@@ -51,7 +51,7 @@ import avatar3 from 'src/assets/images/avatars/3.jpg'
 import avatar4 from 'src/assets/images/avatars/4.jpg'
 import avatar5 from 'src/assets/images/avatars/5.jpg'
 import avatar6 from 'src/assets/images/avatars/6.jpg'
-import { getData } from '../api/Api.js'
+import { getData, putData } from '../api/Api.js'
 
 const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
@@ -109,17 +109,41 @@ const Dashboard = () => {
       activity: '10 sec ago',
     },
   ]
+  const handleUpdateStatusExport = (e, id) => {
+    const eClick = e.currentTarget;
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + id),
+    getData('http://127.0.0.1:8000/api/admin/export/indexStatus')])
+      .then(function (res) {
+        eClick.closest('tr').remove();
+        console.log('Updated succesfully', res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  const handleUpdateStatusImport = (e, id) => {
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + id),
+    getData('http://127.0.0.1:8000/api/admin/import/indexStatus')])
+      .then(res => {
+        console.log('Updated succesfully', res)
+      }).catch(err => {
+        console.log(err)
+      })
+  }
 
-  const [tableDashboard, setTableDashboard] = useState([])
+  const [tableDashboardExport, setTableDashboardExport] = useState([])
+  const [tableDashboardImport, setTableDashboardImport] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/export')])
-      .then(function(res) {
-        setTableDashboard(res[0].data)
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/export/indexStatus')], [getData('http://127.0.0.1:8000/api/admin/import/indexStatus')])
+      .then(function (res) {
+        setTableDashboardExport(res[0].data)
+        setTableDashboardImport(res[1].data)
       })
       .catch((error) => {
         console.log(error)
       })
   }, [])
+
 
   return (
     <>
@@ -356,19 +380,38 @@ const Dashboard = () => {
                     <CTableHeaderCell className="text-center">Người tạo</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
+                    <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                  {tableDashboard.map((item, index) => (
+                  {tableDashboardExport.map((item, index) => (
                     <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">{String(index+1)}</CTableDataCell>
+                      <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.name}</CTableDataCell>
+                      <CTableDataCell className="text-center">Xuất</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
+                      <div className="d-grid gap-2 d-md-block">
+                        <CButton onClick={(e) => handleUpdateStatusExport(e, item.id)} color="primary">Duyệt</CButton>
+                      </div>
+                    </CTableRow>
+                  ))}
+                  {tableDashboardImport.map((item, index) => (
+                    <CTableRow v-for="item in tableItemImport" key={index}>
+                      <CTableDataCell className='text-center'>{String(index + 1)}</CTableDataCell>
                       <CTableDataCell className="text-center">{item.id}</CTableDataCell>
-                      <CTableDataCell className="text-center">Name?</CTableDataCell>
-                      <CTableDataCell className="text-center">Nhap/XUat</CTableDataCell>
-                      <CTableDataCell className="text-center">...</CTableDataCell>
-                      <CTableDataCell className="text-center">...</CTableDataCell>
-                      <CTableDataCell className="text-center">...</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.status==='1'?'Đã duyệt':'Chưa duyệt'}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.name}</CTableDataCell>
+                      <CTableDataCell className="text-center">Nhập</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
+                      <div className="d-grid gap-2 d-md-block">
+                      <CButton onClick={(e) => handleUpdateStatusImport(e, item.id)} color="primary">Duyệt</CButton>
+                      </div>
                     </CTableRow>
                   ))}
                 </CTableBody>
