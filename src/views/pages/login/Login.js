@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import {
   CButton,
   CCard,
@@ -24,6 +24,8 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [validationMsg, setValidationMsg] = useState('')
 
+  const history = useHistory()
+
   const handleUsername = (e) => {
     setUsername(e.target.value)
   }
@@ -40,6 +42,7 @@ const Login = () => {
     Promise.all([postData("http://127.0.0.1:8000/api/auth/login", data)])
       .then(function(res) {
         console.log(res)
+        history.push("/dashboard")
       })
       .catch(error => {
         validatorAll()

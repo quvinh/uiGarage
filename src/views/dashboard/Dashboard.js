@@ -91,30 +91,31 @@ const Dashboard = () => {
     { title: 'LinkedIn', icon: cibLinkedin, percent: 8, value: '27,319' },
   ]
 
-  const tableExample = [
-    {
-      avatar: { src: avatar1, status: 'success' },
-      user: {
-        name: 'Yiorgos Avraamu',
-        new: true,
-        registered: 'Jan 1, 2021',
-      },
-      country: { name: 'USA', flag: cifUs },
-      usage: {
-        value: 50,
-        period: 'Jun 11, 2021 - Jul 10, 2021',
-        color: 'success',
-      },
-      payment: { name: 'Mastercard', icon: cibCcMastercard },
-      activity: '10 sec ago',
-    },
-  ]
+  // const tableExample = [
+  //   {
+  //     avatar: { src: avatar1, status: 'success' },
+  //     user: {
+  //       name: 'Yiorgos Avraamu',
+  //       new: true,
+  //       registered: 'Jan 1, 2021',
+  //     },
+  //     country: { name: 'USA', flag: cifUs },
+  //     usage: {
+  //       value: 50,
+  //       period: 'Jun 11, 2021 - Jul 10, 2021',
+  //       color: 'success',
+  //     },
+  //     payment: { name: 'Mastercard', icon: cibCcMastercard },
+  //     activity: '10 sec ago',
+  //   },
+  // ]
 
   const [tableDashboard, setTableDashboard] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/export')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/import')])
       .then(function(res) {
-        setTableDashboard(res[0].data)
+        console.log(res[0].length)
+        setTableDashboard(res[0])
       })
       .catch((error) => {
         console.log(error)
