@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React from 'react'
+import React, { useState } from 'react'
 import {
   CButton,
   CCard,
@@ -15,9 +15,46 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilPeople, cilPhone, cilUser } from '@coreui/icons'
-import { Link } from 'react-router-dom'
+import { postData } from 'src/views/api/Api'
+import { useHistory } from 'react-router-dom'
 
 const Register = () => {
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [password_confirmation, setPasswordConfirmation] = useState('')
+  const [fullname, setFullname] = useState('')
+  const [phone, setPhone] = useState('')
+  // const [birthday, setBirthday] = useState('')
+  // const [address, setAddress] = useState('')
+  // const [gender, setGender] = useState('')
+
+  const history = useHistory()
+
+  const onRegister = () => {
+    console.log("button clicked")
+    const data = {
+      username: username,
+      email: email,
+      password: password,
+      password_confirmation: password_confirmation,
+      fullname: fullname,
+      phone: phone,
+      // birthday: birthday,
+      // address: address,
+      // gender: gender,
+    }
+    console.log(data)
+    Promise.all([postData('http://127.0.0.1:8000/api/auth/register', data)])
+      .then(function(res) {
+        console.log("Successfully")
+        history.push("/login")
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -33,11 +70,11 @@ const Register = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Tên đăng nhập" autoComplete="username" />
+                      <CFormInput placeholder="Tên đăng nhập" autoComplete="username" onChange={(e) => setUsername(e.target.value)} />
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>@</CInputGroupText>
-                      <CFormInput placeholder="Email" autoComplete="email" />
+                      <CFormInput placeholder="Email" autoComplete="email" onChange={(e) => setEmail(e.target.value)} />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
@@ -46,6 +83,7 @@ const Register = () => {
                       <CFormInput
                         placeholder="Họ và tên"
                         autoComplete="fullname"
+                        onChange={(e) => setFullname(e.target.value)}
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
@@ -55,6 +93,7 @@ const Register = () => {
                       <CFormInput
                         placeholder="Số điện thoại"
                         autoComplete="phone"
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-3">
@@ -65,6 +104,7 @@ const Register = () => {
                         type="password"
                         placeholder="Mật khẩu"
                         autoComplete="new-password"
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
@@ -75,10 +115,11 @@ const Register = () => {
                         type="password"
                         placeholder="Nhập lại mật khẩu"
                         autoComplete="new-password"
+                        onChange={(e) => setPasswordConfirmation(e.target.value)}
                       />
                     </CInputGroup>
                     <div className="d-grid">
-                      <CButton color="warning">Tạo tài khoản</CButton>
+                      <CButton color="warning" onClick={(e) => onRegister(e)}>Tạo tài khoản</CButton>
                       <br />
                       {/* <Link to={"/login"}> */}
                       <CButton href='#/login' color="secondary">Đăng nhập</CButton>
