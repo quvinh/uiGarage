@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   CTable,
   CTableHead,
@@ -26,6 +26,8 @@ import {
 import CIcon from '@coreui/icons-react';
 import { cilArrowCircleBottom } from '@coreui/icons';
 import { getData } from '../api/Api';
+import SimpleReactValidator from 'simple-react-validator';
+import Validator from './Validation';
 // import BootstrapTable from 'react-bootstrap-table-next';
 // import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 
@@ -52,20 +54,27 @@ const Imports = () => {
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
 
+  // const simpleValidator = useRef(SimpleReactValidator())
+  const [validator, showValidationMessage] = Validator()
 
   const btnAddTable = (e) => {//Button click, add data table
-    const data = {
-      itemId: itemId,
-      batchCode: batchCode,
-      nameItem: nameItem,
-      unit: unit,
-      createdBy: createdBy,
-      amount: amount,
-      price: price,
-      nameStore: nameStore,
-      note: note
+    if (validator.allValid()) {
+      console.log("submit")
+      const data = {
+        itemId: itemId,
+        batchCode: batchCode,
+        nameItem: nameItem,
+        unit: unit,
+        createdBy: createdBy,
+        amount: amount,
+        price: price,
+        nameStore: nameStore,
+        note: note
+      }
+      setDataTable([...dataTable, data])
+    } else {
+      showValidationMessage(true)
     }
-    setDataTable([...dataTable, data])
   }
 
   useEffect(() => {
@@ -86,25 +95,34 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Tên vật tư</CInputGroupText>
-                <CFormInput placeholder="Nhập tên vật tư" onChange={(e) => setNameItem(e.target.value)} />
+                <CFormInput
+                  placeholder="Nhập tên vật tư"
+                  name='nameItem'
+                  value={nameItem}
+                  onChange={(e) => setNameItem(e.target.value)} />
               </CInputGroup>
+              {validator.message("nameItem", nameItem, "required", {
+                messages: {
+                  required: "Nhập tên vật tư"
+                }
+              })}
             </CCol>
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>ĐVT</CInputGroupText>
                 {/* <CFormInput placeholder="Nhập đvt" onChange={(e) => setUnit(e.target.value)} /> */}
                 <CDropdown>
-                <CDropdownToggle size="sm" color="secondary">Chiếc</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem type='button'>Bộ</CDropdownItem>
-                  <CDropdownItem type='button'>Cái</CDropdownItem>
-                  <CDropdownItem type='button'>Can</CDropdownItem>
-                  <CDropdownItem type='button'>Chiếc</CDropdownItem>
-                  <CDropdownItem type='button'>Đôi</CDropdownItem>
-                  <CDropdownItem type='button'>Lon</CDropdownItem>
-                  <CDropdownItem type='button'>Ông</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
+                  <CDropdownToggle size="sm" color="secondary">Chiếc</CDropdownToggle>
+                  <CDropdownMenu>
+                    <CDropdownItem type='button'>Bộ</CDropdownItem>
+                    <CDropdownItem type='button'>Cái</CDropdownItem>
+                    <CDropdownItem type='button'>Can</CDropdownItem>
+                    <CDropdownItem type='button'>Chiếc</CDropdownItem>
+                    <CDropdownItem type='button'>Đôi</CDropdownItem>
+                    <CDropdownItem type='button'>Lon</CDropdownItem>
+                    <CDropdownItem type='button'>Ông</CDropdownItem>
+                  </CDropdownMenu>
+                </CDropdown>
               </CInputGroup>
 
             </CCol>
@@ -113,14 +131,24 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Mã vật tư</CInputGroupText>
-                <CFormInput placeholder="Mã vật tư" onChange={(e) => setItemID(e.target.value)} />
+                <CFormInput placeholder="Mã vật tư" name='itemId' value={itemId} onChange={(e) => setItemID(e.target.value)} />
               </CInputGroup>
+              {validator.message("itemId", nameItem, "required", {
+                messages: {
+                  required: "Nhập mã vật tư"
+                }
+              })}
             </CCol>
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Mã sản xuất</CInputGroupText>
-                <CFormInput placeholder="Mã sản xuất" onChange={(e) => setBatchCode(e.target.value)} />
+                <CFormInput placeholder="Mã sản xuất" name='batchCode' value={batchCode} onChange={(e) => setBatchCode(e.target.value)} />
               </CInputGroup>
+              {validator.message("batchCode", batchCode, "required", {
+                messages: {
+                  required: "Nhập mã sản xuất"
+                }
+              })}
             </CCol>
           </CRow>
           <CRow className="g-3">
@@ -133,16 +161,26 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Số lượng</CInputGroupText>
-                <CFormInput placeholder="0" onChange={(e) => setAmount(e.target.value)} />
+                <CFormInput placeholder="0" name='amount' value={amount} onChange={(e) => setAmount(e.target.value)} />
               </CInputGroup>
+              {validator.message("amount", amount, "required", {
+                messages: {
+                  required: "Nhập số lượng"
+                }
+              })}
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Đơn giá</CInputGroupText>
-                <CFormInput placeholder="Nhập đơn giá" onChange={(e) => setPrice(e.target.value)} />
+                <CFormInput placeholder="Nhập đơn giá" name='price' value={price} onChange={(e) => setPrice(e.target.value)} />
               </CInputGroup>
+              {validator.message("price", price, "required", {
+                messages: {
+                  required: "Nhập đơn giá"
+                }
+              })}
             </CCol>
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
@@ -155,8 +193,13 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Người tạo</CInputGroupText>
-                <CFormInput placeholder="Họ và tên" onChange={(e) => setCreatedBy(e.target.value)} />
+                <CFormInput placeholder="Họ và tên" name='createdBy' value={createdBy} onChange={(e) => setCreatedBy(e.target.value)} />
               </CInputGroup>
+              {validator.message("createdBy", createdBy, "required", {
+                messages: {
+                  required: "Nhập người tạo"
+                }
+              })}
             </CCol>
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
