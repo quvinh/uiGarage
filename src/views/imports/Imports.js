@@ -28,7 +28,7 @@ import {
 } from '@coreui/react';
 import { getData, postData } from '../api/Api';
 import Validator from './Validation';
-import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+// import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 // import BootstrapTable from 'react-bootstrap-table-next';
 // import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
 
@@ -36,7 +36,7 @@ import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 //   let today = new Date()
 //   // let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear()
 //   let date = today.toLocaleDateString("en-US", { year: 'numeric', month: '2-digit', day: '2-digit' })
-//   // document.getElementById("myDate").defaultValue = date
+//   // document.getElementById("myDate").value = date
 //   console.log(date)
 // }
 
@@ -44,17 +44,17 @@ import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 const Imports = () => {
   const [item_id, setItemID] = useState('')
   const [batch_code, setBatchCode] = useState('')
-  const [warehouse_id, setWarehouse] = useState('1')
-  const [suppliers_id, setSuppliers] = useState('1')
-  const [shelf_id, setShelf] = useState('1')
-  const [category_id, setCategory] = useState('1')
+  const [warehouse_id, setWarehouse] = useState('')
+  const [suppliers_id, setSuppliers] = useState('')
+  const [shelf_id, setShelf] = useState('')
+  const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
-  const [unit, setUnit] = useState('Chiếc')
+  const [unit, setUnit] = useState('')
   const [created_by, setCreatedBy] = useState('')
   const [amount, setAmount] = useState('')
   const [price, setPrice] = useState('')
   const [totalPrice, setTotalPrice] = useState('')
-  const [nameStore, setNameStore] = useState('')
+  const [nameWarehouse, setNameWarehouse] = useState('')
   const [note, setNote] = useState('')
 
   const [dataTable, setDataTable] = useState([])
@@ -86,14 +86,18 @@ const Imports = () => {
 
   const onChangeName = (e) => {
     setName(e.target.value)
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items')])
-      .then(function(res) {
-        setDataItem(res[0])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value + '/1')])
+      .then(function (res) {
+        setDataItem(res[0].data)
       })
       .catch(err => {
         console.log("Error API get ITEM")
       })
   }
+
+  // onChangeWarehouse = (e) => {
+
+  // }
 
   const btnAddTable = (e) => {//Button click, add data table
     console.log(unit)
@@ -107,13 +111,14 @@ const Imports = () => {
         category_id: category_id,
         name: name,
         unit: unit,
-        created_by: created_by,
+        created_by: 1,//USER
         amount: amount,
         price: price,
-        nameStore: nameStore,
+        nameWarehouse: nameWarehouse,
         note: note
       }
       setDataTable([...dataTable, data])
+      console.log(dataTable)
     } else {
       showValidationMessage(true)
     }
@@ -136,22 +141,39 @@ const Imports = () => {
     }
   }
 
-  // const nameSelected = (id) => {
-  //   Promise.all([])
-
-  // }
+  const nameSelected = (
+    nameItem,
+    itemId,
+    category_id,
+    warehouse_id,
+    shelf_id,
+    batchCode,
+    amount,
+    unit,
+    price) => {
+    console.log('Clicked')
+    setName(nameItem)
+    setItemID(itemId)
+    setCategory(category_id)
+    setWarehouse(warehouse_id)
+    setShelf(shelf_id)
+    setBatchCode(batchCode)
+    setUnit(unit)
+    setPrice(price)
+    setAmount(amount)
+  }
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse'),
     getData('http://127.0.0.1:8000/api/admin/suppliers'),
     getData('http://127.0.0.1:8000/api/admin/category'),
-    getData('http://127.0.0.1:8000/api/admin/items')])
+    getData('http://127.0.0.1:8000/api/admin/shelf')])
       .then(res => {
-        console.log(res[0])
-        console.log(res[2])
+        console.log(res[0].data)
         setDataWarehouse(res[0].data)
-        setDataSuppliers(res[1])///YC sua API
-        // setDataItem(res[3])
+        setDataSuppliers(res[1].data)
+        setDataCategory(res[2].data)
+        setDataShelf(res[3].data)
       })
   }, [])
 
@@ -171,12 +193,28 @@ const Imports = () => {
                   placeholder="Nhập tên vật tư"
                   name='name'
                   value={name}
-                  onChange={onChangeName} />
+                  onChange={(e) => onChangeName(e)} />
               </CInputGroup>
               <CListGroup>
                 {
-                  dataItem.slice(0,5).map((item, index) => (
-                    <CListGroupItem component={"button"} color='warning' key={index}>{item.name}</CListGroupItem>
+                  dataItem && dataItem.slice(0, 5).map((item, index) => (
+                    <CListGroupItem
+                      component={"button"}
+                      color='warning'
+                      key={index}
+                      onClick={(e) => nameSelected(
+                        item.name_item,
+                        item.item_id,
+                        item.category_id,
+                        item.warehouse_id,
+                        item.shelf_id,
+                        item.batch_code,
+                        item.amount,
+                        item.unit,
+                        item.price
+                      )} >
+                      {item.name_item}
+                    </CListGroupItem>
                   ))
                 }
               </CListGroup>
@@ -202,11 +240,11 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" defaultValue={unit} onChange={(e) => setUnit(e.target.value)}>
+              <CFormSelect size="sm" className="mb-3" value={unit} onChange={(e) => setUnit(e.target.value)}>
+                <option value={'Chiếc'}>Chiếc</option>
                 <option value={'Bộ'}>Bộ</option>
                 <option value={'Cái'}>Cái</option>
                 <option value={'Can'}>Can</option>
-                <option value={'Chiếc'}>Chiếc</option>
                 <option value={'Đôi'}>Đôi</option>
                 <option value={'Lon'}>Lon</option>
                 <option value={'Ông'}>Ông</option>
@@ -226,10 +264,10 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" defaultValue={category_id} onChange={(e) => setCategory(e.target.value)}>
+              <CFormSelect size="sm" className="mb-3" value={category_id} onChange={(e) => setCategory(e.target.value)}>
                 <option>Chọn loại vật tư</option>
-                {dataCategory.map((item, id) => (
-                  <option value={id}>item.name</option>
+                {dataCategory.map((item, index) => (
+                  <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
             </CCol>
@@ -247,10 +285,10 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" defaultValue={warehouse_id} onChange={(e) => setWarehouse(e.target.value)}>
+              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={(e) => setWarehouse(e.target.value)}>
                 <option>Chọn nhà kho</option>
-                {dataWarehouse.map((item, id) => (
-                  <option value={id}>item.name</option>
+                {dataWarehouse.map((item, index) => (
+                  <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
             </CCol>
@@ -269,10 +307,10 @@ const Imports = () => {
 
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" defaultValue={suppliers_id} onChange={(e) => setSuppliers(e.target.value)}>
+              <CFormSelect size="sm" className="mb-3" value={suppliers_id} onChange={(e) => setSuppliers(e.target.value)}>
                 <option>Chọn nhà cung cấp</option>
-                {dataSuppliers.map((item, id) => (
-                  <option value={id}>item.name</option>
+                {dataSuppliers.map((item, index) => (
+                  <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
             </CCol>
@@ -287,10 +325,10 @@ const Imports = () => {
             <CCol xs>
 
               {/* <CInputGroupText id="" style={{ width: "120px" }}>Nhà kho</CInputGroupText> */}
-              <CFormSelect size="sm" className="mb-3" defaultValue={shelf_id} onChange={(e) => setShelf(e.target.value)}>
-                <option>Chọn nhà giá/kệ</option>
-                {dataShelf.map((item, id) => (
-                  <option value={id}>item.name</option>
+              <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
+                <option>Chọn giá/kệ</option>
+                {dataShelf.map((item, index) => (
+                  <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
             </CCol>
@@ -316,7 +354,7 @@ const Imports = () => {
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
             <CButton size="sm" color="success" onClick={(e) => btnAddTable(e)}>THÊM VÀO PHIẾU</CButton>
-            <CButton size="sm" color="warning" onClick={btnCreateImport}>TẠO PHIẾU</CButton>
+            <CButton size="sm" color="warning" onClick={(e) => btnCreateImport(e)}>TẠO PHIẾU</CButton>
           </div>
         </CCardBody>
       </CCard>
@@ -348,7 +386,7 @@ const Imports = () => {
               <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
               <CTableDataCell className="text-center">{item.price}</CTableDataCell>
               <CTableDataCell className="text-center">...</CTableDataCell>
-              <CTableDataCell className="text-center">K.LE HONG PHONG</CTableDataCell>
+              <CTableDataCell className="text-center">{item.nameWarehouse}</CTableDataCell>
               <CTableDataCell className="text-center">{item.note}</CTableDataCell>
             </CTableRow>
           ))}

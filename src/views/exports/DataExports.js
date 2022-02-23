@@ -5,40 +5,53 @@ import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import React, { useEffect, useState } from 'react';
 import { getData } from '../api/Api';
 
-
 const columns = [{
-  dataField: 'id',
-  text: 'ID Vật tư',
+  dataField: 'itemId',
+  text: 'Mã vật tư',
+  headerStyle: {
+    backgroundColor: '#ff944d'
+  },
   filter: textFilter()
 }, {
-  dataField: 'name',
+  dataField: 'batch_code',
+  text: 'Mã sản xuất',
+  filter: textFilter()
+}, {
+  dataField: 'nameItem',
   text: 'Tên vật tư',
   filter: textFilter()
 }, {
-  dataField: 'request',
-  text: 'Loại yêu cầu',
+  dataField: 'unit',
+  text: 'ĐVT',
+  filter: textFilter()
+}, {
+  dataField: 'nameCategory',
+  text: 'Loại vật tư',
   filter: textFilter()
 }, {
   dataField: 'amount',
-  text: 'Số lượng'
-}, {
-  dataField: 'created_by',
-  text: 'Người tạo',
+  text: 'Số lượng',
   filter: textFilter()
 }, {
-  dataField: 'created_at',
-  text: 'Ngày tạo',
+  dataField: 'price',
+  text: 'Đơn giá',
   filter: textFilter()
 }, {
-  dataField: 'status',
-  text: 'Trạng thái'
-}
+  dataField: 'nameWarehouse',
+  text: 'Kho',
+  filter: textFilter()
+},
 ];
+
+const rowStyle = (row, rowIndex) => {
+  const style = {};
+  rowIndex%2===0?style.backgroundColor = '#c8e6c9':style.backgroundColor = '#00BFFF';
+  return style
+}
 
 export const DataExportTable = () => {
   const [tableDashboard, setTableDashboard] = useState([])
   const [dataSelected, setDataSelected] = useState([])
-
   function checkDataSelect(index) {
     if (dataSelected.length===0) {
       return true
@@ -63,12 +76,14 @@ export const DataExportTable = () => {
       if (isSelect && checkDataSelect(row.id)) {
         console.log("Add")
         setDataSelected([...dataSelected, {
-          item_id: row.id,
-          item_name: row.name,
+          item_id: row.itemId,
+          batch_code: row.batch_code,
+          item_name: row.nameItem,
+          unit: row.unit,
+          name_category: row.nameCategory,
           amount: row.amount,
-          created_by: row.created_by,
-          created_at: row.created_at,
-          status: row.status
+          price: row.price,
+          name_warehouse: row.nameWarehouse,
         }])
       } else {
         setDataSelected(dataSelected.filter(function(value) {
@@ -79,8 +94,9 @@ export const DataExportTable = () => {
   };
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/export')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/itemInWarehouse/1')])
       .then(function (res) {
+        console.log(res[0].data)
         setTableDashboard(res[0].data)
       })
       .catch((error) => {
@@ -97,6 +113,7 @@ export const DataExportTable = () => {
         columns={columns}
         filter={filterFactory()}
         selectRow={selectRow}
+        rowStyle={rowStyle}
       />
     </div>
   )
