@@ -10,6 +10,7 @@ const headerStyle = {
   fontWeight: 'bold',
 }
 
+
 const columns = [{
   dataField: 'itemId',
   text: 'Mã vật tư',
@@ -66,13 +67,20 @@ export const DataExportTable = () => {
   function checkDataSelect(index) {
     console.log(dataSelected)
     if (dataSelected.length===0) {
+      console.log("=0")
       return true
     } else {
-      for (let i = 0; i < dataSelected.length; i++) {
-        if (dataSelected[i].item_id===index) {
+      // for (let i = 0; i < dataSelected.length; i++) {
+      //   if (dataSelected[i].item_id===index) {
+      //     return false
+      //   }
+      // }
+      dataSelected.map((item) => {
+        console.log(item.item_id)
+        if(item.item_id === index) {
           return false
         }
-      }
+      })
       return true
     }
   }

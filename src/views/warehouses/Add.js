@@ -32,7 +32,7 @@ const Add = () => {
     setNote(e.target.value);
   }
 
-  const handleAddForm = () => {
+  const handleAddForm = (e) => {
     const data = {
       name: name,
       location: location,
@@ -62,18 +62,18 @@ const Add = () => {
                   {/* <p className="text-medium-emphasis"></p> */}
                   <CInputGroup className="mb-3">
                     <CInputGroupText id="" style={{ width: "100px" }}>Tên kho</CInputGroupText>
-                    <CFormInput id='name' placeholder="Tên" onChange={handleNameChange} value={name} />
+                    <CFormInput id='name' placeholder="Tên" onChange={(e) => handleNameChange(e)} value={name} />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText id="" style={{ width: "100px" }}>Địa chỉ</CInputGroupText>
-                    <CFormInput id='location' placeholder="Địa chỉ" onChange={handleLocationChange} value={location} />
+                    <CFormInput id='location' placeholder="Địa chỉ" onChange={(e) => handleLocationChange(e)} value={location} />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText id="" style={{ width: "100px" }}>Ghi chú</CInputGroupText>
-                    <CFormTextarea id="note" rows="2" onChange={handleNoteChange} value={note}></CFormTextarea>
+                    <CFormTextarea id="note" rows="2" onChange={(e) => handleNoteChange(e)} value={note}></CFormTextarea>
                   </CInputGroup>
                   <div className="d-grid">
-                    <CButton color="warning" onClick={handleAddForm}>Lưu</CButton>
+                    <CButton color="warning" onClick={(e) =>handleAddForm(e)}>Lưu</CButton>
                     <br />
                     <CButton href='#/warehouses' color="secondary">Huỷ</CButton>
                   </div>

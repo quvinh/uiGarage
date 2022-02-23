@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CTable,
   CTableHead,
@@ -17,28 +17,12 @@ import {
   CRow,
   CCol,
   CButton,
-  CFormTextarea,
   CListGroupItem,
-  CDropdown,
-  CDropdownToggle,
-  CDropdownMenu,
-  CDropdownItem,
   CFormSelect,
   CListGroup
 } from '@coreui/react';
 import { getData, postData } from '../api/Api';
 import Validator from './Validation';
-// import ReactHTMLTableToExcel from 'react-html-table-to-excel';
-// import BootstrapTable from 'react-bootstrap-table-next';
-// import ToolkitProvider, { CSVExport } from 'react-bootstrap-table2-toolkit';
-
-// const setDate = () => {
-//   let today = new Date()
-//   // let date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear()
-//   let date = today.toLocaleDateString("en-US", { year: 'numeric', month: '2-digit', day: '2-digit' })
-//   // document.getElementById("myDate").value = date
-//   console.log(date)
-// }
 
 
 const Imports = () => {
@@ -150,11 +134,12 @@ const Imports = () => {
     category_id,
     warehouse_id,
     shelf_id,
+    suppliers_id,
     batchCode,
     amount,
     unit,
     price) => {
-    console.log('Clicked')
+    console.log('Clicked', suppliers_id)
     setName(nameItem)
     setItemID(itemId)
     setCategory(category_id)
@@ -164,6 +149,7 @@ const Imports = () => {
     setUnit(unit)
     setPrice(price)
     setAmount(amount)
+    setSuppliers(suppliers_id)
   }
 
   useEffect(() => {
@@ -211,6 +197,7 @@ const Imports = () => {
                         item.category_id,
                         item.warehouse_id,
                         item.shelf_id,
+                        item.suppliers_id,
                         item.batch_code,
                         item.amount,
                         item.unit,

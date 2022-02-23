@@ -19,6 +19,7 @@ const Inventory = () => {
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showInventExport'), getData('http://127.0.0.1:8000/api/admin/inventory/showInventImport')])
       .then(function (res) {
+        console.log(res[1].data)
         setTableDashboardExport(res[0].data)
         setTableDashboardImport(res[1].data)
       })
@@ -68,6 +69,7 @@ const Inventory = () => {
             <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tồn kho</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Kho</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
           </CTableRow>
@@ -77,10 +79,11 @@ const Inventory = () => {
             <CTableRow v-for="item in tableItemImport" key={index}>
               <CTableDataCell className='text-center'>{String(index + 1)}</CTableDataCell>
               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.name}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.name_item}</CTableDataCell>
               <CTableDataCell className="text-center">Nhập</CTableDataCell>
-              <CTableDataCell className="text-center">{item.luongNhap}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.tonKho}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.amount_import}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.amount_inventory}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.name_warehouse}</CTableDataCell>
               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
               <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
             </CTableRow>
