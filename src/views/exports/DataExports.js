@@ -5,54 +5,66 @@ import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import React, { useEffect, useState } from 'react';
 import { getData } from '../api/Api';
 
+const headerStyle = {
+  backgroundColor: '#ff944d',
+  fontWeight: 'bold',
+}
+
 const columns = [{
   dataField: 'itemId',
   text: 'Mã vật tư',
-  headerStyle: {
-    backgroundColor: '#ff944d'
-  },
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'batch_code',
   text: 'Mã sản xuất',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'nameItem',
   text: 'Tên vật tư',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'unit',
   text: 'ĐVT',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'nameCategory',
   text: 'Loại vật tư',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'amount',
   text: 'Số lượng',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'price',
   text: 'Đơn giá',
+  headerStyle: headerStyle,
   filter: textFilter()
 }, {
   dataField: 'nameWarehouse',
   text: 'Kho',
+  headerStyle: headerStyle,
   filter: textFilter()
 },
 ];
 
 const rowStyle = (row, rowIndex) => {
   const style = {};
-  rowIndex%2===0?style.backgroundColor = '#c8e6c9':style.backgroundColor = '#00BFFF';
+  rowIndex%2===0?style.backgroundColor = '#c8e6c9':style.backgroundColor = '#ffff99';
   return style
 }
 
 export const DataExportTable = () => {
   const [tableDashboard, setTableDashboard] = useState([])
   const [dataSelected, setDataSelected] = useState([])
+
   function checkDataSelect(index) {
+    console.log(dataSelected)
     if (dataSelected.length===0) {
       return true
     } else {
@@ -73,7 +85,8 @@ export const DataExportTable = () => {
     mode: 'checkbox',
     clickToSelect: false,
     onSelect: (row, isSelect, rowIndex, e) => {
-      if (isSelect && checkDataSelect(row.id)) {
+      // console.log(rowIndex, " ", row.itemId)
+      if (isSelect && checkDataSelect(row.itemId)) {
         console.log("Add")
         setDataSelected([...dataSelected, {
           item_id: row.itemId,
@@ -87,7 +100,7 @@ export const DataExportTable = () => {
         }])
       } else {
         setDataSelected(dataSelected.filter(function(value) {
-          return value.item_id !== row.id
+          return value.item_id !== row.itemId
         }))
       }
     },
@@ -114,6 +127,7 @@ export const DataExportTable = () => {
         filter={filterFactory()}
         selectRow={selectRow}
         rowStyle={rowStyle}
+        noDataIndication={ 'Không có dữ liệu' }
       />
     </div>
   )

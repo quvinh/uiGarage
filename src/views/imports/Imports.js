@@ -95,9 +95,12 @@ const Imports = () => {
       })
   }
 
-  // onChangeWarehouse = (e) => {
-
-  // }
+  const onChangeWarehouse = (e) => {
+    let index = e.nativeEvent.target.selectedIndex;
+    setWarehouse(e.target.value)
+    setNameWarehouse(e.nativeEvent.target[index].text)
+    console.log(e.nativeEvent.target[index].text)
+  }
 
   const btnAddTable = (e) => {//Button click, add data table
     console.log(unit)
@@ -285,7 +288,7 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={(e) => setWarehouse(e.target.value)}>
+              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={(e) => onChangeWarehouse(e)}>
                 <option>Chọn nhà kho</option>
                 {dataWarehouse.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
