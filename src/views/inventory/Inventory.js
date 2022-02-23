@@ -6,7 +6,8 @@ import {
   CTableRow,
   CTableHeaderCell,
   CTableBody,
-  CTableDataCell
+  CTableDataCell,
+  CTableCaption
 } from '@coreui/react';
 import { getData, putData } from '../api/Api.js'
 
@@ -28,19 +29,16 @@ const Inventory = () => {
 
   return (
     <>
-      <CTable striped hover responsive bordered borderColor="warning">
+      <CTable striped hover responsive bordered borderColor="warning" caption='top'>
+        <CTableCaption>Kiểm kê Xuất</CTableCaption>
         <CTableHead color="warning">
           <CTableRow>
-            {/* <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell> */}
             <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tồn kho</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Người tạo</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
           </CTableRow>
@@ -54,11 +52,27 @@ const Inventory = () => {
               <CTableDataCell className="text-center">Xuất</CTableDataCell>
               <CTableDataCell className="text-center">{item.luongXuat}</CTableDataCell>
               <CTableDataCell className="text-center">{item.tonKho}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-              <CTableDataCell className='text-center'>{item.status === '1'?'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
+              <CTableDataCell className='text-center'>{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
             </CTableRow>
           ))}
+        </CTableBody>
+      </CTable>
+      <CTable striped hover responsive bordered borderColor="warning" caption='top'>
+        <CTableCaption>Kiểm kê Nhập</CTableCaption>
+        <CTableHead color="warning">
+          <CTableRow>
+            <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Tồn kho</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
           {tableDashboardImport.map((item, index) => (
             <CTableRow v-for="item in tableItemImport" key={index}>
               <CTableDataCell className='text-center'>{String(index + 1)}</CTableDataCell>
@@ -67,9 +81,8 @@ const Inventory = () => {
               <CTableDataCell className="text-center">Nhập</CTableDataCell>
               <CTableDataCell className="text-center">{item.luongNhap}</CTableDataCell>
               <CTableDataCell className="text-center">{item.tonKho}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.status === '1'?'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
             </CTableRow>
           ))}
         </CTableBody>
