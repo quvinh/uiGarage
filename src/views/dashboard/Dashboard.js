@@ -110,16 +110,16 @@ const Dashboard = () => {
     },
   ]
 
-  const [tableDashboard, setTableDashboard] = useState([])
-  useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/export')])
-      .then(function(res) {
-        setTableDashboard(res[0].data)
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }, [])
+  // const [tableDashboard, setTableDashboard] = useState([])
+  // useEffect(() => {
+  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/export')])
+  //     .then(function(res) {
+  //       setTableDashboard(res[0].data)
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     })
+  // }, [])
 
   return (
     <>
@@ -358,7 +358,7 @@ const Dashboard = () => {
                     <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
-                <CTableBody>
+                {/* <CTableBody>
                   {tableDashboard.map((item, index) => (
                     <CTableRow v-for="item in tableItems" key={index}>
                       <CTableDataCell className="text-center">{String(index+1)}</CTableDataCell>
@@ -371,7 +371,7 @@ const Dashboard = () => {
                       <CTableDataCell className="text-center">{item.status==='1'?'Đã duyệt':'Chưa duyệt'}</CTableDataCell>
                     </CTableRow>
                   ))}
-                </CTableBody>
+                </CTableBody> */}
               </CTable>
             </CCardBody>
           </CCard>

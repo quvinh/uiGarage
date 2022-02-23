@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { getData } from '../api/Api';
 
 
+
 const columns = [{
   dataField: 'id',
   text: 'ID Vật tư',
