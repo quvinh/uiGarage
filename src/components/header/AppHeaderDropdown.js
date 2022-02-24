@@ -23,8 +23,18 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
+import { getToken, getUser, removeUserSession } from '../utils/Common'
+import { useHistory } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
+  const history = useHistory()
+  const handleLogout = () => {
+    console.log(getToken())
+    removeUserSession()
+    console.log(getToken())
+    history.push('/login')
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
@@ -84,7 +94,7 @@ const AppHeaderDropdown = () => {
           </CBadge>
         </CDropdownItem> */}
         <CDropdownDivider />
-        <CDropdownItem href="#">
+        <CDropdownItem onClick={handleLogout}>
           <CIcon icon={cilLockLocked} className="me-2" />
           Đăng xuất
         </CDropdownItem>

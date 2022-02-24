@@ -91,6 +91,11 @@ const _nav = [
     items: [
       {
         component: CNavItem,
+        name: 'Admin',
+        to: '/account',
+      },
+      {
+        component: CNavItem,
         name: 'Đăng nhập',
         to: '/login',
       },

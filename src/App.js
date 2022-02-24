@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { Component } from 'react'
-import { HashRouter, Route, Switch } from 'react-router-dom'
+import { HashRouter, Redirect, Route, Switch } from 'react-router-dom'
+import { getToken } from './components/utils/Common'
 import './scss/style.scss'
 
 const loading = (
@@ -34,7 +35,7 @@ class App extends Component {
             />
             <Route exact path="/404" name="Page 404" render={(props) => <Page404 {...props} />} />
             <Route exact path="/500" name="Page 500" render={(props) => <Page500 {...props} />} />
-            <Route path="/" name="Home" render={(props) => <DefaultLayout {...props} />} />
+            <Route path="/" name="Home" render={(props) => getToken() ? <DefaultLayout {...props} /> : <Redirect to={{ pathname: '/login', }} />} />
             {/* <Route exact path="/warehouses-edit/id">
               <EditWarehouses />
             </Route> */}

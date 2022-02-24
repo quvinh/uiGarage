@@ -18,6 +18,7 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { postData } from 'src/views/api/Api'
 import isEmpty from 'validator/lib/isEmpty'
+import { setUserSession } from 'src/components/utils/Common'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -42,6 +43,9 @@ const Login = () => {
     Promise.all([postData("http://127.0.0.1:8000/api/auth/login", data)])
       .then(function(res) {
         console.log(res)
+        // localStorage.setItem("token", res[0].data.access_token)
+        setUserSession(res[0].data.access_token, res[0].data.user.username)
+        // console.log(localStorage.getItem("token"))
         history.push("/dashboard")
       })
       .catch(error => {
