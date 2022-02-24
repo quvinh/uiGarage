@@ -118,7 +118,7 @@ const Dashboard = () => {
             <CCardHeader>Giao dịch nhập chờ xử lý</CCardHeader>
             <CCardBody>
               <CTable striped hover responsive bordered borderColor="warning">
-                <CTableHead color="warning">
+                <CTableHead color="primary">
                   <CTableRow>
                     <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
                     <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
