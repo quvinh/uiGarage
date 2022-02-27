@@ -24,7 +24,8 @@ const AddCategories = React.lazy(() => import('./views/categories/Add'))
 const Shelves = React.lazy(() => import('./views/shelf/Shelves'))
 const EditShelves = React.lazy(() => import('./views/shelf/Edit'))
 const AddShelves = React.lazy(() => import('./views/shelf/Add'))
-const Itemshelf = React.lazy(() => import('./views/shelf/Itemshelf'))
+// const AddShelves1 = React.lazy(() => import('./views/shelf/Add'))
+const Itemshelf = React.lazy(() => import('./views/warehouses/Itemshelf'))
 
 //Detail_item
 // const Shelves = React.lazy(() => import('./views/detail_item/Detail_item'))
@@ -49,15 +50,16 @@ const routes = [
   { path: '/warehouses-add', name: 'Tạo kho', component: AddWarehouses },
   { path: '/warehouses-edit/:id', name: 'Chỉnh sửa kho', component: EditWarehouses },
   { path: '/warehouses-shelf/:id', name: 'kệ trong kho', component: ShelfWarehouse },
+  { path: '/item-shelf/:id', name: 'vật tư trong kệ', component: Itemshelf },
 
-  { path: '/categories', name: 'Kho', component: Categories },
-  { path: '/categories-add', name: 'Tạo kho', component: AddCategories },
-  { path: '/categories-edit/:id', name: 'Chỉnh sửa kho', component: EditCategories },
+  { path: '/categories', name: 'Category', component: Categories },
+  { path: '/categories-add', name: 'Tạo category', component: AddCategories },
+  { path: '/categories-edit/:id', name: 'Chỉnh sửa category', component: EditCategories },
 
   { path: '/shelf', name: 'Kho', component: Shelves },
   { path: '/shelf-add', name: 'Tạo kho', component: AddShelves },
+  // { path: '/shelf-add/:id', name: 'Tạo kho', component: AddShelves1 },
   { path: '/shelf-edit/:id', name: 'Chỉnh sửa kho', component: EditShelves },
-  { path: '/item-shelf/:id', name: 'vật tư trong kệ', component: Itemshelf },
 ]
 
 export default routes

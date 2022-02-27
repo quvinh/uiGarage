@@ -19,23 +19,35 @@ import { getData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FromControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+
 const Add = () => {
-  const [dataTable, setDataWarehouse] = useState([])
+  const [open, setOpen] = React.useState(false);
+  const [dataTable, setDataTable] = useState([])
+  const [dataWarehouse, setDataWarehouse] = useState([])
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [warehouse_id, setWarehouse_id] = useState('');
-  const history = useHistory()
-  const handleNameChange = (e) => {
+
+  const handleName = (e) => {
     setName(e.target.value);
   }
-  const handlePositionChange = (e) => {
+  const handlePosition = (e) => {
     setPosition(e.target.value);
   }
-  const handleWarehouse_idChange = (e) => {
+  const handleWarehouse_id = (e) => {
     setWarehouse_id(e.target.value);
   }
 
-  const handleAddForm = () => {
+  const handleAdd = () => {
     const data = {
       name: name,
       position: position,
@@ -45,13 +57,15 @@ const Add = () => {
     Promise.all([postData('http://127.0.0.1:8000/api/admin/shelf/store', data)])
       .then(res => {
         console.log('Added succesfully', res)
-        history.push('/shelf')
+        console.log(dataTable)
+        console.log(data)
+        setDataTable([...dataTable, data])
       }).catch(error => {
-        // validatorAll()
         console.log(':(((')
         console.log(error)
       })
-  
+    window.location.reload(false);
+
   }
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse')])
@@ -63,47 +77,73 @@ const Add = () => {
         console.log(error)
       })
   }, [])
-  
-
+  const handleAddForm = () => {
+    setOpen(true);
+  }
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
-    <div className="bg-light d-flex flex-row align-items-center">
-      <CContainer>
-        <CRow className="justify-content-center">
-          <CCol md={9} lg={9} xl={9}>
-            <CCard className="mx-4">
-              <CCardBody className="p-4">
-                <CForm>
-                  <h1>Tạo giá</h1>
-                  {/* <p className="text-medium-emphasis"></p> */}
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText id="" style={{ width: "100px" }}>Tên giá</CInputGroupText>
-                    <CFormInput id='name' placeholder="Tên" onChange={handleNameChange} value={name} />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
-                    <CInputGroupText id="" style={{ width: "100px" }}>Vị trí</CInputGroupText>
-                    <CFormTextarea id="position" onChange={handlePositionChange} value={position}></CFormTextarea>
-                  </CInputGroup>
-                  <CCol xs>
-                    <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={(e) => setWarehouse_id(e.target.value)}>
-                      <option>Chọn kho</option>
-                      {dataTable.map((item, index) => (
-                        <option key={index} value={item.id}>{item.name}</option>
-                      ))}
-                    </CFormSelect>
-                  </CCol>
-                  <div className="d-grid">
-                    <CButton color="warning" onClick={handleAddForm}>Lưu</CButton>
-                    <br />
-                    <CButton href='#/shelf' color="secondary">Huỷ</CButton>
-                  </div>
-                </CForm>
-              </CCardBody>
-            </CCard>
-          </CCol>
-        </CRow>
-      </CContainer>
-    </div>
+    <>
+      <Button onClick={handleAddForm} color='warning'>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
+          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+        </svg>
+      </Button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Thêm Giá kệ</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Tên giá kệ"
+            type="text"
+            fullWidth
+            value={name}
+            onChange={handleName}
+            variant="standard"
+          />
+          <TextField
+            margin="dense"
+            id="position"
+            label="Vị trí"
+            type="text"
+            fullWidth
+            value={position}
+            onChange={handlePosition}
+            variant="standard"
+          />
+          {/* <TextField
+            margin="dense"
+            id="name"
+            label="Mã kho"
+            type="text"
+            fullWidth
+            value={warehouse_id}
+            onChange={handleWarehouse_id}
+            variant="standard"
+          /> */}
+          <FromControl sx={{ m: 1, minWidth: 120 }}>
+            <Select
+              native
+              value={warehouse_id}
+              onChange={(e) => setWarehouse_id(e.target.value)}>
+                <option value="">Kho</option>
+              {dataWarehouse.map((item, index) => (
+                <option key={index} value={item.id}>{item.name}</option>
+              ))}
+            </Select>
+          </FromControl>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleAdd} >Save</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   )
 }
 
