@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { lazy, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import BootstrapTable from 'react-bootstrap-table-next';
 import {
   CTable,
   CTableHead,
@@ -10,84 +11,89 @@ import {
   CTableCaption
 } from '@coreui/react';
 import { getData, putData } from '../api/Api.js'
+import DataExport from './DataExport.js';
+import DataImport from './DataImport.js';
 
 const Inventory = () => {
 
 
-  const [tableDashboardExport, setTableDashboardExport] = useState([])
-  const [tableDashboardImport, setTableDashboardImport] = useState([])
+  const columns = [{
+    dataField: 'code',
+    text: 'Mã Phiếu'
+  }, {
+    dataField: 'tenKho',
+    text: 'Tên Kho'
+  }, {
+    dataField: 'created_at',
+    text: 'Ngày Tạo'
+  }, {
+    dataField: 'created_by',
+    text: 'Người tạo'
+  }];
+
+  const [codeExport, setCodeExport] = useState([])
+  const [codeImport, setCodeImport] = useState([])
+
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showInventExport'), getData('http://127.0.0.1:8000/api/admin/inventory/showInventImport')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeExport'),
+      getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')
+    ])
       .then(function (res) {
-        setTableDashboardExport(res[0].data)
-        setTableDashboardImport(res[1].data)
+        // console.log(res[0].data)
+        setCodeExport(res[0].data)
+        setCodeImport(res[1].data)
       })
       .catch((error) => {
         console.log(error)
       })
   }, [])
 
+  const expandRowExport = {
+    renderer: row => (
+      <>
+        <div>
+          <DataExport props={row.code} />
+        </div>
+      </>
+
+    ),
+    onlyOneExpanding: true,
+    // showExpandColumn: true,
+    // expandByColumnOnly: true
+  };
+  const expandRowImport = {
+    renderer: row => (
+      <>
+        <div>
+          <DataImport props={row.code} />
+        </div>
+      </>
+
+    ),
+    onlyOneExpanding: true,
+    // showExpandColumn: true,
+    // expandByColumnOnly: true
+  };
+
   return (
     <>
-      <CTable striped hover responsive bordered borderColor="warning" caption='top'>
-        <CTableCaption>Kiểm kê Xuất</CTableCaption>
-        <CTableHead color="warning">
-          <CTableRow>
-            <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Tồn kho</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {tableDashboardExport.map((item, index) => (
-            <CTableRow v-for="item in tableItems" key={index}>
-              <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-              <CTableDataCell className="text-center">Xuất</CTableDataCell>
-              <CTableDataCell className="text-center">{item.luongXuat}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.tonKho}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-              <CTableDataCell className='text-center'>{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
-            </CTableRow>
-          ))}
-        </CTableBody>
-      </CTable>
-      <CTable striped hover responsive bordered borderColor="warning" caption='top'>
-        <CTableCaption>Kiểm kê Nhập</CTableCaption>
-        <CTableHead color="warning">
-          <CTableRow>
-            <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Tồn kho</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          {tableDashboardImport.map((item, index) => (
-            <CTableRow v-for="item in tableItemImport" key={index}>
-              <CTableDataCell className='text-center'>{String(index + 1)}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-              <CTableDataCell className="text-center">Nhập</CTableDataCell>
-              <CTableDataCell className="text-center">{item.luongNhap}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.tonKho}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
-            </CTableRow>
-          ))}
-        </CTableBody>
-      </CTable>
+    <h1>Phiếu Nhập</h1>
+    <BootstrapTable
+      keyField='code'
+      data={codeExport}
+      columns={columns}
+      expandRow={expandRowExport}
+    />
+    <h1>Phiếu Xuất</h1>
+    <BootstrapTable
+      keyField='code'
+      data={codeImport}
+      columns={columns}
+      expandRow={expandRowImport}
+    />
     </>
+
   )
+
 }
 export default Inventory

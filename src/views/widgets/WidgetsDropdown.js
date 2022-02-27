@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CRow,
   CCol,
@@ -8,6 +8,7 @@ import {
   CDropdownToggle,
   CWidgetStatsA,
 } from '@coreui/react'
+import { getData, putData } from '../api/Api.js'
 import { getStyle } from '@coreui/utils'
 import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
@@ -23,9 +24,9 @@ const WidgetsDropdown = () => {
           value={
             <>
               Mặt hàng tồn kho{' '}
-              {/* <span className="fs-6 fw-normal">
+              <span className="fs-6 fw-normal">
                 (-12.4% <CIcon icon={cilArrowBottom} />)
-              </span> */}
+              </span>
             </>
           }
           title="1000"
@@ -109,10 +110,10 @@ const WidgetsDropdown = () => {
           color="success"
           value={
             <>
-              Tồn kho dưới hạn mức{' '}
-              {/* <span className="fs-6 fw-normal">
+              Tổng tồn kho{' '}
+              <span className="fs-6 fw-normal">
                 (40.9% <CIcon icon={cilArrowTop} />)
-              </span> */}
+              </span>
             </>
           }
           title="100"
@@ -196,9 +197,9 @@ const WidgetsDropdown = () => {
           value={
             <>
               Kho đang hoạt động{' '}
-              {/* <span className="fs-6 fw-normal">
+              <span className="fs-6 fw-normal">
                 (84.7% <CIcon icon={cilArrowTop} />)
-              </span> */}
+              </span>
             </>
           }
           title="10"
@@ -262,7 +263,7 @@ const WidgetsDropdown = () => {
           // }
         />
       </CCol>
-      {/* <CCol sm={6} lg={3}>
+      <CCol sm={6} lg={3}>
         <CWidgetStatsA
           className="mb-4"
           color="danger"
@@ -288,72 +289,72 @@ const WidgetsDropdown = () => {
               </CDropdownMenu>
             </CDropdown>
           }
-          chart={
-            <CChartBar
-              className="mt-3 mx-3"
-              style={{ height: '70px' }}
-              data={{
-                labels: [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December',
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                ],
-                datasets: [
-                  {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(255,255,255,.2)',
-                    borderColor: 'rgba(255,255,255,.55)',
-                    data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
-                    barPercentage: 0.6,
-                  },
-                ],
-              }}
-              options={{
-                maintainAspectRatio: false,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                  y: {
-                    grid: {
-                      display: false,
-                      drawBorder: false,
-                      drawTicks: false,
-                    },
-                    ticks: {
-                      display: false,
-                    },
-                  },
-                },
-              }}
-            />
-          }
+          // chart={
+          //   <CChartBar
+          //     className="mt-3 mx-3"
+          //     style={{ height: '70px' }}
+          //     data={{
+          //       labels: [
+          //         'January',
+          //         'February',
+          //         'March',
+          //         'April',
+          //         'May',
+          //         'June',
+          //         'July',
+          //         'August',
+          //         'September',
+          //         'October',
+          //         'November',
+          //         'December',
+          //         'January',
+          //         'February',
+          //         'March',
+          //         'April',
+          //       ],
+          //       datasets: [
+          //         {
+          //           label: 'My First dataset',
+          //           backgroundColor: 'rgba(255,255,255,.2)',
+          //           borderColor: 'rgba(255,255,255,.55)',
+          //           data: [78, 81, 80, 45, 34, 12, 40, 85, 65, 23, 12, 98, 34, 84, 67, 82],
+          //           barPercentage: 0.6,
+          //         },
+          //       ],
+          //     }}
+          //     options={{
+          //       maintainAspectRatio: false,
+          //       plugins: {
+          //         legend: {
+          //           display: false,
+          //         },
+          //       },
+          //       scales: {
+          //         x: {
+          //           grid: {
+          //             display: false,
+          //             drawTicks: false,
+          //           },
+          //           ticks: {
+          //             display: false,
+          //           },
+          //         },
+          //         y: {
+          //           grid: {
+          //             display: false,
+          //             drawBorder: false,
+          //             drawTicks: false,
+          //           },
+          //           ticks: {
+          //             display: false,
+          //           },
+          //         },
+          //       },
+          //     }}
+          //   />
+          // }
         />
-      </CCol> */}
+      </CCol>
     </CRow>
   )
 }
