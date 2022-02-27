@@ -21,8 +21,8 @@ import { useHistory } from 'react-router-dom'
 const Register = () => {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [password_confirmation, setPasswordConfirmation] = useState('')
+  const [password, setPassword] = useState('123456')
+  const [password_confirmation, setPasswordConfirmation] = useState('123456')
   const [fullname, setFullname] = useState('')
   const [phone, setPhone] = useState('')
   // const [birthday, setBirthday] = useState('')
@@ -104,6 +104,7 @@ const Register = () => {
                         type="password"
                         placeholder="Mật khẩu"
                         autoComplete="new-password"
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                     </CInputGroup>
@@ -115,6 +116,7 @@ const Register = () => {
                         type="password"
                         placeholder="Nhập lại mật khẩu"
                         autoComplete="new-password"
+                        value={password_confirmation}
                         onChange={(e) => setPasswordConfirmation(e.target.value)}
                       />
                     </CInputGroup>

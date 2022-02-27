@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import {DataExportTable} from './DataExports';
 
 
-const Exports = () => {
+const Exports = (props) => {
   return (
     <>
       <DataExportTable />

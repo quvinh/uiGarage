@@ -44,7 +44,7 @@ const Login = () => {
       .then(function(res) {
         console.log(res)
         // localStorage.setItem("token", res[0].data.access_token)
-        setUserSession(res[0].data.access_token, res[0].data.user.username)
+        setUserSession(res[0].data.access_token, res[0].data.user.id)
         // console.log(localStorage.getItem("token"))
         history.push("/dashboard")
       })

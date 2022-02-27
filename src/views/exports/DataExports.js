@@ -2,7 +2,7 @@
 /* eslint-disable prettier/prettier */
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { getData, postData } from '../api/Api';
 import {
   CTable,
@@ -11,7 +11,12 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
+  CInputGroup,
+  CInputGroupText,
+  CFormInput,
 } from '@coreui/react';
+import { ShowExport } from './ShowExport'
+
 const headerStyle = {
   backgroundColor: '#ff944d',
   fontWeight: 'bold',
@@ -71,6 +76,9 @@ export const DataExportTable = () => {
   const [tableDashboard, setTableDashboard] = useState([])
   const [dataSelected, setDataSelected] = useState([])
   const [dataExport, setDataExport] = useState([])
+  const [dataExportSelected, setDataExportSelected] = useState([])
+  const [isSelected, setIsSelected] = useState(false)
+  const [isAmountSelected, setIsAmountSelected] = useState(false)
 
   function checkDataSelect(index) {
     console.log(dataSelected)
@@ -95,23 +103,39 @@ export const DataExportTable = () => {
 
   const handleGetSelectedData = () => {
     // console.log(dataSelected)
-    setDataExport([...dataExport, dataSelected])
+    if (isSelected) {
+      setDataExport([...dataExport, dataSelected])
+      setIsSelected(false)
+      setIsAmountSelected(false)
+    }
     console.log(dataExport)
   }
 
-  const handleExport = (e) => {
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store', dataExport)])
-      .then(function(res){
-        console.log("Exported")
-      })
-      .catch(error => {
-        console.log(error)
-      })
+  // const handleExport = (e) => {
+  //   Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store', dataExport)])
+  //     .then(function (res) {
+  //       console.log("Exported")
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //     })
+  // }
+
+  const handleReset = (e) => {
+    setDataExport([])
+  }
+
+  const handleSetAmount = (e, i) => {
+    var data = Object.assign({}, dataExport[i])
+    // console.log(i)
+    data[0].amount = e.target.value
+    setDataExportSelected([...dataExportSelected, data])
+    setIsAmountSelected(true)
   }
 
   const selectRow = {
     mode: 'checkbox',
-    clickToSelect: false,
+    // clickToSelect: false,
     onSelect: (row, isSelect, rowIndex, e) => {
       // console.log(rowIndex, " ", row.itemId)
       if (isSelect && checkDataSelect(row.itemId)) {
@@ -128,6 +152,7 @@ export const DataExportTable = () => {
           warehouse_id: row.warehouse_id,
           created_by: 1
         }])
+        setIsSelected(true)
       } else {
         setDataSelected(dataSelected.filter(function (value) {
           return value.item_id !== row.itemId
@@ -149,9 +174,25 @@ export const DataExportTable = () => {
 
   return (
     <>
-      <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+      {/* <div className="d-grid gap-2 d-md-flex justify-content-md-center">
         <button className="btn btn-success" onClick={(e) => handleExport(e)}>Tạo phiếu xuất</button>
+      </div> */}
+
+      <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+        <button className="btn btn-secondary" onClick={(e) => handleReset()} >RESET</button>
+        <button className="btn btn-primary" onClick={(e) => handleGetSelectedData()}>THÊM VÀO PHIẾU</button>
+        <ShowExport dataTable={dataExportSelected} isAmountSelected={isAmountSelected} />
       </div>
+      <BootstrapTable
+        keyField='itemId'
+        data={tableDashboard}
+        columns={columns}
+        filter={filterFactory()}
+        selectRow={selectRow}
+        rowStyle={rowStyle}
+        noDataIndication={'Không có dữ liệu'}
+      />
+      <hr />
       <CTable id='dataExport' striped hover responsive bordered borderColor="warning">
         <CTableHead color="light">
           <CTableRow>
@@ -161,7 +202,7 @@ export const DataExportTable = () => {
             <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
             <CTableHeaderCell className="text-center">ĐVT</CTableHeaderCell>
             {/* <CTableHeaderCell className="text-center">SLYC</CTableHeaderCell> */}
-            <CTableHeaderCell className="text-center">SL thực</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">SL</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Đơn giá</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Kho</CTableHeaderCell>
           </CTableRow>
@@ -174,27 +215,20 @@ export const DataExportTable = () => {
               <CTableDataCell className="text-center">{item[0].batch_code}</CTableDataCell>
               <CTableDataCell className="text-center">{item[0].item_name}</CTableDataCell>
               <CTableDataCell className="text-center">{item[0].unit}</CTableDataCell>
-              {/* <CTableDataCell className="text-center">-</CTableDataCell> */}
-              <CTableDataCell className="text-center">{item[0].amount}</CTableDataCell>
+              <CInputGroup>
+                {/* <CInputGroupText id="">Ghi chú</CInputGroupText> */}
+                <CFormInput
+                  placeholder="số lượng"
+                  name='amount'
+                  style={{ width: "50px", textAlign: "center" }}
+                  onChange={(e) => handleSetAmount(e, index)} />
+              </CInputGroup>
               <CTableDataCell className="text-center">{item[0].price}</CTableDataCell>
               <CTableDataCell className="text-center">{item[0].name_warehouse}</CTableDataCell>
             </CTableRow>
           ))}
         </CTableBody>
       </CTable>
-      <hr />
-      <div className="d-grid gap-2 d-md-flex justify-content-md-center">
-        <button className="btn btn-primary" onClick={handleGetSelectedData}>Thêm phiếu xuất</button>
-      </div>
-      <BootstrapTable
-        keyField='itemId'
-        data={tableDashboard}
-        columns={columns}
-        filter={filterFactory()}
-        selectRow={selectRow}
-        rowStyle={rowStyle}
-        noDataIndication={'Không có dữ liệu'}
-      />
     </>
   )
 }

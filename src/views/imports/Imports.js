@@ -22,7 +22,14 @@ import {
   CListGroup
 } from '@coreui/react';
 import { getData, postData } from '../api/Api';
+import TextField from '@mui/material/TextField'
+import Stack from '@mui/material/Stack'
+import Autocomplete from '@mui/material/Autocomplete'
 import Validator from './Validation';
+import { ShowImport } from './ShowImport';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DateTimePicker from '@mui/lab/DateTimePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 
 
 const Imports = () => {
@@ -34,11 +41,12 @@ const Imports = () => {
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
   const [unit, setUnit] = useState('')
-  const [created_by, setCreatedBy] = useState('')
-  const [amount, setAmount] = useState('')
-  const [price, setPrice] = useState('')
-  const [totalPrice, setTotalPrice] = useState('')
+  const [created_by, setCreatedBy] = useState('Nguyễn Thị T')
+  const [amount, setAmount] = useState(0)
+  const [price, setPrice] = useState(0)
+  const [totalPrice, setTotalPrice] = useState(0)
   const [nameWarehouse, setNameWarehouse] = useState('')
+  const [date, setDate] = useState(new Date)
   const [note, setNote] = useState('')
 
   const [dataTable, setDataTable] = useState([])
@@ -56,27 +64,52 @@ const Imports = () => {
     setName('')
     setItemID('')
     setBatchCode('')
-    setAmount('0')
-    setPrice('0')
-    setTotalPrice('0')
+    setAmount(0)
+    setPrice(0)
+    setTotalPrice(0)
     setUnit('')
     setCategory('')
     setWarehouse('')
     setSuppliers('')
     setShelf('')
-    setCreatedBy('')
-    setDataTable([])
+    setCreatedBy('Kế toán')
+    setDate(new Date())
+    // setDataTable([])
   }
 
-  const onChangeName = (e) => {
-    setName(e.target.value)
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value + '/1')])
-      .then(function (res) {
-        setDataItem(res[0].data)
-      })
-      .catch(err => {
-        console.log("Error API get ITEM")
-      })
+  const reset = () => {
+    setNull()
+    setDataTable([])
+  }
+  // const onChangeName = (e) => {
+  //   setName(e.target.value)
+  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value + '/1')])
+  //     .then(function (res) {
+  //       setDataItem(res[0].data)
+  //     })
+  //     .catch(err => {
+  //       console.log("Error API get ITEM")
+  //     })
+  // }
+  const onChangeName = (e, newValue) => {
+    setName(newValue)
+    dataItem.map((item) => {
+      if (item.name_item === newValue) {
+        setItemID(item.item_id)
+        setBatchCode(item.batch_code)
+        setCategory(item.category_id)
+        setShelf(item.shelf_id)
+        setAmount(item.amount)
+        setUnit(item.unit)
+        setWarehouse(item.warehouse_id)
+        setPrice(item.price)
+        setSuppliers(item.suppliers_id)
+        setName(item.name_item)
+        setTotalPrice((item.amount) * (item.price))
+        console.log(item.name_item)
+      }
+    })
+    // console.log(arr)
   }
 
   const onChangeWarehouse = (e) => {
@@ -102,7 +135,8 @@ const Imports = () => {
         amount: amount,
         price: price,
         nameWarehouse: nameWarehouse,
-        note: note
+        note: note,
+        totalPrice: totalPrice
       }
       setDataTable([...dataTable, data])
       console.log(dataTable)
@@ -139,52 +173,64 @@ const Imports = () => {
     amount,
     unit,
     price) => {
-    console.log('Clicked', suppliers_id)
-    setName(nameItem)
-    setItemID(itemId)
-    setCategory(category_id)
-    setWarehouse(warehouse_id)
-    setShelf(shelf_id)
-    setBatchCode(batchCode)
-    setUnit(unit)
-    setPrice(price)
-    setAmount(amount)
-    setSuppliers(suppliers_id)
+    // console.log('Clicked', suppliers_id)
+    // setName(nameItem)
+    // setItemID(itemId)
+    // setCategory(category_id)
+    // setWarehouse(warehouse_id)
+    // setShelf(shelf_id)
+    // setBatchCode(batchCode)
+    // setUnit(unit)
+    // setPrice(price)
+    // setAmount(amount)
+    // setSuppliers(suppliers_id)
   }
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse'),
     getData('http://127.0.0.1:8000/api/admin/suppliers'),
     getData('http://127.0.0.1:8000/api/admin/category'),
-    getData('http://127.0.0.1:8000/api/admin/shelf')])
+    getData('http://127.0.0.1:8000/api/admin/shelf'),
+    getData('http://127.0.0.1:8000/api/admin/items/searchItem/1')])
       .then(res => {
         console.log(res[0].data)
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
         setDataShelf(res[3].data)
+        setDataItem(res[4].data)
       })
   }, [])
 
   return (
     <>
-      {/* <p style={{fontWeight: "bold"}}>&gt;Nhập vật tư - phụ tùng</p> */}
+      <p style={{ fontWeight: "bold" }}>&gt;Nhập vật tư - phụ tùng</p>
       <CCard>
-        <CCardHeader>
+        {/* <CCardHeader>
           <h6>Nhập vật tư - phụ tùng</h6>
-        </CCardHeader>
+        </CCardHeader> */}
         <CCardBody>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              {/* <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Tên vật tư</CInputGroupText>
                 <CFormInput
                   placeholder="Nhập tên vật tư"
                   name='name'
                   value={name}
                   onChange={(e) => onChangeName(e)} />
-              </CInputGroup>
-              <CListGroup>
+              </CInputGroup> */}
+              <Autocomplete
+                id="name_item"
+                freeSolo
+                size='small'
+                options={dataItem.map((option) => option.name_item)}
+                value={name}
+                onChange={(e, newValue) => onChangeName(e, newValue)}
+                renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
+              />
+              <br />
+              {/* <CListGroup>
                 {
                   dataItem && dataItem.slice(0, 5).map((item, index) => (
                     <CListGroupItem
@@ -207,7 +253,7 @@ const Imports = () => {
                     </CListGroupItem>
                   ))
                 }
-              </CListGroup>
+              </CListGroup> */}
               {validator.message("name", name, "required", {
                 messages: {
                   required: "Nhập tên vật tư"
@@ -215,6 +261,20 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
+              <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DateTimePicker
+                    renderInput={(props) => <TextField size='small' {...props} />}
+                    label="Ngày nhập"
+                    value={date}
+                    inputFormat={"dd/MM/yyyy hh:mm"}
+                    onChange={(newValue) => {
+                      setDate(newValue);
+                    }}
+                  />
+                </LocalizationProvider>
+                <CButton color="success" onClick={(e) => setNull()}>LÀM MỚI</CButton>
+              </div>
             </CCol>
           </CRow>
           <CRow className="g-3">
@@ -266,7 +326,10 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Số lượng</CInputGroupText>
-                <CFormInput placeholder="0" name='amount' value={amount} onChange={(e) => setAmount(e.target.value)} />
+                <CFormInput placeholder="0" name='amount' value={amount} onChange={(e) => {
+                  setAmount(e.target.value)
+                  setTotalPrice((e.target.value) * price)
+                }} />
               </CInputGroup>
               {validator.message("amount", amount, "required", {
                 messages: {
@@ -287,7 +350,10 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Đơn giá</CInputGroupText>
-                <CFormInput placeholder="Nhập đơn giá" name='price' value={price} onChange={(e) => setPrice(e.target.value)} />
+                <CFormInput placeholder="Nhập đơn giá" name='price' value={price} onChange={(e) => {
+                  setPrice(e.target.value)
+                  setTotalPrice((e.target.value) * amount)
+                }} />
               </CInputGroup>
               {validator.message("price", price, "required", {
                 messages: {
@@ -309,7 +375,7 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Thành tiền</CInputGroupText>
-                <CFormInput placeholder="0" value={totalPrice} onChange={(e) => setTotalPrice(e.target.value)} />
+                <CFormInput placeholder="0" value={totalPrice} readOnly />
               </CInputGroup>
             </CCol>
             <CCol xs>
@@ -326,14 +392,8 @@ const Imports = () => {
           <CRow className="g-3">
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
-                <CInputGroupText id="" style={{ width: "120px" }}>Ngày nhập kho</CInputGroupText>
-                <CFormInput id="myDate" type="date" />
-              </CInputGroup>
-            </CCol>
-            <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Người tạo</CInputGroupText>
-                <CFormInput placeholder="Họ và tên" name='created_by' value={created_by} onChange={(e) => setCreatedBy(e.target.value)} />
+                <CFormInput readOnly placeholder="Họ và tên" name='created_by' value={created_by} onChange={(e) => setCreatedBy(e.target.value)} />
               </CInputGroup>
               {validator.message("created_by", created_by, "required", {
                 messages: {
@@ -341,10 +401,17 @@ const Imports = () => {
                 }
               })}
             </CCol>
+            <CCol xs>
+              <CInputGroup size="sm" className="mb-3">
+                <CInputGroupText id="" style={{ width: "120px" }}>Ghi chú</CInputGroupText>
+                <CFormInput placeholder="Ghi chú" name='note' value={note} onChange={(e) => setNote(e.target.value)} />
+              </CInputGroup>
+            </CCol>
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
             <CButton size="sm" color="success" onClick={(e) => btnAddTable(e)}>THÊM VÀO PHIẾU</CButton>
-            <CButton size="sm" color="warning" onClick={(e) => btnCreateImport(e)}>TẠO PHIẾU</CButton>
+            <ShowImport dataTable={dataTable} />
+            <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
           </div>
         </CCardBody>
       </CCard>

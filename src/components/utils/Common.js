@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 
 //return data user
-export const getUser = () => {
-  const userStr = sessionStorage.getItem('user')
+export const getUserID = () => {
+  const userStr = sessionStorage.getItem('user_id')
 
   if(userStr) return JSON.parse(userStr)
   else return null
@@ -14,11 +14,11 @@ export const getToken = () => {
 
 export const removeUserSession = () => {
   sessionStorage.removeItem('token');
-  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('user_id');
 }
 
-export const setUserSession = (token, user) => {
+export const setUserSession = (token, user_id) => {
   sessionStorage.setItem('token', token);
-  sessionStorage.setItem('user', JSON.stringify(user));
+  sessionStorage.setItem('user_id', JSON.stringify(user_id));
   console.log(getToken())
 }

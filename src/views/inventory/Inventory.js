@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { lazy, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CTable,
   CTableHead,
@@ -9,7 +9,7 @@ import {
   CTableDataCell,
   CTableCaption
 } from '@coreui/react';
-import { getData, putData } from '../api/Api.js'
+import { getData } from '../api/Api.js'
 
 const Inventory = () => {
 
