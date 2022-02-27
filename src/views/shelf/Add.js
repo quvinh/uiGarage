@@ -51,7 +51,7 @@ const Add = () => {
         console.log(':(((')
         console.log(error)
       })
-  
+
   }
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse')])
@@ -63,7 +63,7 @@ const Add = () => {
         console.log(error)
       })
   }, [])
-  
+
 
 
   return (
