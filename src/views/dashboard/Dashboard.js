@@ -2,6 +2,8 @@
 import React, { lazy, useEffect, useState } from 'react'
 
 import {
+  CAvatar,
+  CBadge,
   CButton,
   CCard,
   CCardBody,
@@ -16,145 +18,55 @@ import {
   CTableRow,
 } from '@coreui/react'
 import { getData, putData } from '../api/Api.js'
+import Charts from './Charts.js'
 
-const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
+//const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
+const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
-  const random = (min, max) => {
-    return Math.floor(Math.random() * (max - min + 1) + min)
-  }
 
-  const [msg, setMsg] = useState();
-  const handleUpdateStatusExport = (e, id) => {
-    const eClick = e.currentTarget;
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + id),
-    getData('http://127.0.0.1:8000/api/admin/export/indexStatus')])
-      .then(function (res) {
-        eClick.closest('tr').remove();
-        console.log('Updated succesfully', res);
-        setMsg = 'Duyệt thành công.';
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-  const handleUpdateStatusImport = (e, id) => {
-    const eClick = e.currentTarget;
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + id),
-    getData('http://127.0.0.1:8000/api/admin/import/indexStatus')])
-      .then(function (res) {
-        eClick.closest('tr').remove();
-        console.log('Updated succesfully', res);
-        setMsg = 'Duyệt thành công.';
-      }).catch(err => {
-        console.log(err)
-      })
-  }
-
-  const [tableDashboardExport, setTableDashboardExport] = useState([])
-  const [tableDashboardImport, setTableDashboardImport] = useState([])
+  const [tonKho, setTonKho] = useState([])
+  const [solgKho, setSolgKho] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/export/indexStatus'), getData('http://127.0.0.1:8000/api/admin/import/indexStatus')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'), getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho')])
       .then(function (res) {
-        console.log(res[0].data)
-        setTableDashboardExport(res[0].data)
-        setTableDashboardImport(res[1].data)
-
+        setTonKho(res[0].data)
+        setSolgKho(res[1].data)
       })
       .catch((error) => {
-        console.log(error)
+        // console.log(error)
       })
   }, [])
 
-
   return (
     <>
-      <WidgetsDropdown />
+      {/* <WidgetsDropdown /> */}
       <CRow>
-        <CCol xs>
-          <CCard className="mb-4">
-            <CCardHeader>Giao dịch xuất chờ xử lý</CCardHeader>
-            <CCardBody>
-              <CTable striped hover responsive bordered borderColor="warning">
-                <CTableHead color="warning">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Người tạo</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableDashboardExport.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                      <CTableDataCell className="text-center">Xuất</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
-                      <CTableDataCell>
-                        <div className="d-grid gap-2 d-md-block">
-                          <CButton onClick={(e) => handleUpdateStatusExport(e, item.id)} color="primary">Duyệt</CButton>
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>
+        <CCol sm={6} lg={5}>
+          {solgKho.map((item, index) => (
+            <CCard key={index} textColor='black' className='mb-3 border-warning'>
+              <CCardBody>
+                <h1>Kho đang hoạt động: {item.solgKho}</h1>
+              </CCardBody>
+            </CCard>
+          ))}
+          {tonKho.map((item, index) => (
+            <CCard key={index} textColor='black' className='mb-3 border-warning'>
+              <CCardBody >
+                <h4>Tổng tồn kho {item.name}: {item.tonKho} <CBadge color='success'> Active </CBadge></h4>
+                <h5>Tổng tiền trong kho:</h5>
+                <h6>{item.total} VND</h6>
+              </CCardBody>
+            </CCard>
+          ))}
         </CCol>
-        <br />
-        <CCol>
-          <CCard>
-            <CCardHeader>Giao dịch nhập chờ xử lý</CCardHeader>
-            <CCardBody>
-              <CTable striped hover responsive bordered borderColor="warning">
-                <CTableHead color="primary">
-                  <CTableRow>
-                    <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Loại yêu cầu</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Người tạo</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-                    <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
-                  </CTableRow>
-                </CTableHead>
-                <CTableBody>
-                  {tableDashboardImport.map((item, index) => (
-                    <CTableRow v-for="item in tableItems" key={index}>
-                      <CTableDataCell className='text-center'>{String(index + 1)}</CTableDataCell>
-                      <CTableDataCell className='text-center'>{item.item_id}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                      <CTableDataCell className="text-center">Nhập</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.created_by}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.status === '1' ? 'Đã duyệt' : 'Chưa duyệt'}</CTableDataCell>
-                      <CTableDataCell>
-                        <div className='d-grid gap-2 d-md-block'>
-                          <CButton onClick={(e) => handleUpdateStatusImport(e, item.id)} color='primary'>Duyệt</CButton>
-                        </div>
-                      </CTableDataCell>
-                    </CTableRow>
-                  ))}
-                </CTableBody>
-              </CTable>
-            </CCardBody>
-          </CCard>
+        <CCol sm={6} lg={6}>
+          <Charts />
         </CCol>
       </CRow>
+      {/* <CRow>
+
+      </CRow> */}
     </>
   )
 }

@@ -36,7 +36,7 @@ const Add = () => {
     console.log(data);
     Promise.all([postData('http://127.0.0.1:8000/api/admin/category/store', data)])
       .then(res => {
-        console.log('Added succesfully', res)
+        console.log('Added successfully', res)
         history.push('/categories')
       }).catch(error => {
         // validatorAll()
