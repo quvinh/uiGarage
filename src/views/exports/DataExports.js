@@ -122,15 +122,21 @@ export const DataExportTable = () => {
   // }
 
   const handleReset = (e) => {
+    setDataSelected([])
     setDataExport([])
+    setDataExportSelected([])
   }
 
+
   const handleSetAmount = (e, i) => {
-    var data = Object.assign({}, dataExport[i])
-    // console.log(i)
+    const data = Object.assign({}, dataExport[i])
+    console.log("----")
     data[0].amount = e.target.value
-    setDataExportSelected([...dataExportSelected, data])
+    setDataExportSelected([...dataExportSelected.slice(0, i),
+      data,
+    ...dataExportSelected.slice(i, dataExportSelected.lastIndex)])
     setIsAmountSelected(true)
+    console.log(dataExportSelected)
   }
 
   const selectRow = {

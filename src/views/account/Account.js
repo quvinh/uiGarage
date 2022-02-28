@@ -19,7 +19,9 @@ import {
   CInputGroupText,
   CFormInput,
   CFormCheck,
-  CFormSelect
+  CFormSelect,
+  CListGroup,
+  CListGroupItem
 } from '@coreui/react';
 import { delData, getData, postData } from '../api/Api';
 import { Link, useHistory } from 'react-router-dom';
@@ -86,14 +88,28 @@ const Account = () => {
   const [onGenderChanged, setOnGenderChanged] = useState(false)
   const history = useHistory()
 
-  const handleAddressChange = (e) => {
-    setAddress(e.target.value)
-    setOnAddressChanged(true)
-  }
+  // const handleAddressChange = (e) => {
+  //   setAddress(e.target.value)
+  //   setOnAddressChanged(true)
+  // }
 
-  const handleBirthdayChange = (e) => {
-    setBirthday(e.toLocaleDateString())
-    setOnBirthdayChanged(true)
+  // const handleBirthdayChange = (e) => {
+  //   setBirthday(e.toLocaleDateString())
+  //   setOnBirthdayChanged(true)
+  // }
+
+  const handleSelectedRoles = (e) => {
+    let index = e.nativeEvent.target.selectedIndex;
+    console.log(e.nativeEvent.target[index].text)
+    // Promise.all([getData('http://127.0.0.1:8000/api/admin/auth_model/detail_roles/' + id)])
+    //   .then(function (res) {
+    //     setPermission(res[0].data)
+    //     console.log(res[0].data)
+    //   })
+    //   .catch(error => {
+    //     console.log(error)
+    //     history.push('/login')
+    //   })
   }
 
   const expandRow = {
@@ -108,53 +124,33 @@ const Account = () => {
             <CCol xs={4}>
               <CCardBody>
                 <CForm>
-                  <CInputGroup className="mb-4">
-                    <CInputGroupText>
-                      <CIcon icon={cilAddressBook} />
-                    </CInputGroupText>
+                  <CInputGroup className="mb-4" size='sm'>
+                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Địa chỉ</CInputGroupText>
                     <CFormInput
-                      placeholder="Địa chỉ"
+                      placeholder="Chưa cập nhật"
                       autoComplete="address"
-                      value={onAddressChanged ? address : row.address}
-                      onChange={(e) => handleAddressChange(e)}
+                      value={address}
+                      readOnly
                     />
                   </CInputGroup>
-                  <CInputGroup className="mb-4">
-                    {/* <CFormInput
-                      type='date'
-                      placeholder="Ngày sinh"
+                  <CInputGroup className="mb-4" size='sm'>
+                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Ngày sinh</CInputGroupText>
+                    <CFormInput
+                      placeholder="Chưa cập nhật"
                       autoComplete="birthday"
-                      // value={row.birthday}
-                      onChange={(e) => setBirthday(e.target.value)}
-                    /> */}
-                    {/* <LocalizationProvider dateAdapter={AdapterDateFns} >
-                      <DateTimePicker
-                        inputFormat={"dd/MM/yyyy"}
-                        renderInput={(props) => <TextField {...props} />}
-                        label="Ngày sinh"
-                        value={row.birthday?new Date(row.birthday):new Date().toLocaleDateString()}
-                        onChange={(e) => {
-                          setBirthday();
-                        }}
-                      // formatDate={(date) => moment(date).format('dd/MM/yyyy hh:mm')}
-                      />
-                    </LocalizationProvider> */}
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker
-                        label="Nhập ngày sinh"
-                        inputFormat={"dd/MM/yyyy"}
-                        value={onBirthdayChanged ? birthday : (row.birthday ? new Date(row.birthday) : null)}
-                        onChange={(e) => {
-                          handleBirthdayChange(e)
-                        }}
-                        renderInput={(params) => (
-                          <TextField {...params} helperText={params?.inputProps?.placeholder} />
-                        )}
-                      />
-                    </LocalizationProvider>
+                      value={birthday}
+                      readOnly
+                    />
                   </CInputGroup>
-                  <CFormCheck type="radio" name="gender" label="Nam" defaultChecked={row.gender === 1 ? true : false} onClick={(e) => setGender(1)} />
-                  <CFormCheck type="radio" name="gender" label="Nữ" defaultChecked={row.gender === 0 ? true : false} onClick={(e) => setGender(0)} />
+                  <CInputGroup className="mb-4" size='sm'>
+                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Giới tính</CInputGroupText>
+                    <CFormInput
+                      placeholder="Chưa cập nhật"
+                      autoComplete="gender"
+                      value={gender}
+                      readOnly
+                    />
+                  </CInputGroup>
                 </CForm>
                 {/* <CButton color="success" onClick={(e) => btnUpdateDetailUser(e, row.id)}>Lưu</CButton> */}
               </CCardBody>
@@ -166,23 +162,28 @@ const Account = () => {
                     <CFormSelect size="sm" className="mb-3" value={rolesID} onChange={(e) => setRolesID(e.target.value)}>
                       <option>Vai trò</option>
                       {dataRoles.map((item, index) => (
-                        <option key={index} value={item.id}>{item.name}</option>
+                        <option key={index} value={item.id} onChange={(e) => handleSelectedRoles(e)}>{item.name}</option>
                       ))}
                     </CFormSelect>
                   </CCol>
                   <CCol>
-                    <CFormSelect size="sm" className="mb-3" value={rolesID} onChange={(e) => setPermissionID(e.target.value)}>
-                      <option>Quyền hạn</option>
-                      {dataPermission.map((item, index) => (
-                        <option key={index} value={item.id}>{item.name}</option>
-                      ))}
-                    </CFormSelect>
+                    <CListGroup>
+                      <CButton color='secondary' size='sm' style={{ fontWeight: 'bold' }}>Quyền hạn</CButton>
+                      {
+                        dataPermission.map((item, index) => {
+                          <CListGroupItem key={index}>{item.permission_name}</CListGroupItem>
+                        })
+                      }
+                    </CListGroup>
                   </CCol>
                 </CRow>
+                <br />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+                  <CButton size="sm" color="success">LƯU QUYỀN HẠN</CButton>
+                </div>
               </CCardBody>
             </CCol>
           </CRow>
-
         </CCard>
       </div>
     ),
@@ -228,7 +229,7 @@ const Account = () => {
       })
       .catch(error => {
         console.log(error)
-        history.push('/login')
+        // history.push('/login')
       })
   }, [])
 

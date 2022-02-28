@@ -36,7 +36,7 @@ const Imports = () => {
   const [item_id, setItemID] = useState('')
   const [batch_code, setBatchCode] = useState('')
   const [warehouse_id, setWarehouse] = useState('')
-  const [suppliers_id, setSuppliers] = useState('')
+  const [suppliers_id, setSuppliers] = useState()
   const [shelf_id, setShelf] = useState('')
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
@@ -57,6 +57,7 @@ const Imports = () => {
   const [dataCategory, setDataCategory] = useState([])
   const [dataNameSelected, setDataNameSelected] = useState([])
 
+  const [code, setCode] = useState('')
   // const simpleValidator = useRef(SimpleReactValidator())
   const [validator, showValidationMessage] = Validator()
 
@@ -92,7 +93,10 @@ const Imports = () => {
   //     })
   // }
   const onChangeName = (e, newValue) => {
-    setName(newValue)
+    setName(e.target.value)
+    if(dataTable.length===0) createCode()
+    console.log(e.target.value)
+    console.log(newValue)
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         setItemID(item.item_id)
@@ -103,7 +107,7 @@ const Imports = () => {
         setUnit(item.unit)
         setWarehouse(item.warehouse_id)
         setPrice(item.price)
-        setSuppliers(item.suppliers_id)
+        setSuppliers("NO1")
         setName(item.name_item)
         setTotalPrice((item.amount) * (item.price))
         console.log(item.name_item)
@@ -119,11 +123,21 @@ const Imports = () => {
     console.log(e.nativeEvent.target[index].text)
   }
 
+  const createCode = () => {
+    const time = new Date()
+    const date = time.getDate() + "" + (time.getMonth() + 1) + "" + time.getFullYear() + "" +
+      time.getHours() + "" + time.getMinutes() + "" + time.getSeconds()
+    const code = "NH_" + date
+    console.log('CREATED: ' + code)
+    setCode(code)
+  }
+  // console.log(createCode())
   const btnAddTable = (e) => {//Button click, add data table
     console.log(unit)
     if (validator.allValid()) {
       const data = {
         item_id: item_id,
+        code: code,
         batch_code: batch_code,
         warehouse_id: warehouse_id,
         shelf_id: shelf_id,
@@ -139,28 +153,29 @@ const Imports = () => {
         totalPrice: totalPrice
       }
       setDataTable([...dataTable, data])
+      // setCode(code)
       console.log(dataTable)
     } else {
       showValidationMessage(true)
     }
   }
 
-  const btnCreateImport = () => {
-    console.log(unit)
-    if (dataTable.length > 0) {
-      dataTable.map((item, index) => {
-        console.log(item)
-        Promise.all([postData('http://127.0.0.1:8000/api/admin/import/store', item)])
-          .then(function (res) {
-            console.log(index)
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      })
-      setNull()
-    }
-  }
+  // const btnCreateImport = () => {
+  //   console.log(unit)
+  //   if (dataTable.length > 0) {
+  //     dataTable.map((item, index) => {
+  //       console.log(item)
+  //       Promise.all([postData('http://127.0.0.1:8000/api/admin/import/store', item)])
+  //         .then(function (res) {
+  //           console.log(index)
+  //         })
+  //         .catch(err => {
+  //           console.log(err)
+  //         })
+  //     })
+  //     setNull()
+  //   }
+  // }
 
   const nameSelected = (
     nameItem,
@@ -193,7 +208,7 @@ const Imports = () => {
     getData('http://127.0.0.1:8000/api/admin/shelf'),
     getData('http://127.0.0.1:8000/api/admin/items/searchItem/1')])
       .then(res => {
-        console.log(res[0].data)
+        console.log(res[1].data)
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
@@ -225,9 +240,12 @@ const Imports = () => {
                 freeSolo
                 size='small'
                 options={dataItem.map((option) => option.name_item)}
-                value={name}
-                onChange={(e, newValue) => onChangeName(e, newValue)}
+                // value={name}
+                // onChange={(e, newValue) => onChangeName(e, newValue)}
+                inputValue={name}
+                onInputChange={(e, newValue) => onChangeName(e, newValue)}
                 renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
+                disableClearable
               />
               <br />
               {/* <CListGroup>
@@ -410,7 +428,7 @@ const Imports = () => {
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
             <CButton size="sm" color="success" onClick={(e) => btnAddTable(e)}>THÊM VÀO PHIẾU</CButton>
-            <ShowImport dataTable={dataTable} />
+            <ShowImport dataTable={dataTable} code={code} />
             <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
           </div>
         </CCardBody>

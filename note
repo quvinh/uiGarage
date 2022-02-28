@@ -1,0 +1,258 @@
+{/* <CTable>
+        <CTableHead color="warning">
+          <CTableRow>
+            <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Mã giá kệ</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Tên giá kệ</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Vị trí</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody>
+          {dataTable.map((item, index) => (
+            <CTableRow key={index}>
+              <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
+              <CTableDataCell className="text-center" style={{ width: "200px" }} >{item.id}</CTableDataCell>
+              <CTableDataCell className="text-center" style={{ width: "200px" }} >{item.name}</CTableDataCell>
+              <CTableDataCell className="text-center" style={{ width: "300px" }}>{item.position}</CTableDataCell>
+              <CTableDataCell className="text-center" style={{ width: "200px" }}>{item.status === '1' ? 'Đã đầy' : 'Còn chỗ'}</CTableDataCell>
+              <CTableDataCell className="text-center">
+                <div className="d-grid gap-2 d-md-block">
+                  <CButton href={'#/item-shelf/' + item.id} color="success">chi tiết</CButton>
+                  <CButton href={'#/shelf-edit/' + item.id} color="success">Sửa</CButton>
+                  <CButton onClick={(e) => handleDelete(e, item.id)} color="secondary">Xoá</CButton>
+                </div>
+              </CTableDataCell>
+            </CTableRow>
+          ))}
+        </CTableBody>
+      </CTable> */}
+
+
+
+
+
+
+
+
+      Add Warehouse 
+
+
+      /* eslint-disable prettier/prettier */
+import React, { useState } from 'react'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCol,
+  CContainer,
+  CForm,
+  CFormInput,
+  CFormTextarea,
+  CInputGroup,
+  CInputGroupText,
+  CRow,
+} from '@coreui/react'
+import { postData } from '../api/Api';
+import { useHistory } from 'react-router-dom';
+import axios from 'axios';
+
+const Add = () => {
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [note, setNote] = useState('');
+  const history = useHistory()
+  
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  }
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+  }
+  const handleNoteChange = (e) => {
+    setNote(e.target.value);
+  }
+
+  const handleAddForm = () => {
+    const data = {
+      name: name,
+      location: location,
+      note: note
+    }
+    console.log(data);
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store', data)])
+      .then(res => {
+        console.log('Added succesfully', res)
+        history.push('/warehouses')
+      }).catch(error => {
+        // validatorAll()
+        console.log(':(((')
+        console.log(error)
+      })
+  }
+
+  return (
+    <div className="bg-light d-flex flex-row align-items-center">
+      <CContainer>
+        <CRow className="justify-content-center">
+          <CCol md={9} lg={9} xl={9}>
+            <CCard className="mx-4">
+              <CCardBody className="p-4">
+                <CForm>
+                  <h1>Tạo kho mới</h1>
+                  {/* <p className="text-medium-emphasis"></p> */}
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Tên kho</CInputGroupText>
+                    <CFormInput id='name' placeholder="Tên" onChange={handleNameChange} value={name} />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Địa chỉ</CInputGroupText>
+                    <CFormInput id='location' placeholder="Địa chỉ" onChange={handleLocationChange} value={location} />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Ghi chú</CInputGroupText>
+                    <CFormTextarea id="note" rows="2" onChange={handleNoteChange} value={note}></CFormTextarea>
+                  </CInputGroup>
+                  <div className="d-grid">
+                    <CButton color="warning" onClick={handleAddForm}>Lưu</CButton>
+                    <br />
+                    <CButton href='#/warehouses' color="secondary">Huỷ</CButton>
+                  </div>
+                </CForm>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      </CContainer>
+    </div>
+  )
+}
+
+export default Add
+
+
+
+
+
+
+Edit Warehouse
+
+
+
+
+/* eslint-disable react/prop-types */
+/* eslint-disable prettier/prettier */
+import React, { useEffect, useState } from 'react'
+import {
+  CButton,
+  CCard,
+  CCardBody,
+  CCol,
+  CContainer,
+  CForm,
+  CFormInput,
+  CFormTextarea,
+  CInputGroup,
+  CInputGroupText,
+  CRow,
+} from '@coreui/react'
+import { getData, putData } from '../api/Api';
+import { useHistory } from 'react-router-dom';
+
+const Edit = (props) => {
+  console.log(props)
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [note, setNote] = useState('');
+  const history = useHistory()
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+  }
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+  }
+  const handleNoteChange = (e) => {
+    setNote(e.target.value);
+  }
+  const handleUpdate = (e) => {
+    const data = {
+      name: name,
+      location: location,
+      note: note
+    }
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/warehouse/update/' + props.match.params.id, data)])
+      .then(response => {
+        console.log('Edited successfully ^^')
+        history.push('/warehouses')
+      }).catch((err) => {
+        console.log(err)
+      })
+  }
+
+  useEffect(() => {
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id)])
+      .then(response => {
+        // console.log(response.data)
+        setName(response[0].data.name)
+        setLocation(response[0].data.location)
+        setNote(response[0].data.note)
+      })
+  }, []);
+  return (
+    <div className="bg-light d-flex flex-row align-items-center">
+      <CContainer>
+        <CRow className="justify-content-center">
+          <CCol md={9} lg={9} xl={9}>
+            <CCard className="mx-4">
+              <CCardBody className="p-4">
+                <CForm>
+                  <h1>Chỉnh sửa kho</h1>
+                  {/* <p className="text-medium-emphasis"></p> */}
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Tên kho</CInputGroupText>
+                    <CFormInput id='name' placeholder="Tên" onChange={handleNameChange} value={name} />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Địa chỉ</CInputGroupText>
+                    <CFormInput id='location' placeholder="Địa chỉ" onChange={handleLocationChange} value={location} />
+                  </CInputGroup>
+                  <CInputGroup className="mb-3">
+                    <CInputGroupText id="" style={{ width: "100px" }}>Ghi chú</CInputGroupText>
+                    <CFormTextarea id="note" rows="2" onChange={handleNoteChange} value={note} ></CFormTextarea>
+                  </CInputGroup>
+                  <div className="d-grid">
+                    <CButton color="warning" onClick={(e) => handleUpdate(e)}>Lưu</CButton>
+                    <br />
+                    <CButton href='#/warehouses' color="secondary">Huỷ</CButton>
+                  </div>
+                </CForm>
+              </CCardBody>
+            </CCard>
+          </CCol>
+        </CRow>
+      </CContainer>
+    </div>
+  )
+}
+
+export default Edit
+
+
+<CButton color='success'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                </CButton>
+                <Button color='warning'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-brush" viewBox="0 0 16 16">
+                        <path d="M15.825.12a.5.5 0 0 1 .132.584c-1.53 3.43-4.743 8.17-7.095 10.64a6.067 6.067 0 0 1-2.373 1.534c-.018.227-.06.538-.16.868-.201.659-.667 1.479-1.708 1.74a8.118 8.118 0 0 1-3.078.132 3.659 3.659 0 0 1-.562-.135 1.382 1.382 0 0 1-.466-.247.714.714 0 0 1-.204-.288.622.622 0 0 1 .004-.443c.095-.245.316-.38.461-.452.394-.197.625-.453.867-.826.095-.144.184-.297.287-.472l.117-.198c.151-.255.326-.54.546-.848.528-.739 1.201-.925 1.746-.896.126.007.243.025.348.048.062-.172.142-.38.238-.608.261-.619.658-1.419 1.187-2.069 2.176-2.67 6.18-6.206 9.117-8.104a.5.5 0 0 1 .596.04zM4.705 11.912a1.23 1.23 0 0 0-.419-.1c-.246-.013-.573.05-.879.479-.197.275-.355.532-.5.777l-.105.177c-.106.181-.213.362-.32.528a3.39 3.39 0 0 1-.76.861c.69.112 1.736.111 2.657-.12.559-.139.843-.569.993-1.06a3.122 3.122 0 0 0 .126-.75l-.793-.792zm1.44.026c.12-.04.277-.1.458-.183a5.068 5.068 0 0 0 1.535-1.1c1.9-1.996 4.412-5.57 6.052-8.631-2.59 1.927-5.566 4.66-7.302 6.792-.442.543-.795 1.243-1.042 1.826-.121.288-.214.54-.275.72v.001l.575.575zm-4.973 3.04.007-.005a.031.031 0 0 1-.007.004zm3.582-3.043.002.001h-.002z" />
+                    </svg>
+                </Button>
+                <CButton color="danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-file-x" viewBox="0 0 16 16">
+                        <path d="M6.146 6.146a.5.5 0 0 1 .708 0L8 7.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 8l1.147 1.146a.5.5 0 0 1-.708.708L8 8.707 6.854 9.854a.5.5 0 0 1-.708-.708L7.293 8 6.146 6.854a.5.5 0 0 1 0-.708z" />
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
+                    </svg>
+                </CButton>

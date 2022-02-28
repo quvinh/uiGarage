@@ -8,7 +8,9 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CTableCaption
+  CTableCaption,
+  CCard,
+  CCardBody
 } from '@coreui/react';
 import { getData, putData } from '../api/Api.js'
 import DataExport from './DataExport.js';
@@ -36,10 +38,10 @@ const Inventory = () => {
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeExport'),
-      getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')
+    getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')
     ])
       .then(function (res) {
-        // console.log(res[0].data)
+        console.log(res[1].data)
         setCodeExport(res[0].data)
         setCodeImport(res[1].data)
       })
@@ -71,26 +73,38 @@ const Inventory = () => {
 
     ),
     onlyOneExpanding: true,
-    // showExpandColumn: true,
-    // expandByColumnOnly: true
+    showExpandColumn: true,
+    expandByColumnOnly: true
   };
 
   return (
     <>
-    <h1>Phiếu Nhập</h1>
-    <BootstrapTable
-      keyField='code'
-      data={codeExport}
-      columns={columns}
-      expandRow={expandRowExport}
-    />
-    <h1>Phiếu Xuất</h1>
-    <BootstrapTable
-      keyField='code'
-      data={codeImport}
-      columns={columns}
-      expandRow={expandRowImport}
-    />
+      <CCard>
+        <CCardBody>
+          <h1>Phiếu Nhập</h1>
+          <BootstrapTable
+            keyField='code'
+            data={codeImport}
+            columns={columns}
+            expandRow={expandRowImport}
+            noDataIndication={'Không có dữ liệu'}
+          />
+        </CCardBody>
+      </CCard>
+      <hr />
+      <CCard>
+        <CCardBody>
+          <h1>Phiếu Xuất</h1>
+          <BootstrapTable
+            keyField='code'
+            data={codeExport}
+            columns={columns}
+            expandRow={expandRowExport}
+            noDataIndication={'Không có dữ liệu'}
+          />
+        </CCardBody>
+      </CCard>
+
     </>
 
   )

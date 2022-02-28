@@ -5,8 +5,6 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
-import List from '@mui/material/List'
-import Divider from '@mui/material/Divider'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
@@ -14,19 +12,9 @@ import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Slide from '@mui/material/Slide'
 import Grid from '@mui/material/Grid'
-import Box from '@mui/material/Box'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import FolderIcon from '@mui/icons-material/Folder'
-import DeleteIcon from '@mui/icons-material/Delete'
 import styled from "@emotion/styled"
 import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -197,7 +185,7 @@ export const ShowImport = (props) => {
                         </ListItem>
                         <ListItem>
                           <ListItemText
-                            primary="Số phiếu: PNK10001"
+                            primary={"Số phiếu: " + props.code}
                             secondary={'Thời gian nhập: ' + String(handleTime())}
                           />
                         </ListItem>

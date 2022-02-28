@@ -5,8 +5,6 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import ListItemText from '@mui/material/ListItemText'
 import ListItem from '@mui/material/ListItem'
-import List from '@mui/material/List'
-import Divider from '@mui/material/Divider'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
@@ -14,19 +12,9 @@ import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Slide from '@mui/material/Slide'
 import Grid from '@mui/material/Grid'
-import Box from '@mui/material/Box'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import Avatar from '@mui/material/Avatar'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Checkbox from '@mui/material/Checkbox'
-import FolderIcon from '@mui/icons-material/Folder'
-import DeleteIcon from '@mui/icons-material/Delete'
 import styled from "@emotion/styled"
 import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -41,13 +29,19 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 export const ShowExport = (props) => {
-  console.log(props.dataTable)
 
+  console.log(props.dataTable)
+  const [data, setData] = React.useState([])
   const [open, setOpen] = React.useState(false)
   const [isSave, setIsSave] = React.useState(false)
-
+  // const length = props.dataTable.length - 1
   const handleClickOpen = () => {
     if (props.dataTable.length > 0) {
+
+      console.log("data...")
+      // console.log(props.dataTable[length])
+      // setData([...])
+      // console.log(data)
       setOpen(true)
     }
   }
@@ -74,7 +68,10 @@ export const ShowExport = (props) => {
 
   const handleSave = () => {
     if (props.dataTable.length > 0) {
+      // const length = props.dataTable.length
+      console.log(props.dataTable)
       props.dataTable.map((item, index) => {
+        console.log("LOG")
         console.log(item)
         Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store', item)])
           .then(function (res) {
@@ -118,7 +115,7 @@ export const ShowExport = (props) => {
 
   return (
     <div>
-      {
+      {/* {
         (props.isAmountSelected) ? (
           <Button variant="outlined" size="sm" color="warning" onClick={handleClickOpen}>
             Tạo phiếu xuất
@@ -128,7 +125,10 @@ export const ShowExport = (props) => {
             Chọn số lượng để tạo phiếu
           </Button>
         )
-      }
+      } */}
+      <Button variant="outlined" size="sm" color="warning" onClick={handleClickOpen}>
+        Tạo phiếu xuất
+      </Button>
       <Dialog
         fullScreen
         open={open}
@@ -205,7 +205,7 @@ export const ShowExport = (props) => {
                         </ListItem>
                         <ListItem>
                           <ListItemText
-                            primary="Số phiếu: PNK10001"
+                            primary={"Số phiếu: " + props.code}
                             secondary={'Thời gian nhập: ' + String(handleTime())}
                           />
                         </ListItem>
@@ -232,12 +232,12 @@ export const ShowExport = (props) => {
                           {props.dataTable.map((row, index) => (
                             <StyledTableRow key={index}>
                               <StyledTableCell align="center">{index + 1}</StyledTableCell>
-                              <StyledTableCell align="center">{row[0].item_id}</StyledTableCell>
-                              <StyledTableCell align="center">{row[0].batch_code}</StyledTableCell>
-                              <StyledTableCell align="center" component="th" scope="row">{row[0].item_name}</StyledTableCell>
-                              <StyledTableCell align="center">{row[0].unit}</StyledTableCell>
-                              <StyledTableCell align="center">{row[0].amount}</StyledTableCell>
-                              <StyledTableCell align="center">{row[0].price}</StyledTableCell>
+                              <StyledTableCell align="center">{row.item_id}</StyledTableCell>
+                              <StyledTableCell align="center">{row.batch_code}</StyledTableCell>
+                              <StyledTableCell align="center" component="th" scope="row">{row.name}</StyledTableCell>
+                              <StyledTableCell align="center">{row.unit}</StyledTableCell>
+                              <StyledTableCell align="center">{row.amount}</StyledTableCell>
+                              <StyledTableCell align="center">{row.price}</StyledTableCell>
                             </StyledTableRow>
                           ))}
                         </TableBody>
@@ -251,7 +251,7 @@ export const ShowExport = (props) => {
                       <CardContent>
                         <ListItem>
                           <ListItemText
-                            // primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
+                          // primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
                           />
                         </ListItem>
                       </CardContent>

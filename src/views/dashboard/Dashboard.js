@@ -2,36 +2,34 @@
 import React, { lazy, useEffect, useState } from 'react'
 
 import {
-  CAvatar,
   CBadge,
-  CButton,
   CCard,
   CCardBody,
-  CCardHeader,
   CCol,
   CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
 } from '@coreui/react'
-import { getData, putData } from '../api/Api.js'
+import { getData } from '../api/Api.js'
 import Charts from './Charts.js'
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
+// const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
 
   const [tonKho, setTonKho] = useState([])
   const [solgKho, setSolgKho] = useState([])
+  const [importVT, setImportVT] = useState([])
+  const [exportVT, setExportVT] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'), getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho'),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/import'),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/export')])
       .then(function (res) {
         setTonKho(res[0].data)
         setSolgKho(res[1].data)
+        setImportVT(res[2].data)
+        setExportVT(res[3].data)
       })
       .catch((error) => {
         // console.log(error)
@@ -61,7 +59,11 @@ const Dashboard = () => {
           ))}
         </CCol>
         <CCol sm={6} lg={6}>
-          <Charts />
+          <CCard>
+            <CCardBody>
+              <Charts importVT={importVT} exportVT={exportVT} />
+            </CCardBody>
+          </CCard>
         </CCol>
       </CRow>
       {/* <CRow>

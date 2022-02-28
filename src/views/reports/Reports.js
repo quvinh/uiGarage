@@ -12,12 +12,9 @@ import {
 const Reports = () => {
   return (
     <>
-      <CTable striped hover responsive bordered borderColor="warning">
+      {/* <CTable striped hover responsive bordered borderColor="warning">
         <CTableHead color="warning">
           <CTableRow>
-            {/* <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell> */}
             <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
@@ -30,7 +27,7 @@ const Reports = () => {
         </CTableHead>
         <CTableBody>
         </CTableBody>
-      </CTable>
+      </CTable> */}
     </>
   )
 }
