@@ -12,9 +12,12 @@ import {
     CInputGroup,
     CInputGroupText,
     CRow,
+    
 } from '@coreui/react'
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
+import { cilX, cilCheckAlt } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 
 const Add = () => {
     const [open, setOpen] = React.useState(false);
@@ -77,10 +80,9 @@ const Add = () => {
                                             <CInputGroupText id="" style={{ width: "100px" }}>Ghi chú</CInputGroupText>
                                             <CFormTextarea id="note" rows="2" onChange={(e)=>handleNote(e)} value={note}></CFormTextarea>
                                         </CInputGroup>
-                                        <div className="d-grid">
-                                            <CButton color="warning" onClick={(e)=>handleAddWarehouse(e)}>Lưu</CButton>
-                                            <br />
-                                            <CButton href='#/warehouses' color="secondary">Huỷ</CButton>
+                                        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <CButton color="warning" onClick={(e)=>handleAddWarehouse(e)}><CIcon icon={cilCheckAlt}/></CButton>
+                                            <CButton href='#/warehouses' color="danger"><CIcon icon={cilX}/></CButton>
                                         </div>
                                     </CForm>
                                 </CCardBody>

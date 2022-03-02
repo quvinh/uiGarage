@@ -17,6 +17,8 @@ import {
 
 import { getData, putData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
+import { cilX, cilCheckAlt } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
 
 
 const Edit = (props) => {
@@ -87,10 +89,9 @@ const Edit = (props) => {
                       <CInputGroupText id="" style={{ width: "100px" }}>Địa chỉ</CInputGroupText>
                       <CFormTextarea id="note" rows="2" onChange={handleNote} value={note} ></CFormTextarea>
                     </CInputGroup>
-                    <div className="d-grid">
-                      <CButton color="warning" onClick={(e) => handleUpdate(e)}>Lưu</CButton>
-                      <br />
-                      <CButton href='#/warehouses' color="secondary">Huỷ</CButton>
+                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                      <CButton color="warning" onClick={(e) => handleUpdate(e)}><CIcon icon={cilCheckAlt}/></CButton>
+                      <CButton href='#/warehouses' color="danger"><CIcon icon={cilX}/></CButton>
                     </div>
                   </CForm>
                 </CCardBody>

@@ -18,7 +18,8 @@ import {
   CFormSelect,
 } from '@coreui/react'
 
-
+import CIcon from '@coreui/icons-react';
+import { cilX, cilCheckAlt } from '@coreui/icons';
 
 const Edit = (props) => {
 
@@ -42,18 +43,8 @@ const Edit = (props) => {
   const handleStatus = (e) => {
     setStatus(e.target.value);
   }
-  const handleDelete = (e, props) => {
-    // const eClick = e.currentTarget;
+  
 
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete-item/' + props)],
-      [delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + props)])
-      .then(function (response) {
-        // eClick.closest('tr').remove();
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
   const handleUpdate = (e) => {
     const shelf = {
       name: name,
@@ -109,11 +100,10 @@ const Edit = (props) => {
                     ]}
                   />
                   </CInputGroup>
-                  <div className="d-grid">
-                    <CButton color="warning" onClick={(e) => handleUpdate(e)}>Lưu</CButton>
-                    <br />
-                    <CButton href={'#/warehouses'} color="secondary">Huỷ</CButton>
-                  </div>
+                  <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <CButton color="warning" onClick={(e) => handleUpdate(e)}><CIcon icon={cilCheckAlt}/></CButton>
+                    <CButton onClick={(e) => history.goBack()} color="danger"><CIcon icon={cilX}/></CButton>
+                    </div>
                 </CForm>
               </CCardBody>
             </CCard>

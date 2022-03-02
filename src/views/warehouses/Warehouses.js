@@ -35,7 +35,7 @@ import {
 
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions } from '@coreui/icons'
+import { cilOptions, cilPlus } from '@coreui/icons'
 import { getData, putData, delData,postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
 import '../../css/dropdown.css'
@@ -118,7 +118,7 @@ const Warehouses = () => {
   return (
     <>
       {/* <WidgetsDropdown /> */}
-      <CButton href='#/warehouses-add' className='btn1'>Tạo kho</CButton>
+      <CButton href='#/warehouses-add' className='btn1'><CIcon icon={cilPlus}/></CButton>
       <CRow>{dataWarehouse.map((item, index) => (
         <CCol sm={6} lg={6} key={index}>
 

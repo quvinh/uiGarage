@@ -30,7 +30,7 @@ import {
   CInputGroup,
   CFormSelect,
   CFormInput,
-
+  CFormTextarea,
   CInputGroupText,
   CListGroup,
   CListGroupItem,
@@ -43,6 +43,10 @@ import {
   cilPeople,
   cilFile,
   cilDescription,
+  cilPlus,
+  cilCheckAlt,
+  cilX,
+  cilSearch,
 } from '@coreui/icons';
 import { getData, delData, putData, postData } from '../api/Api';
 import { useHistory, useParams } from 'react-router-dom';
@@ -63,13 +67,17 @@ const ShelfWarehouse = (props) => {
 
   const [dataShelf, setDataShelf] = useState([])
   const [visible, setVisible] = useState(false)
-  const [visibleShelf, setVisibleShelf] = useState(false)
   const [dataItemClick, setDataItemClick] = useState([])
 
   const [itemWarehouse, setItemWarehouse] = useState([])
   const [categoryname, setCategory] = useState([])
-  const [shelfId, setShelfId] = useState([])
   const [dataItem, setDataItem] = useState([])
+  const [searchName, setSearchName] = useState([])
+
+  const [shelfId, setShelfId] = useState([])
+  const [shelfStatus, setShelfStatus] = useState([])
+  const [shelfName, setShelfName] = useState([])
+  const [shelfPosition, setShelfPosition] = useState([])
 
   const [itemId, setItemId] = useState([]);
   const [categoryId, setCategoryId] = useState([]);
@@ -83,9 +91,11 @@ const ShelfWarehouse = (props) => {
   const [isShelfSelected, setIsShelfSelected] = useState(false)
 
   const [warehouseName, setWarehouseName] = useState([]);
-  // const [data_Shelf, setData_Shelf] = useState([]);
   const [dataCategory, setDataCategory] = useState([]);
-  // const [validator, showValidationMessage] = Validator()
+
+  const handlSearchName = (e) => {
+    setSearchName(e.target.value)
+  }
 
   const handleItemIdChange = (e) => {
     setItemId(e.target.value);
@@ -115,6 +125,15 @@ const ShelfWarehouse = (props) => {
     setPrice('')
     setStatus(0)
   }
+
+  const handleSearch = (searchName) => {
+    
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/searchItems/' + searchName + '/' + props.match.params.id)])
+      .then(response => {
+        setItemWarehouse(response[0].data);
+      })
+  }
+
   console.log(dataItemClick)
   const handleUpdateItem = (e) => {
     const dataItem = {
@@ -123,17 +142,15 @@ const ShelfWarehouse = (props) => {
       price: item_price,
       status: item_status,
     }
-
-    console.log(dataItem)
     Promise.all([putData('http://127.0.0.1:8000/api/admin/detail_item/update/' + dataItemClick, dataItem)])
       .then(response => {
         console.log('Edited successfully ^^')
         handleClick(shelfId)
-        // history.push('/detail_item')
       }).catch((err) => {
         console.log(err)
       })
   }
+  console.log(dataItem)
 
   const handleReload = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id)])
@@ -151,19 +168,19 @@ const ShelfWarehouse = (props) => {
       .catch(error => {
         console.log(error)
       })
-
-    // window.location.reload()
   }
 
-
-  // const history = useHistory()
   const handleClick = (e, id) => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + props.match.params.id + '/' + id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + props.match.params.id + '/' + id),
+    getData('http://127.0.0.1:8000/api/admin/shelf/show/' + id)])
       .then(response => {
+        console.log(response[0].data)
         setItemWarehouse(response[0].data);
+        setShelfName(response[1].data.name);
+        setShelfPosition(response[1].data.position);
       })
     setShelfId(id);
-    
+
   }
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id),
@@ -173,24 +190,35 @@ const ShelfWarehouse = (props) => {
     getData('http://127.0.0.1:8000/api/admin/warehouse/sumAmountItem/' + props.match.params.id),
     ])
       .then(response => {
-        console.log(response[0].data)
         setDataShelf(response[0].data)
         setDataCategory(response[1].data)
         setWarehouseName(response[2].data.name)
         setAmountShelf(response[3].data)
         setAmountItem(response[4].data[0].amountItem)
-        // console.log(response[4].data[0].amountItem)
       })
   }, []);
   return (
     <>
       <CCard>
-        <CCardHeader>{warehouseName} -- Số lượng giá kệ: {amountShelf} -- Số vật tư: {amountItem} </CCardHeader>
+        <CCardHeader>
+          <CRow>
+            <CCol sm={9} lg={9}>
+              {warehouseName} -- Số lượng giá kệ: {amountShelf} -- Số vật tư: {amountItem}
+            </CCol>
+            <CCol sm={3} lg={3}>
+                <CForm>
+                  <CInputGroup>
+                    <CFormTextarea id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormTextarea>
+                    <CButton color='warning' onClick={(e) => {handleSearch(searchName)}} ><CIcon icon={cilSearch} /></CButton>
+                  </CInputGroup>
+                </CForm>
+            </CCol>
+          </CRow>
+        </CCardHeader>
         <CCardBody>
           <CRow>
             <CCol sm={3} lg={2}><div className="d-grid gap-2 d-md-block">
-              <CButton color="warning" href={'#/shelf-add/' + props.match.params.id}>Add</CButton>
-              {/* <Add/> */}
+              <CButton color="warning" href={'#/shelf-add/' + props.match.params.id}><CIcon icon={cilPlus} /></CButton>
             </div>
               <br />
               {dataShelf.map((item, index) => (
@@ -212,14 +240,15 @@ const ShelfWarehouse = (props) => {
                     <CRow>
                       <CCol sm={10} lg={10}>
                         {/* <div className="d-grid gap-2 d-md-flex justify-content-md-start"> */}
-                          <CListGroup>
-                            <CListGroupItem>{dataItem.shelf_id} - {dataItem.shelf_name} - {dataItem.shelf_status}</CListGroupItem>
-                          </CListGroup>
+                        <CListGroup>
+                          <CListGroupItem>Mã giá: {shelfId} - Tên giá: {shelfName} - Vị trí: {shelfPosition}</CListGroupItem>
+                        </CListGroup>
                         {/* </div> */}
                       </CCol>
+
                       <CCol sm={2} lg={2}>
                         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                          <CButton color="warning" className="me-md-2" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilFile} /></CButton>
+                          <CButton color="warning" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilFile} /></CButton>
                           <CButton color="danger" onClick={(e) => handleDeleteShelf(e, shelfId)} ><CIcon icon={cilDelete} /></CButton>
                         </div>
                       </CCol>
@@ -262,7 +291,7 @@ const ShelfWarehouse = (props) => {
                               }}>
                                 <CIcon icon={cilFile} />
                               </CButton>
-                              <CButton className='me-2' color="success"><CIcon icon={cilDescription} /></CButton>
+                              {/* <CButton className='me-2' color="success"><CIcon icon={cilDescription} /></CButton> */}
                             </div>
                           </CTableDataCell>
                         </CTableRow>
@@ -325,6 +354,11 @@ const ShelfWarehouse = (props) => {
           </CRow>
         </CModalBody>
         <CModalFooter>
+          <CButton color="warning" onClick={(e) => {
+
+            handleUpdateItem(e, dataItemClick)
+          }
+          }><CIcon icon={cilCheckAlt} /></CButton>
           <CButton color="danger" onClick={() => {
             setVisible(false)
             setItemShelfId([])
@@ -332,29 +366,9 @@ const ShelfWarehouse = (props) => {
             setPrice([])
             setStatus(['1'])
           }}>
-            Đóng
+            <CIcon icon={cilX} />
           </CButton>
-          <CButton color="warning" onClick={(e) => {
 
-            handleUpdateItem(e, dataItemClick)
-          }
-          }>Lưu</CButton>
-        </CModalFooter>
-      </CModal>
-      <CModal alignment="center" visible={visible} onClose={() => setVisible(false)}>
-        <CModalHeader>
-          <CModalTitle>Thông tin giá kệ</CModalTitle>
-        </CModalHeader>
-        <CModalBody>
-          <CListGroup>
-            <CListGroupItem></CListGroupItem>
-          </CListGroup>
-        </CModalBody>
-        <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisible(false)}>
-            Close
-          </CButton>
-          <CButton color="primary">Save changes</CButton>
         </CModalFooter>
       </CModal>
     </>

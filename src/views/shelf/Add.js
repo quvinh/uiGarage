@@ -14,6 +14,9 @@ import {
   CInputGroupText,
   CRow,
 } from '@coreui/react'
+
+import CIcon from '@coreui/icons-react';
+import { cilX, cilCheckAlt } from '@coreui/icons';
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 
@@ -65,10 +68,9 @@ const Add = (props) => {
                       <CInputGroupText id="" style={{ width: "100px" }}>Vị trí</CInputGroupText>
                       <CFormInput id="position" placeholder='Nhập vị trí' onChange={handlePosition} value={position}></CFormInput>
                     </CInputGroup>
-                    <div className="d-grid">
-                      <CButton color="warning" onClick={(e)=>handleAdd(e)}>Lưu</CButton>
-                      <br />
-                      <CButton href={'#/warehouses-shelf/' + props.match.params.id} color="secondary">Huỷ</CButton>
+                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                      <CButton color="warning" onClick={(e)=>handleAdd(e)}><CIcon icon={cilCheckAlt}/></CButton>
+                      <CButton href={'#/warehouses-shelf/' + props.match.params.id} color="danger"><CIcon icon={cilX}/></CButton>
                     </div>
                   </CForm>
                 </CCardBody>
