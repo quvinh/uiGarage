@@ -76,10 +76,10 @@ const Edit = (props) => {
         console.log(err)
       })
 
-  } 
-  
+  }
+
   useEffect(() => {
-   
+
     Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf/show/' + props.props),
     getData('http://127.0.0.1:8000/api/admin/warehouse')])
       .then(response => {
@@ -120,7 +120,7 @@ const Edit = (props) => {
             onChange={handlePosition}
             variant="standard"
           />
-  
+
           <FromControl sx={{ m: 1, minWidth: 120 }}>
             <Select
               native
@@ -131,7 +131,7 @@ const Edit = (props) => {
                 <option value={1}>Đầy</option>
             </Select>
           </FromControl>
-          
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>

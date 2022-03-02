@@ -161,8 +161,6 @@ const Account = () => {
         setUserDetail(res[1].data)
         setRoles(res[2].data)
         setPermission(res[3])
-        console.log(res[2].data[0]["name"])
-        console.log(res[0].dataRoles)
       })
       .catch(error => {
         console.log(error)
@@ -190,42 +188,42 @@ const Account = () => {
             <CTableBody>
               {
                 dataTable.map((item, index) => (
-                  <>
-                    <CTableRow key={index}>
-                      <CTableHeaderCell scope="row" className="text-center">{index + 1}</CTableHeaderCell>
-                      <CTableDataCell className="text-center">{item.username}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.fullname}</CTableDataCell>
-                      <CTableDataCell className="text-center">{item.phone}</CTableDataCell>
-                      <CTableDataCell className="text-center">{
-                        (item.roles_id === null) ? ("Chưa phân quyền") : (
-                          dataRoles.map((value) => {
-                            if (value.id === item.roles_id) return value.name
-                          })
-                        )
-                      }</CTableDataCell>
-                      <CTableDataCell className="text-center">
-                        <CButton size="sm" className="me-2" color='warning' onClick={(e) => {
-                          setDataUserClick(item)
-                          setVisibleInfo(!visibleInfo)
-                        }}>
-                          <CIcon icon={cilDescription} />
-                        </CButton>
-                        <CButton size="sm" className="me-2" color='success' onClick={(e) => {
-                          setDataUserClick(item)
-                          setVisibleRoles(!visibleRoles)
-                          showPermission(item.roles_id)
-                        }}>
-                          <CIcon icon={cilPeople} />
-                        </CButton>
-                        <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
-                          setDataUserClick(item)
-                          setVisibleRemove(!visibleRemove)
-                        }}>
-                          <CIcon icon={cilDelete} />
-                        </CButton>
-                      </CTableDataCell>
-                    </CTableRow>
-                  </>
+
+                  <CTableRow key={index}>
+                    <CTableHeaderCell scope="row" className="text-center">{index + 1}</CTableHeaderCell>
+                    <CTableDataCell className="text-center">{item.username}</CTableDataCell>
+                    <CTableDataCell className="text-center">{item.fullname}</CTableDataCell>
+                    <CTableDataCell className="text-center">{item.phone}</CTableDataCell>
+                    <CTableDataCell className="text-center">{
+                      (item.roles_id === null) ? ("Chưa phân quyền") : (
+                        dataRoles.map((value) => {
+                          if (value.id === item.roles_id) return value.name
+                        })
+                      )
+                    }</CTableDataCell>
+                    <CTableDataCell className="text-center">
+                      <CButton size="sm" className="me-2" color='warning' onClick={(e) => {
+                        setDataUserClick(item)
+                        setVisibleInfo(!visibleInfo)
+                      }}>
+                        <CIcon icon={cilDescription} />
+                      </CButton>
+                      <CButton size="sm" className="me-2" color='success' onClick={(e) => {
+                        setDataUserClick(item)
+                        setVisibleRoles(!visibleRoles)
+                        showPermission(item.roles_id)
+                      }}>
+                        <CIcon icon={cilPeople} />
+                      </CButton>
+                      <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                        setDataUserClick(item)
+                        setVisibleRemove(!visibleRemove)
+                      }}>
+                        <CIcon icon={cilDelete} />
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+
                 ))
               }
 
@@ -233,7 +231,7 @@ const Account = () => {
           </CTable>
         </CCardBody>
       </CCard>
-      <CModal alignment="center" size="md" visible={visibleInfo} onClose={() => setVisibleInfo(false)}>
+      <CModal alignment="center" size="lg" visible={visibleInfo} onClose={() => setVisibleInfo(false)}>
         <CModalHeader>
           <CModalTitle>Thông tin: {dataUserClick.fullname}</CModalTitle>
         </CModalHeader>

@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React, { lazy, useEffect, useState } from 'react'
-import {
-} from '@coreui/react'
 import { CChartLine, CChartBar, CChart } from '@coreui/react-chartjs'
 import { getData, putData } from '../api/Api.js'
 import { Scale } from 'chart.js'
@@ -27,6 +25,8 @@ const Charts = (props) => {
   //       // console.log(err)
   //     })
   // })
+
+
   const arrImportAmount = []
   props.importVT.map((item, index) => {
     arrImportAmount.push(item.importAmount)
@@ -35,10 +35,49 @@ const Charts = (props) => {
   props.importVT.map((item, index) => {
     arrImportMonth.push(item.month)
   })
+  const arrExportMonth = []
+  props.exportVT.map((item, index) => {
+    arrExportMonth.push(item.month)
+  })
   const arrExportAmount = []
   props.exportVT.map((item, index) => {
     arrExportAmount.push(item.exportAmount)
   })
+
+//   const arr = [
+//     ...arrExportMonth,
+//     ...arrImportMonth
+//   ]
+
+//   var arrMonth = arr.filter(function(value, index){
+//    return arr.indexOf(value) == index
+//   })
+//   var newImportAmount = []
+//   arrMonth.map((item, index) => {
+//     props.importVT.map((value, pos) => {
+//       if(item !== value.month){
+//         newImportAmount=[...newImportAmount,0]
+//       } else {
+//         newImportAmount=[...newImportAmount,value.importAmount]
+//       }
+//     })
+//   })
+
+//   var newExportAmount = new Array(arrMonth.length)
+//   props.exportVT.map((value, pos) => {
+//     arrMonth.map((item, index) => {
+//       if(item !== value.month){
+//         // newExportAmount=[...newExportAmount,0]
+//         newExportAmount[index] = 0
+//       } else {
+//         // newExportAmount=[...newExportAmount,value.exportAmount]
+//         newExportAmount[index] = value.exportAmount
+//       }
+//     })
+//   })
+// console.log(newExportAmount)
+// console.log(newImportAmount)
+
   // const arrImportMonth = []
   // importVT.map((item, index) => {
   //   arrImportMonth.push(item.month)
@@ -47,7 +86,6 @@ const Charts = (props) => {
     <CChart
       type="bar"
       data={{
-
         labels: arrImportMonth,
         datasets: [
           {

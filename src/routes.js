@@ -3,11 +3,16 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Account = React.lazy(() => import('./views/account/Account'))
 
-const Items = React.lazy(() => import('./views/items/Items'))
+const Status = React.lazy(() => import('./views/status/Status'))
+
 const Imports = React.lazy(() => import('./views/imports/Imports'))
 const Exports = React.lazy(() => import('./views/exports/Exports'))
 const Reports = React.lazy(() => import('./views/reports/Reports'))
-const Inventory = React.lazy(() => import('./views/inventory/Inventory'))
+
+const History = React.lazy(() => import('./views/history/History'))
+const DataImport = React.lazy(() => import('./views/history/DataImport'))
+const HistoryV2 = React.lazy(() => import('./views/history/HistoryV2'))
+
 const Transfer = React.lazy(() => import('./views/transfer/Transfer'))
 
 //Warehouse
@@ -42,9 +47,11 @@ const routes = [
   { path: '/dashboard', name: 'Bản tin', component: Dashboard },
   { path: '/charts', name: 'Charts', component: Charts },
   { path: '/exports', name: 'Thông tin xuất kho', component: Exports },
-  { path: '/items', name: 'Vật tư - phụ tùng', component: Items },
+  { path: '/status', name: 'Duyệt phiếu', component: Status },
   { path: '/imports', name: 'Thông tin nhập kho', component: Imports },
-  { path: '/inventory', name: 'Kiểm kê tồn kho', component: Inventory },
+  { path: '/history', name: 'Kiểm kê tồn kho', component: History },
+  { path: '/dataExport', name: 'Kiểm kê tồn kho', component: DataImport },
+  { path: '/historyV2', name: 'Kiểm kê tồn kho', component: HistoryV2 },
   { path: '/reports', name: 'Báo cáo', component: Reports },
   { path: '/transfer', name: 'Điều phối kho', component: Transfer },
 

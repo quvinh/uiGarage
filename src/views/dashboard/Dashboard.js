@@ -5,11 +5,15 @@ import {
   CBadge,
   CCard,
   CCardBody,
+  CCardHeader,
   CCol,
+  CDropdown,
   CRow,
 } from '@coreui/react'
 import { getData } from '../api/Api.js'
 import Charts from './Charts.js'
+import ChartsV2 from './ChartsV2.js'
+
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 // const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
@@ -20,19 +24,33 @@ const Dashboard = () => {
   const [solgKho, setSolgKho] = useState([])
   const [importVT, setImportVT] = useState([])
   const [exportVT, setExportVT] = useState([])
+  const [importCode, setImportCode] = useState([])
+  const [exportCode, setExportCode] = useState([])
+
+  const year = new Date().getFullYear().toString()
+  // var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // var d = new Date();
+  // const month = months[d.getMonth()].toString();
+
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'),
     getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho'),
-    getData('http://127.0.0.1:8000/api/admin/dashboard/import'),
-    getData('http://127.0.0.1:8000/api/admin/dashboard/export')])
+    getData('http://127.0.0.1:8000/api/admin/dashboard/import/' + year),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/export/' + year),
+    // getData('http://127.0.0.1:8000/api/admin/dashboard/importCode/' + month + '/' + year),
+    // getData('http://127.0.0.1:8000/api/admin/dashboard/exportCode/' + month + '/' + year),
+    ])
       .then(function (res) {
+        // console.log(res[5].data)
         setTonKho(res[0].data)
         setSolgKho(res[1].data)
         setImportVT(res[2].data)
         setExportVT(res[3].data)
+        // setImportCode(res[4].data)
+        // setExportCode(res[5].data)
       })
       .catch((error) => {
-        // console.log(error)
+        console.log(error)
       })
   }, [])
 
@@ -62,6 +80,14 @@ const Dashboard = () => {
           <CCard>
             <CCardBody>
               <Charts importVT={importVT} exportVT={exportVT} />
+            </CCardBody>
+          </CCard>
+          <CCard>
+            <CCardHeader>
+              <CDropdown />
+            </CCardHeader>
+            <CCardBody>
+              {/* <ChartsV2 importCode={importCode} exportCode={exportCode}/> */}
             </CCardBody>
           </CCard>
         </CCol>
