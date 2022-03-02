@@ -1,6 +1,10 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react'
+import {
+    CRow,
+    CCol
+} from '@coreui/react'
 
 import { getData, delData } from '../api/Api';
 import { useHistory, useParams } from 'react-router-dom';
@@ -9,9 +13,10 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import { StyledEngineProvider } from "@mui/material/styles";
 import Edit from '../detail_item/Edit';
+import Detail_Item from '../detail_item/Detail_item';
 
 const headerStyle = {
-    backgroundColor: '#ff944d',
+    backgroundColor: '#4ddbff',
     fontWeight: 'bold',
 }
 const columns = [{
@@ -38,7 +43,7 @@ const columns = [{
     dataField: 'shelf_id',
     text: 'Mã giá kệ',
     headerStyle: headerStyle,
-}, {
+}, /*{
     dataField: 'amount',
     text: 'Số lượng khả dụng',
     headerStyle: headerStyle,
@@ -46,11 +51,11 @@ const columns = [{
     dataField: 'amount',
     text: 'Số lượng không khả dụng',
     headerStyle: headerStyle,
-},{
+},*/ {
     dataField: 'amount',
     text: 'Tổng số lượng',
     headerStyle: headerStyle,
-},{
+}, {
     dataField: 'unit',
     text: 'Đơn vị tính',
     headerStyle: headerStyle,
@@ -65,14 +70,14 @@ const Itemshelf = (props) => {
         // const eClick = e.currentTarget;
         console.log(id)
         Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id)])
-          .then(function (response) {
-            // eClick.closest('tr').remove();
-          })
-          .catch(error => {
-            console.log(error)
-          })
-      }
-    
+            .then(function (response) {
+                // eClick.closest('tr').remove();
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
     useEffect(() => {
         console.log(props)
         Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf/itemShelf/' + props.props)])
@@ -86,6 +91,7 @@ const Itemshelf = (props) => {
         renderer: row => (
             <>
                 <Edit props={row.id} />
+                {/* <Detail_Item props={row.id} /> */}
             </>
         ),
         showExpandColumn: true

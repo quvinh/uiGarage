@@ -36,9 +36,20 @@ const _nav = [
         to: '/transfer',
       },
       {
-        component: CNavItem,
+        component: CNavGroup,
         name: 'Quản lý kho',
-        to: '/warehouses',
+        items: [
+          {
+            component: CNavItem,
+            name: 'Danh sách kho',
+            to: '/warehouses',
+          },
+          {
+            component: CNavItem,
+            name: 'Danh sách vật tư',
+            to: '/warehouses-shelf/:id',
+          },
+        ],
       },
       {
         component: CNavItem,
