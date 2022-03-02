@@ -158,6 +158,7 @@ const Imports = () => {
   const getDataShelf = (id) => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id)])
       .then(function (res) {
+        console.log(res[0].data)
         setDataShelf(res[0].data)
       })
       .catch(err => {
@@ -211,6 +212,7 @@ const Imports = () => {
         setUserProfile(res[5].data.fullname)
         console.log(res[5].data.fullname)
       })
+      .catch(err => { console.log(err)})
   }, [])
 
   return (
@@ -298,7 +300,7 @@ const Imports = () => {
                         <CCol xs>
                           <CInputGroup size="sm" className="mb-3">
                             <CInputGroupText>SL/lô</CInputGroupText>
-                            <CurrencyFormat class="form-control" type="text" placeholder="Số lượng" value={subAmount} thousandSeparator={true} onValueChange={(values) => {
+                            <CurrencyFormat className="form-control" type="text" placeholder="Số lượng" value={subAmount} thousandSeparator={true} onValueChange={(values) => {
                               const { formattedValue, value } = values
                               setSubAmount(value)
                               setTotalPrice(value * amount * price)
@@ -354,7 +356,7 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Số lượng</CInputGroupText>
-                <CurrencyFormat class="form-control" type="text" placeholder="Số lượng" value={amount} thousandSeparator={true} onValueChange={(values) => {
+                <CurrencyFormat className="form-control" type="text" placeholder="Số lượng" value={amount} thousandSeparator={true} onValueChange={(values) => {
                   const { formattedValue, value } = values
                   setAmount(value)
                   setTotalPrice(value * price * subAmount)
@@ -391,7 +393,7 @@ const Imports = () => {
                   setPrice(e.target.value)
                   setTotalPrice((e.target.value) * amount * subAmount)
                 }} /> */}
-                <CurrencyFormat class="form-control" type="text" placeholder="Nhập đơn giá" value={price} thousandSeparator={true} prefix={'VND '} onValueChange={(values) => {
+                <CurrencyFormat className="form-control" type="text" placeholder="Nhập đơn giá" value={price} thousandSeparator={true} prefix={'VND '} onValueChange={(values) => {
                   const { formattedValue, value } = values
                   setPrice(value)
                   setTotalPrice(value * amount * subAmount)
@@ -418,7 +420,7 @@ const Imports = () => {
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Thành tiền</CInputGroupText>
                 {/* <CFormInput placeholder="0" value={totalPrice.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} readOnly /> */}
-                <CurrencyFormat class="form-control" type="text" disabled value={totalPrice} thousandSeparator={true} prefix={'VND '} />
+                <CurrencyFormat className="form-control" type="text" disabled value={totalPrice} thousandSeparator={true} prefix={'VND '} />
               </CInputGroup>
             </CCol>
             <CCol xs>
@@ -427,7 +429,7 @@ const Imports = () => {
                   <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
                     <option>Chọn giá/kệ</option>
                     {dataShelf.map((item, index) => (
-                      <option key={index} value={item.id}>{item.name}</option>
+                      <option key={index} value={item.shelf_id}>{item.shelf_name}</option>
                     ))}
                   </CFormSelect>
                 ) : (

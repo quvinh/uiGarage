@@ -80,6 +80,7 @@ const DataImport = (props) => {
   }
   const handleUpdateStatus = () => {
     if (tableHistoryImport.length > 0) {
+      console.log(tableHistoryImport)
       tableHistoryImport.map((item, index) => {
         console.log(item)
         Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + item.id)])
@@ -91,7 +92,7 @@ const DataImport = (props) => {
           })
       })
     }
-    window.location.reload();
+    // window.location.reload();
   }
 
   const handleClickOpen = () => {

@@ -24,6 +24,7 @@ const History = () => {
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')])
       .then(function (res) {
+        // console.log(res[0].data)
         setCodeImport(res[0].data)
       }).catch((error) => {
         console.log(error)
