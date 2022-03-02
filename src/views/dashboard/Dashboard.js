@@ -2,42 +2,55 @@
 import React, { lazy, useEffect, useState } from 'react'
 
 import {
-  CAvatar,
   CBadge,
-  CButton,
-  CButtonGroup,
   CCard,
   CCardBody,
-  CCardFooter,
   CCardHeader,
   CCol,
-  CProgress,
+  CDropdown,
   CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
 } from '@coreui/react'
-import { getData, putData } from '../api/Api.js'
+import { getData } from '../api/Api.js'
 import Charts from './Charts.js'
+import ChartsV2 from './ChartsV2.js'
+
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
+// const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
 
   const [tonKho, setTonKho] = useState([])
   const [solgKho, setSolgKho] = useState([])
+  const [importVT, setImportVT] = useState([])
+  const [exportVT, setExportVT] = useState([])
+  const [importCode, setImportCode] = useState([])
+  const [exportCode, setExportCode] = useState([])
+
+  const year = new Date().getFullYear().toString()
+  // var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  // var d = new Date();
+  // const month = months[d.getMonth()].toString();
+
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'), getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/tonKho'),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho'),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/import/' + year),
+    getData('http://127.0.0.1:8000/api/admin/dashboard/export/' + year),
+    // getData('http://127.0.0.1:8000/api/admin/dashboard/importCode/' + month + '/' + year),
+    // getData('http://127.0.0.1:8000/api/admin/dashboard/exportCode/' + month + '/' + year),
+    ])
       .then(function (res) {
+        // console.log(res[5].data)
         setTonKho(res[0].data)
         setSolgKho(res[1].data)
+        setImportVT(res[2].data)
+        setExportVT(res[3].data)
+        // setImportCode(res[4].data)
+        // setExportCode(res[5].data)
       })
       .catch((error) => {
-        // console.log(error)
+        console.log(error)
       })
   }, [])
 
@@ -64,7 +77,19 @@ const Dashboard = () => {
           ))}
         </CCol>
         <CCol sm={6} lg={6}>
-          <Charts />
+          <CCard>
+            <CCardBody>
+              <Charts importVT={importVT} exportVT={exportVT} />
+            </CCardBody>
+          </CCard>
+          <CCard>
+            <CCardHeader>
+              <CDropdown />
+            </CCardHeader>
+            <CCardBody>
+              {/* <ChartsV2 importCode={importCode} exportCode={exportCode}/> */}
+            </CCardBody>
+          </CCard>
         </CCol>
       </CRow>
       {/* <CRow>

@@ -43,11 +43,6 @@ const AppHeader = () => {
               </CNavLink>
             </CNavItem>
             <CNavItem>
-              <CNavLink to="/items" component={NavLink}>
-                Hàng tồn kho
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
               <CNavLink to="/imports" component={NavLink}>
                 Nhập kho
               </CNavLink>
@@ -57,9 +52,14 @@ const AppHeader = () => {
                 Xuất kho
               </CNavLink>
             </CNavItem>
+            {/* <CNavItem>
+              <CNavLink to="/status" component={NavLink}>
+                Duyệt phiếu
+              </CNavLink>
+            </CNavItem> */}
             <CNavItem>
-              <CNavLink to="/inventory" component={NavLink}>
-                Kiểm kê
+              <CNavLink to="/history" component={NavLink}>
+                QL Phiếu
               </CNavLink>
             </CNavItem>
             <CNavItem>

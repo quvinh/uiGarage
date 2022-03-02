@@ -12,7 +12,7 @@ import {
   CCardBody
 } from '@coreui/react';
 
-const Items = () => {
+const Status = () => {
   return (
     <>
       <CCard>
@@ -23,9 +23,6 @@ const Items = () => {
           <CTable striped hover responsive bordered borderColor="warning">
             <CTableHead color="warning">
               <CTableRow>
-                {/* <CTableHeaderCell className="text-center">
-                      <CIcon icon={cilPeople} />
-                    </CTableHeaderCell> */}
                 <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
                 <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
@@ -65,4 +62,4 @@ const Items = () => {
   )
 }
 
-export default Items
+export default Status
