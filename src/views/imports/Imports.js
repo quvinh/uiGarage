@@ -20,17 +20,18 @@ import {
   CListGroupItem,
   CFormSelect,
   CListGroup
-} from '@coreui/react';
-import { getData, postData } from '../api/Api';
+} from '@coreui/react'
+import { getData, postData } from '../api/Api'
 import TextField from '@mui/material/TextField'
 import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation';
-import { ShowImport } from './ShowImport';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DateTimePicker from '@mui/lab/DateTimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-
+import Validator from './Validation'
+import { ShowImport } from './ShowImport'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import { getToken, getUserID } from 'src/components/utils/Common'
+import CurrencyFormat from 'react-currency-format'
 
 const Imports = () => {
   const [item_id, setItemID] = useState('')
@@ -41,13 +42,17 @@ const Imports = () => {
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
   const [unit, setUnit] = useState('')
-  const [created_by, setCreatedBy] = useState('Nguyễn Thị T')
+  const [subUnit, setSubUnit] = useState('')
+  // const [created_by, setCreatedBy] = useState('Nguyễn Thị T')
   const [amount, setAmount] = useState(0)
+  const [subAmount, setSubAmount] = useState(1)
   const [price, setPrice] = useState(0)
   const [totalPrice, setTotalPrice] = useState(0)
   const [nameWarehouse, setNameWarehouse] = useState('')
   const [date, setDate] = useState(new Date)
   const [note, setNote] = useState('')
+
+  const [userProfile, setUserProfile] = useState('')
 
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
@@ -60,20 +65,26 @@ const Imports = () => {
   const [code, setCode] = useState('')
   // const simpleValidator = useRef(SimpleReactValidator())
   const [validator, showValidationMessage] = Validator()
+  const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+  const [isItemSelected, setIsItemSelected] = useState(false)
+  const [isUnitSelected, setIsUnitSelected] = useState(false)
 
   const setNull = () => {
     setName('')
     setItemID('')
     setBatchCode('')
     setAmount(0)
+    setSubAmount(1)
     setPrice(0)
     setTotalPrice(0)
     setUnit('')
+    setSubUnit('')
     setCategory('')
     setWarehouse('')
     setSuppliers('')
     setShelf('')
-    setCreatedBy('Kế toán')
+    setIsItemSelected(false)
+    // setCreatedBy('Kế toán')
     setDate(new Date())
     // setDataTable([])
   }
@@ -94,7 +105,8 @@ const Imports = () => {
   // }
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
-    if(dataTable.length===0) createCode()
+    if (dataTable.length === 0) createCode()
+    setIsItemSelected(false)
     console.log(e.target.value)
     console.log(newValue)
     dataItem.map((item) => {
@@ -110,17 +122,27 @@ const Imports = () => {
         setSuppliers("NO1")
         setName(item.name_item)
         setTotalPrice((item.amount) * (item.price))
+        setIsItemSelected(true)
         console.log(item.name_item)
       }
     })
     // console.log(arr)
   }
 
-  const onChangeWarehouse = (e) => {
-    let index = e.nativeEvent.target.selectedIndex;
-    setWarehouse(e.target.value)
-    setNameWarehouse(e.nativeEvent.target[index].text)
-    console.log(e.nativeEvent.target[index].text)
+  const onChangeWarehouse = (e, value) => {
+    if (value) {
+      let index = e.nativeEvent.target.selectedIndex;
+      setWarehouse(e.target.value)
+      setNameWarehouse(e.nativeEvent.target[index].text)
+      setIsWarehouseSelected(true)
+      setWarehouse(e.target.value)
+      getDataShelf(e.target.value)
+    } else {
+      setIsWarehouseSelected(false)
+      setWarehouse(null)
+    }
+
+    // console.log(e.nativeEvent.target[index].text)
   }
 
   const createCode = () => {
@@ -132,7 +154,17 @@ const Imports = () => {
     setCode(code)
   }
   // console.log(createCode())
-  const btnAddTable = (e) => {//Button click, add data table
+
+  const getDataShelf = (id) => {
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id)])
+      .then(function (res) {
+        setDataShelf(res[0].data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+  const onAddTable = (e) => {//Button click, add data table
     console.log(unit)
     if (validator.allValid()) {
       const data = {
@@ -145,7 +177,7 @@ const Imports = () => {
         category_id: category_id,
         name: name,
         unit: unit,
-        created_by: 1,//USER
+        created_by: getUserID(),//USER
         amount: amount,
         price: price,
         nameWarehouse: nameWarehouse,
@@ -160,53 +192,15 @@ const Imports = () => {
     }
   }
 
-  // const btnCreateImport = () => {
-  //   console.log(unit)
-  //   if (dataTable.length > 0) {
-  //     dataTable.map((item, index) => {
-  //       console.log(item)
-  //       Promise.all([postData('http://127.0.0.1:8000/api/admin/import/store', item)])
-  //         .then(function (res) {
-  //           console.log(index)
-  //         })
-  //         .catch(err => {
-  //           console.log(err)
-  //         })
-  //     })
-  //     setNull()
-  //   }
-  // }
-
-  const nameSelected = (
-    nameItem,
-    itemId,
-    category_id,
-    warehouse_id,
-    shelf_id,
-    suppliers_id,
-    batchCode,
-    amount,
-    unit,
-    price) => {
-    // console.log('Clicked', suppliers_id)
-    // setName(nameItem)
-    // setItemID(itemId)
-    // setCategory(category_id)
-    // setWarehouse(warehouse_id)
-    // setShelf(shelf_id)
-    // setBatchCode(batchCode)
-    // setUnit(unit)
-    // setPrice(price)
-    // setAmount(amount)
-    // setSuppliers(suppliers_id)
-  }
-
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse'),
-    getData('http://127.0.0.1:8000/api/admin/suppliers'),
-    getData('http://127.0.0.1:8000/api/admin/category'),
-    getData('http://127.0.0.1:8000/api/admin/shelf'),
-    getData('http://127.0.0.1:8000/api/admin/items/searchItem/1')])
+    Promise.all([
+      getData('http://127.0.0.1:8000/api/admin/warehouse'),
+      getData('http://127.0.0.1:8000/api/admin/suppliers'),
+      getData('http://127.0.0.1:8000/api/admin/category'),
+      getData('http://127.0.0.1:8000/api/admin/shelf'),
+      getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
+      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+    ])
       .then(res => {
         console.log(res[1].data)
         setDataWarehouse(res[0].data)
@@ -214,6 +208,8 @@ const Imports = () => {
         setDataCategory(res[2].data)
         setDataShelf(res[3].data)
         setDataItem(res[4].data)
+        setUserProfile(res[5].data.fullname)
+        console.log(res[5].data.fullname)
       })
   }, [])
 
@@ -227,14 +223,6 @@ const Imports = () => {
         <CCardBody>
           <CRow className="g-3">
             <CCol xs>
-              {/* <CInputGroup size="sm" className="mb-3">
-                <CInputGroupText id="" style={{ width: "120px" }}>Tên vật tư</CInputGroupText>
-                <CFormInput
-                  placeholder="Nhập tên vật tư"
-                  name='name'
-                  value={name}
-                  onChange={(e) => onChangeName(e)} />
-              </CInputGroup> */}
               <Autocomplete
                 id="name_item"
                 freeSolo
@@ -248,30 +236,6 @@ const Imports = () => {
                 disableClearable
               />
               <br />
-              {/* <CListGroup>
-                {
-                  dataItem && dataItem.slice(0, 5).map((item, index) => (
-                    <CListGroupItem
-                      component={"button"}
-                      color='warning'
-                      key={index}
-                      onClick={(e) => nameSelected(
-                        item.name_item,
-                        item.item_id,
-                        item.category_id,
-                        item.warehouse_id,
-                        item.shelf_id,
-                        item.suppliers_id,
-                        item.batch_code,
-                        item.amount,
-                        item.unit,
-                        item.price
-                      )} >
-                      {item.name_item}
-                    </CListGroupItem>
-                  ))
-                }
-              </CListGroup> */}
               {validator.message("name", name, "required", {
                 messages: {
                   required: "Nhập tên vật tư"
@@ -279,7 +243,7 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+              <div className="d-grid gap-2 d-md-flex justify-content-md-start">
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                   <DateTimePicker
                     renderInput={(props) => <TextField size='small' {...props} />}
@@ -287,7 +251,7 @@ const Imports = () => {
                     value={date}
                     inputFormat={"dd/MM/yyyy hh:mm"}
                     onChange={(newValue) => {
-                      setDate(newValue);
+                      setDate(newValue)
                     }}
                   />
                 </LocalizationProvider>
@@ -308,15 +272,61 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={unit} onChange={(e) => setUnit(e.target.value)}>
-                <option value={'Chiếc'}>Chiếc</option>
-                <option value={'Bộ'}>Bộ</option>
-                <option value={'Cái'}>Cái</option>
-                <option value={'Can'}>Can</option>
-                <option value={'Đôi'}>Đôi</option>
-                <option value={'Lon'}>Lon</option>
-                <option value={'Ông'}>Ông</option>
-              </CFormSelect>
+              <CRow>
+                <CCol xs={4}>
+                  <CFormSelect disabled={isItemSelected} size="sm" className="mb-3" value={unit} onChange={
+                    (e) => {
+                      // setUnit(e.target.value)
+                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
+                      setUnit(e.target.value)
+                    }
+                  }>
+                    <option value={'Chiếc'}>Chiếc</option>
+                    <option value={'Bộ'}>Bộ</option>
+                    <option value={'Cái'}>Cái</option>
+                    <option value={'Can'}>Can</option>
+                    <option value={'Đôi'}>Đôi</option>
+                    <option value={'Lon'}>Lon</option>
+                    <option value={'Ông'}>Ông</option>
+                    <option value={'Lô'}>LÔ</option>
+                  </CFormSelect>
+                </CCol>
+                <CCol>
+                  {
+                    (isUnitSelected) ? (
+                      <CRow>
+                        <CCol xs>
+                          <CInputGroup size="sm" className="mb-3">
+                            <CInputGroupText>SL/lô</CInputGroupText>
+                            <CurrencyFormat class="form-control" type="text" placeholder="Số lượng" value={subAmount} thousandSeparator={true} onValueChange={(values) => {
+                              const { formattedValue, value } = values
+                              setSubAmount(value)
+                              setTotalPrice(value * amount * price)
+                            }} />
+                            {/* <CFormInput placeholder="SL vật tư/lô" value={subAmount} onChange={
+                              (e) => {
+                                setSubAmount(e.target.value)
+                                setTotalPrice(e.target.value * amount * price)
+                              }} /> */}
+                          </CInputGroup>
+                        </CCol>
+                        <CCol>
+                          <CFormSelect size="sm" className="mb-3" value={subUnit} onChange={(e) => setSubUnit(e.target.value)}>
+                            <option value={'Chiếc'}>Chiếc</option>
+                            <option value={'Bộ'}>Bộ</option>
+                            <option value={'Cái'}>Cái</option>
+                            <option value={'Can'}>Can</option>
+                            <option value={'Đôi'}>Đôi</option>
+                            <option value={'Lon'}>Lon</option>
+                            <option value={'Ông'}>Ông</option>
+                          </CFormSelect>
+                        </CCol>
+                      </CRow>
+                    ) : (<></>)
+                  }
+                </CCol>
+              </CRow>
+
             </CCol>
           </CRow>
           <CRow className="g-3">
@@ -332,7 +342,7 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={category_id} onChange={(e) => setCategory(e.target.value)}>
+              <CFormSelect disabled={isItemSelected} size="sm" className="mb-3" value={category_id} onChange={(e) => setCategory(e.target.value)}>
                 <option>Chọn loại vật tư</option>
                 {dataCategory.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
@@ -344,10 +354,15 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Số lượng</CInputGroupText>
-                <CFormInput placeholder="0" name='amount' value={amount} onChange={(e) => {
-                  setAmount(e.target.value)
-                  setTotalPrice((e.target.value) * price)
+                <CurrencyFormat class="form-control" type="text" placeholder="Số lượng" value={amount} thousandSeparator={true} onValueChange={(values) => {
+                  const { formattedValue, value } = values
+                  setAmount(value)
+                  setTotalPrice(value * price * subAmount)
                 }} />
+                {/* <CFormInput placeholder="0" name='amount' value={amount} onChange={(e) => {
+                  setAmount(e.target.value)
+                  setTotalPrice((e.target.value) * price * subAmount)
+                }} /> */}
               </CInputGroup>
               {validator.message("amount", amount, "required", {
                 messages: {
@@ -356,7 +371,11 @@ const Imports = () => {
               })}
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={(e) => onChangeWarehouse(e)}>
+              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={
+                (e) => {
+                  (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
+                }
+              }>
                 <option>Chọn nhà kho</option>
                 {dataWarehouse.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
@@ -368,9 +387,14 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Đơn giá</CInputGroupText>
-                <CFormInput placeholder="Nhập đơn giá" name='price' value={price} onChange={(e) => {
+                {/* <CFormInput placeholder="Nhập đơn giá" name='price' value={price.toLocaleString('it-IT')} onChange={(e) => {
                   setPrice(e.target.value)
-                  setTotalPrice((e.target.value) * amount)
+                  setTotalPrice((e.target.value) * amount * subAmount)
+                }} /> */}
+                <CurrencyFormat class="form-control" type="text" placeholder="Nhập đơn giá" value={price} thousandSeparator={true} prefix={'VND '} onValueChange={(values) => {
+                  const { formattedValue, value } = values
+                  setPrice(value)
+                  setTotalPrice(value * amount * subAmount)
                 }} />
               </CInputGroup>
               {validator.message("price", price, "required", {
@@ -393,31 +417,33 @@ const Imports = () => {
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Thành tiền</CInputGroupText>
-                <CFormInput placeholder="0" value={totalPrice} readOnly />
+                {/* <CFormInput placeholder="0" value={totalPrice.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} readOnly /> */}
+                <CurrencyFormat class="form-control" type="text" disabled value={totalPrice} thousandSeparator={true} prefix={'VND '} />
               </CInputGroup>
             </CCol>
             <CCol xs>
-
-              {/* <CInputGroupText id="" style={{ width: "120px" }}>Nhà kho</CInputGroupText> */}
-              <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
-                <option>Chọn giá/kệ</option>
-                {dataShelf.map((item, index) => (
-                  <option key={index} value={item.id}>{item.name}</option>
-                ))}
-              </CFormSelect>
+              {
+                (isWarehouseSelected) ? (
+                  <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
+                    <option>Chọn giá/kệ</option>
+                    {dataShelf.map((item, index) => (
+                      <option key={index} value={item.id}>{item.name}</option>
+                    ))}
+                  </CFormSelect>
+                ) : (
+                  <CFormSelect size="sm" disabled>
+                    <option>Chọn giá/kệ</option>
+                  </CFormSelect>
+                )
+              }
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
                 <CInputGroupText id="" style={{ width: "120px" }}>Người tạo</CInputGroupText>
-                <CFormInput readOnly placeholder="Họ và tên" name='created_by' value={created_by} onChange={(e) => setCreatedBy(e.target.value)} />
+                <CFormInput readOnly placeholder="Họ và tên" name='created_by' value={userProfile} />
               </CInputGroup>
-              {validator.message("created_by", created_by, "required", {
-                messages: {
-                  required: "Nhập người tạo"
-                }
-              })}
             </CCol>
             <CCol xs>
               <CInputGroup size="sm" className="mb-3">
@@ -427,7 +453,7 @@ const Imports = () => {
             </CCol>
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
-            <CButton size="sm" color="success" onClick={(e) => btnAddTable(e)}>THÊM VÀO PHIẾU</CButton>
+            <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
             <ShowImport dataTable={dataTable} code={code} />
             <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
           </div>

@@ -32,6 +32,10 @@ import DateTimePicker from '@mui/lab/DateTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { DataExportTable } from './DataExports';
 import { ShowExport } from './ShowExport';
+import CurrencyFormat from 'react-currency-format';
+import CIcon from '@coreui/icons-react';
+import { cilDelete } from '@coreui/icons';
+import { getToken } from 'src/components/utils/Common';
 
 
 const Exports = (props) => {
@@ -40,11 +44,12 @@ const Exports = (props) => {
   const [batch_code, setBatchCode] = useState('')
   const [warehouse_id, setWarehouse] = useState('')
   const [suppliers_id, setSuppliers] = useState()
-  const [shelf_id, setShelf] = useState('')
+  const [shelf_id, setShelfID] = useState('')
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
+  const [shelf_name, setShelfName] = useState('')
   const [unit, setUnit] = useState('')
-  const [created_by, setCreatedBy] = useState('Nguyễn Thị T')
+  const [created_by, setCreatedBy] = useState('')
   const [amount, setAmount] = useState('')
   const [price, setPrice] = useState(0)
   const [totalPrice, setTotalPrice] = useState(0)
@@ -74,16 +79,13 @@ const Exports = (props) => {
         setItemID(item.item_id)
         setBatchCode(item.batch_code)
         setCategory(item.category_id)
-        setShelf(item.shelf_id)
+        setShelfID(item.shelf_id)
+        setShelfName(item.shelf_name)
         setUnit(item.unit)
         setWarehouse(item.warehouse_id)
         setPrice(item.price)
-        // setName(item.name)
-        // setSuppliers("NO1")
         setName(item.name_item)
         setNameWarehouse(item.name_warehouse)
-        // setTotalPrice((item.amount) * (item.price))
-        // console.log(item)
         getDataShelf(item.warehouse_id)
         setIsWarehouseSelected(true)
         checked = true
@@ -92,24 +94,24 @@ const Exports = (props) => {
     if (amount > 0) {
       setIsAmountSelected(true)
       if (dataTable.length === 0) createCode()
-      // if (name.length !== 0) setIsAmountSelected(false)
-
-      // console.log(name.length)
     }
-    // setIsWarehouseSelected(true)
     if (!checked) setIsAmountSelected(false)
   }
 
   const onChangeAmount = (e) => {
-    (e.target.value > 0) ? setIsAmountSelected(true) : setIsAmountSelected(false)
+    (e.target.value > 0 && name.length > 0) ? setIsAmountSelected(true) : setIsAmountSelected(false)
     if (dataTable.length === 0) createCode()
+    console.log(shelf_id)
+    console.log(name)
   }
 
   const setNull = () => {
     setName('')
     setAmount('')
+    setWarehouse('')
     setDate(new Date())
     setIsAmountSelected(false)
+    setDataWarehouse([])
   }
 
   const createCode = () => {
@@ -131,10 +133,31 @@ const Exports = (props) => {
       setIsWarehouseSelected(false)
       setWarehouse(null)
     }
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value)])
+      .then(function (res) {
+        setDataItem(res[0].data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    setName('')
+    setShelfID(null)
+    setIsAmountSelected(false)
   }
 
   const onChangeShelf = (e) => {
-    console.log(e.target.value)
+    const index = e.nativeEvent.target.selectedIndex
+    if (index === 0) {
+      setIsAmountSelected(false)
+    } else {
+      setIsAmountSelected(true)
+      setShelfName(e.nativeEvent.target[index].text)
+    }
+  }
+
+  const onRemoveRow = (e, index) => {
+    console.log(index)
   }
 
   const getDataShelf = (id) => {
@@ -148,7 +171,6 @@ const Exports = (props) => {
   }
 
   const onAddTable = (e) => {//Button click, add data table
-    // console.log(dataTable.length)
     if (validator.allValid()) {
       const data = {
         item_id: item_id,
@@ -160,15 +182,15 @@ const Exports = (props) => {
         category_id: category_id,
         name: name,
         unit: unit,
-        created_by: 1,//USER
+        created_by: created_by,//USER
         amount: amount,
         price: price,
         nameWarehouse: nameWarehouse,
+        nameShelf: shelf_name,
         note: note,
         totalPrice: totalPrice
       }
       setDataTable([...dataTable, data])
-      // setCode(code)
       console.log(dataTable)
     } else {
       showValidationMessage(true)
@@ -178,11 +200,14 @@ const Exports = (props) => {
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
-    getData('http://127.0.0.1:8000/api/admin/warehouse')])
+      getData('http://127.0.0.1:8000/api/admin/warehouse'),
+      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+    ])
       .then(res => {
         console.log(res[1].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
+        setCreatedBy(res[2].data.fullname)
       })
   }, [])
 
@@ -201,7 +226,7 @@ const Exports = (props) => {
                     value={date}
                     inputFormat={"dd/MM/yyyy hh:mm"}
                     onChange={(newValue) => {
-                      setDate(newValue);
+                      setDate(newValue)
                     }}
                   />
                 </LocalizationProvider>
@@ -225,10 +250,9 @@ const Exports = (props) => {
                 renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
                 disableClearable
               />
-              <br />
               {validator.message("name", name, "required", {
                 messages: {
-                  required: "Nhập tên vật tư"
+                  required: "(*) Nhập tên vật tư"
                 }
               })}
             </CCol>
@@ -244,6 +268,12 @@ const Exports = (props) => {
                       setAmount(e.target.value)
                     }}
                     variant="outlined" />
+                  <br />
+                  {validator.message("amount", amount, "required", {
+                    messages: {
+                      required: "(*) Nhập số lượng"
+                    }
+                  })}
                 </CCol>
                 <CCol xs>
                   <CFormSelect size="md" className="mb-3" value={warehouse_id} onChange={
@@ -262,11 +292,15 @@ const Exports = (props) => {
                 <CCol xs>
                   {
                     (isWarehouseSelected) ? (
-                      <CFormSelect size="md" className="mb-3" value={shelf_id}>
+                      <CFormSelect size="md" className="mb-3" value={shelf_id} onChange={
+                        (e) => {
+                          onChangeShelf(e)
+                          setShelfID(e.target.value)
+                        }}>
                         <option>Giá/kệ</option>
                         {
                           dataShelf.map((item, index) => (
-                            <option key={index} value={item.shelf_id} onChange={(e) => onChangeShelf(e)}>{item.shelf_name}</option>
+                            <option key={index} value={item.shelf_id} >{item.shelf_name}</option>
                           ))
                         }
                       </CFormSelect>
@@ -292,7 +326,7 @@ const Exports = (props) => {
           </div>
         </CCardBody>
       </CCard>
-      <CTable id='dataExport' striped hover responsive bordered borderColor="warning">
+      <CTable id='dataExport' striped hover responsive bordered borderColor="warning" >
         <CTableHead color="warning">
           <CTableRow>
             <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
@@ -302,8 +336,8 @@ const Exports = (props) => {
             <CTableHeaderCell className="text-center">ĐVT</CTableHeaderCell>
             <CTableHeaderCell className="text-center">SL</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Đơn giá</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">Kho</CTableHeaderCell>
-            {/* <CTableHeaderCell className="text-center">Ghi chú</CTableHeaderCell> */}
+            <CTableHeaderCell className="text-center">Giá/kệ</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">#</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody id="myTable">
@@ -315,9 +349,15 @@ const Exports = (props) => {
               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
               <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
               <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.price}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.nameWarehouse}</CTableDataCell>
-              {/* <CTableDataCell className="text-center">{item.note}</CTableDataCell> */}
+              <CTableDataCell className="text-center">{(item.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.nameShelf}</CTableDataCell>
+              <CTableDataCell className="text-center">
+                <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                  onRemoveRow(e, index)
+                }}>
+                  <CIcon icon={cilDelete} />
+                </CButton>
+              </CTableDataCell>
             </CTableRow>
           ))}
         </CTableBody>

@@ -96,12 +96,7 @@ const _nav = [
       },
       {
         component: CNavItem,
-        name: 'Đăng nhập',
-        to: '/login',
-      },
-      {
-        component: CNavItem,
-        name: 'Đăng xuất',
+        name: 'Cấp tài khoản',
         to: '/register',
       },
     ],

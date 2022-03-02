@@ -25,9 +25,6 @@ const Register = () => {
   const [password_confirmation, setPasswordConfirmation] = useState('123456')
   const [fullname, setFullname] = useState('')
   const [phone, setPhone] = useState('')
-  // const [birthday, setBirthday] = useState('')
-  // const [address, setAddress] = useState('')
-  // const [gender, setGender] = useState('')
 
   const history = useHistory()
 
@@ -40,15 +37,13 @@ const Register = () => {
       password_confirmation: password_confirmation,
       fullname: fullname,
       phone: phone,
-      // birthday: birthday,
-      // address: address,
-      // gender: gender,
     }
     console.log(data)
     Promise.all([postData('http://127.0.0.1:8000/api/auth/register', data)])
       .then(function(res) {
         console.log("Successfully")
-        history.push("/login")
+        // history.push("/login")
+        history.push("/account")
       })
       .catch(err => {
         console.log(err)
@@ -64,8 +59,8 @@ const Register = () => {
               <CCard className="p-4">
                 <CCardBody>
                   <CForm>
-                    <h1>Đăng kí</h1>
-                    <p className="text-medium-emphasis">Tạo tài khoản</p>
+                    <h1>Cấp tài khoản</h1>
+                    <p className="text-medium-emphasis"></p>
                     <CInputGroup className="mb-3">
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
@@ -123,9 +118,7 @@ const Register = () => {
                     <div className="d-grid">
                       <CButton color="warning" onClick={(e) => onRegister(e)}>Tạo tài khoản</CButton>
                       <br />
-                      {/* <Link to={"/login"}> */}
-                      <CButton href='#/login' color="secondary">Đăng nhập</CButton>
-                      {/* </Link> */}
+                      {/* <CButton href='#/login' color="secondary">Đăng nhập</CButton> */}
                     </div>
                   </CForm>
                 </CCardBody>
