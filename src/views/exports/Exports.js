@@ -63,29 +63,41 @@ const Exports = (props) => {
   const [validator, showValidationMessage] = Validator()
 
   const [isAmountSelected, setIsAmountSelected] = useState(false)
+  const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+  const [isItemSelected, setIsItemSelected] = useState(false)
 
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
-    console.log(e.target.value)
-    console.log(newValue)
+    var checked = false
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         setItemID(item.item_id)
         setBatchCode(item.batch_code)
         setCategory(item.category_id)
         setShelf(item.shelf_id)
-        // setAmount(item.amount)
         setUnit(item.unit)
         setWarehouse(item.warehouse_id)
         setPrice(item.price)
+        // setName(item.name)
         // setSuppliers("NO1")
         setName(item.name_item)
         setNameWarehouse(item.name_warehouse)
         // setTotalPrice((item.amount) * (item.price))
-        console.log(item)
+        // console.log(item)
+        getDataShelf(item.warehouse_id)
+        setIsWarehouseSelected(true)
+        checked = true
       }
     })
-    // console.log(arr)
+    if (amount > 0) {
+      setIsAmountSelected(true)
+      if (dataTable.length === 0) createCode()
+      // if (name.length !== 0) setIsAmountSelected(false)
+
+      // console.log(name.length)
+    }
+    // setIsWarehouseSelected(true)
+    if (!checked) setIsAmountSelected(false)
   }
 
   const onChangeAmount = (e) => {
@@ -95,19 +107,8 @@ const Exports = (props) => {
 
   const setNull = () => {
     setName('')
-    // setItemID('')
-    // setBatchCode('')
     setAmount('')
-    // setPrice(0)
-    // setTotalPrice(0)
-    // setUnit('')
-    // setCategory('')
-    // setWarehouse('')
-    // setSuppliers('')
-    // setShelf('')
-    // setCreatedBy('Kế toán')
     setDate(new Date())
-    // setDataTable([])
     setIsAmountSelected(false)
   }
 
@@ -120,10 +121,35 @@ const Exports = (props) => {
     setCode(code)
   }
 
-  const btnAddTable = (e) => {//Button click, add data table
+  const onChangeWarehouse = (e, value) => {
+    console.log(value)
+    if (value) {
+      setIsWarehouseSelected(true)
+      setWarehouse(e.target.value)
+      getDataShelf(e.target.value)
+    } else {
+      setIsWarehouseSelected(false)
+      setWarehouse(null)
+    }
+  }
+
+  const onChangeShelf = (e) => {
+    console.log(e.target.value)
+  }
+
+  const getDataShelf = (id) => {
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id)])
+      .then(function (res) {
+        setDataShelf(res[0].data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  const onAddTable = (e) => {//Button click, add data table
     // console.log(dataTable.length)
     if (validator.allValid()) {
-
       const data = {
         item_id: item_id,
         code: code,
@@ -151,10 +177,12 @@ const Exports = (props) => {
 
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
+    getData('http://127.0.0.1:8000/api/admin/warehouse')])
       .then(res => {
-        console.log(res[0].data)
+        console.log(res[1].data)
         setDataItem(res[0].data)
+        setDataWarehouse(res[1].data)
       })
   }, [])
 
@@ -205,22 +233,56 @@ const Exports = (props) => {
               })}
             </CCol>
             <CCol xs>
-              <TextField id=""
-                size='small'
-                label="Số lượng"
-                value={amount}
-                onChange={(e) => {
-                  onChangeAmount(e)
-                  setAmount(e.target.value)
-                }}
-                variant="outlined" />
+              <CRow className="g-3">
+                <CCol xs>
+                  <TextField id=""
+                    size='small'
+                    label="Số lượng"
+                    value={amount}
+                    onChange={(e) => {
+                      onChangeAmount(e)
+                      setAmount(e.target.value)
+                    }}
+                    variant="outlined" />
+                </CCol>
+                <CCol xs>
+                  <CFormSelect size="md" className="mb-3" value={warehouse_id} onChange={
+                    (e) => {
+                      (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
+                    }
+                  } >
+                    <option>TẠI KHO</option>
+                    {
+                      dataWarehouse.map((item, index) => (
+                        <option key={index} value={item.id}>{item.name}</option>
+                      ))
+                    }
+                  </CFormSelect>
+                </CCol>
+                <CCol xs>
+                  {
+                    (isWarehouseSelected) ? (
+                      <CFormSelect size="md" className="mb-3" value={shelf_id}>
+                        <option>Giá/kệ</option>
+                        {
+                          dataShelf.map((item, index) => (
+                            <option key={index} value={item.shelf_id} onChange={(e) => onChangeShelf(e)}>{item.shelf_name}</option>
+                          ))
+                        }
+                      </CFormSelect>
+                    ) : (
+                      <></>
+                    )
+                  }
+                </CCol>
+              </CRow>
             </CCol>
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
             {
               (isAmountSelected) ? (
                 <>
-                  <CButton size="sm" color="success" onClick={(e) => btnAddTable(e)}>THÊM VÀO PHIẾU</CButton>
+                  <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
                   <ShowExport dataTable={dataTable} code={code} />
                 </>
               ) : (

@@ -14,20 +14,21 @@ import {
   CButton,
   CRow,
   CCol,
-  CForm,
-  CInputGroup,
-  CInputGroupText,
-  CFormInput,
-  CFormCheck,
   CFormSelect,
   CListGroup,
-  CListGroupItem
+  CListGroupItem,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
+  CAlert
 } from '@coreui/react';
 import { delData, getData, postData } from '../api/Api';
 import { Link, useHistory } from 'react-router-dom';
 import { getToken, getUserID } from 'src/components/utils/Common';
 import CIcon from '@coreui/icons-react';
-import { cilAddressBook, cilPeople } from '@coreui/icons';
+import { cifVn, cilAddressBook, cilArrowCircleRight, cilDelete, cilDescription, cilPeople } from '@coreui/icons';
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import TextField from '@mui/material/TextField';
@@ -77,146 +78,81 @@ const Account = () => {
   const [dataPermission, setPermission] = useState([])
   const [dataRoles, setRoles] = useState([])
 
+  const [dataUserClick, setDataUserClick] = useState([])
+
   const [rolesID, setRolesID] = useState('')
   const [permissionID, setPermissionID] = useState('')
 
   const [address, setAddress] = useState('')
   const [birthday, setBirthday] = useState(null)
   const [gender, setGender] = useState('')
-  const [onAddressChanged, setOnAddressChanged] = useState(false)
-  const [onBirthdayChanged, setOnBirthdayChanged] = useState(false)
-  const [onGenderChanged, setOnGenderChanged] = useState(false)
+  // const [onAddressChanged, setOnAddressChanged] = useState(false)
+  // const [onBirthdayChanged, setOnBirthdayChanged] = useState(false)
+  // const [onGenderChanged, setOnGenderChanged] = useState(false)
+  const [isSelected, setIsSelected] = useState(false)
+  const [checked, setChecked] = useState('')
+
+  //Modal
+  const [visibleInfo, setVisibleInfo] = useState(false)
+  const [visibleRoles, setVisibleRoles] = useState(false)
+  const [visibleRemove, setVisibleRemove] = useState(false)
+
   const history = useHistory()
 
-  // const handleAddressChange = (e) => {
-  //   setAddress(e.target.value)
-  //   setOnAddressChanged(true)
-  // }
-
-  // const handleBirthdayChange = (e) => {
-  //   setBirthday(e.toLocaleDateString())
-  //   setOnBirthdayChanged(true)
-  // }
-
-  const handleSelectedRoles = (e) => {
-    let index = e.nativeEvent.target.selectedIndex;
-    console.log(e.nativeEvent.target[index].text)
-    // Promise.all([getData('http://127.0.0.1:8000/api/admin/auth_model/detail_roles/' + id)])
-    //   .then(function (res) {
-    //     setPermission(res[0].data)
-    //     console.log(res[0].data)
-    //   })
-    //   .catch(error => {
-    //     console.log(error)
-    //     history.push('/login')
-    //   })
+  const showPermission = (roles_id) => {
+    if (roles_id) {
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/auth_model/detail_roles/' + roles_id)])
+        .then(function (res) {
+          // console.log(res[0].data)
+          setPermission(res[0].data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
   }
 
-  const expandRow = {
-    onlyOneExpanding: true,
-    renderer: row => (
-      <div>
-        <CCard>
-          <CRow>
-            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <CButton color="success">X</CButton>
-            </div>
-            <CCol xs={4}>
-              <CCardBody>
-                <CForm>
-                  <CInputGroup className="mb-4" size='sm'>
-                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Địa chỉ</CInputGroupText>
-                    <CFormInput
-                      placeholder="Chưa cập nhật"
-                      autoComplete="address"
-                      value={address}
-                      readOnly
-                    />
-                  </CInputGroup>
-                  <CInputGroup className="mb-4" size='sm'>
-                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Ngày sinh</CInputGroupText>
-                    <CFormInput
-                      placeholder="Chưa cập nhật"
-                      autoComplete="birthday"
-                      value={birthday}
-                      readOnly
-                    />
-                  </CInputGroup>
-                  <CInputGroup className="mb-4" size='sm'>
-                    <CInputGroupText style={{ width: "90px", fontWeight: 'bold' }}>Giới tính</CInputGroupText>
-                    <CFormInput
-                      placeholder="Chưa cập nhật"
-                      autoComplete="gender"
-                      value={gender}
-                      readOnly
-                    />
-                  </CInputGroup>
-                </CForm>
-                {/* <CButton color="success" onClick={(e) => btnUpdateDetailUser(e, row.id)}>Lưu</CButton> */}
-              </CCardBody>
-            </CCol>
-            <CCol xs={8}>
-              <CCardBody>
-                <CRow>
-                  <CCol>
-                    <CFormSelect size="sm" className="mb-3" value={rolesID} onChange={(e) => setRolesID(e.target.value)}>
-                      <option>Vai trò</option>
-                      {dataRoles.map((item, index) => (
-                        <option key={index} value={item.id} onChange={(e) => handleSelectedRoles(e)}>{item.name}</option>
-                      ))}
-                    </CFormSelect>
-                  </CCol>
-                  <CCol>
-                    <CListGroup>
-                      <CButton color='secondary' size='sm' style={{ fontWeight: 'bold' }}>Quyền hạn</CButton>
-                      {
-                        dataPermission.map((item, index) => {
-                          <CListGroupItem key={index}>{item.permission_name}</CListGroupItem>
-                        })
-                      }
-                    </CListGroup>
-                  </CCol>
-                </CRow>
-                <br />
-                <div className="d-grid gap-2 d-md-flex justify-content-md-center">
-                  <CButton size="sm" color="success">LƯU QUYỀN HẠN</CButton>
-                </div>
-              </CCardBody>
-            </CCol>
-          </CRow>
-        </CCard>
-      </div>
-    ),
-    showExpandColumn: true
+  const handleGetUsers = () => {
+    Promise.all([getData('http://127.0.0.1:8000/api/auth/users?token=' + getToken())])
+      .then(function (response) {
+        setDataTable(response[0].data)
+      })
+      .catch(err => { history.push('/login') })
   }
 
-  const btnUpdateDetailUser = (e, id) => {
-    // if (birthday) {
-    //   const splitDate = birthday.split("/")
-    //   const date = splitDate[2] + "/" + splitDate[0] + "/" + splitDate[1]
-    //   const data = {
-    //     user_id: id,
-    //     address: address,
-    //     birthday: date,
-    //     gender: gender,
-    //   }
-    //   console.log(data)
-    //   Promise.all([postData('http://127.0.0.1:8000/api/admin/detail_user/store/' + id, data)])
-    //     .then(function (res) {
-    //       console.log('Update successfully')
-    //       setUserDetail(res[0].data)
-    //     })
-    //     .catch(err => {
-    //       console.log(err)
-    //     })
-    // } else {
-    //   console.log("-_-")
-    // }
+  const handelSave = (user_id, roles_id) => {
+    console.log(user_id)
+    console.log(roles_id)
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/auth_model/user_roles', {
+      user_id: user_id,
+      roles_id: roles_id
+    })])
+      .then(function (res) {
+        console.log('SAVED roles')
+        handleGetUsers()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+  }
+
+  const handleDelete = (id) => {
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/detail_user/delete/' + id)])
+      .then(function (res) {
+        console.log('Deleted')
+        handleGetUsers()
+        setVisibleRemove(false)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   useEffect(() => {
     // const header = `Authorization: Bearer ${getToken()}`
     Promise.all([getData('http://127.0.0.1:8000/api/auth/users?token=' + getToken()),
+    // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers: header}),
     getData('http://127.0.0.1:8000/api/admin/detail_user/show/' + getUserID()),
     getData('http://127.0.0.1:8000/api/admin/auth_model/roles'),
     getData('http://127.0.0.1:8000/api/admin/auth_model/permission')])
@@ -225,27 +161,174 @@ const Account = () => {
         setUserDetail(res[1].data)
         setRoles(res[2].data)
         setPermission(res[3])
-        console.log(res[3].data)
+        console.log(res[2].data[0]["name"])
+        console.log(res[0].dataRoles)
       })
       .catch(error => {
         console.log(error)
-        // history.push('/login')
+        history.push('/login')
       })
   }, [])
 
   return (
     <>
       <p style={{ fontWeight: "bold" }}>&gt;Tài khoản</p>
-      <BootstrapTable
-        keyField='id'
-        wrapperClasses="boo"
-        data={dataTable}
-        columns={columns}
-        expandRow={expandRow}
-        filter={filterFactory()}
-        rowStyle={rowStyle}
-        noDataIndication={'Không có dữ liệu'}
-      />
+      <CCard>
+        <CCardHeader>Quản lý tài khoản</CCardHeader>
+        <CCardBody>
+          <CTable hover>
+            <CTableHead>
+              <CTableRow>
+                <CTableHeaderCell scope="col" className="text-center">STT</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">Tên đăng nhập</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">Họ và tên</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">SĐT</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">Chức vụ</CTableHeaderCell>
+                <CTableHeaderCell scope="col" className="text-center">Thao tác</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+            <CTableBody>
+              {
+                dataTable.map((item, index) => (
+                  <>
+                    <CTableRow key={index}>
+                      <CTableHeaderCell scope="row" className="text-center">{index + 1}</CTableHeaderCell>
+                      <CTableDataCell className="text-center">{item.username}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.fullname}</CTableDataCell>
+                      <CTableDataCell className="text-center">{item.phone}</CTableDataCell>
+                      <CTableDataCell className="text-center">{
+                        (item.roles_id === null) ? ("Chưa phân quyền") : (
+                          dataRoles.map((value) => {
+                            if (value.id === item.roles_id) return value.name
+                          })
+                        )
+                      }</CTableDataCell>
+                      <CTableDataCell className="text-center">
+                        <CButton size="sm" className="me-2" color='warning' onClick={(e) => {
+                          setDataUserClick(item)
+                          setVisibleInfo(!visibleInfo)
+                        }}>
+                          <CIcon icon={cilDescription} />
+                        </CButton>
+                        <CButton size="sm" className="me-2" color='success' onClick={(e) => {
+                          setDataUserClick(item)
+                          setVisibleRoles(!visibleRoles)
+                          showPermission(item.roles_id)
+                        }}>
+                          <CIcon icon={cilPeople} />
+                        </CButton>
+                        <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                          setDataUserClick(item)
+                          setVisibleRemove(!visibleRemove)
+                        }}>
+                          <CIcon icon={cilDelete} />
+                        </CButton>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </>
+                ))
+              }
+
+            </CTableBody>
+          </CTable>
+        </CCardBody>
+      </CCard>
+      <CModal alignment="center" size="md" visible={visibleInfo} onClose={() => setVisibleInfo(false)}>
+        <CModalHeader>
+          <CModalTitle>Thông tin: {dataUserClick.fullname}</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CListGroup>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Username: {dataUserClick.username}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Tên: {dataUserClick.fullname}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cifVn} /> SĐT: {dataUserClick.phone}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Email: {dataUserClick.email}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Chức vụ: {
+              (dataUserClick.roles_id === null) ? ("Chưa phân quyền") : (
+                dataRoles.map((value) => {
+                  if (value.id === dataUserClick.roles_id) return value.name
+                })
+              )
+            }</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Địa chỉ: {dataUserClick.address ? dataUserClick.address : "Chưa cập nhật"}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Ngày sinh: {dataUserClick.birthday ? dataUserClick.birthday : "Chưa cập nhật"}</CListGroupItem>
+            <CListGroupItem component="button"><CIcon icon={cilArrowCircleRight} /> Giới tính: {dataUserClick.gender ? dataUserClick.gender : "Chưa cập nhật"}</CListGroupItem>
+          </CListGroup>
+        </CModalBody>
+      </CModal>
+      <CModal alignment="center" size="lg" visible={visibleRoles} backdrop="static" onClose={() => {
+        setVisibleRoles(false)
+        setPermission([])
+        setIsSelected(false)
+        setRolesID()
+      }}>
+        <CModalHeader>
+          <CModalTitle>Quyền hạn</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CRow>
+            <CCol>
+              <CFormSelect size="lg" className="mb-3" value={rolesID ? rolesID : dataUserClick.roles_id} onChange={(e) => {
+                showPermission(e.target.value)
+                setRolesID(e.target.value)
+                setIsSelected(true)
+              }}>
+                <option>Quyền hạn</option>
+                {
+                  dataRoles.map((item, index) => (
+                    <option key={index} value={item.id}>{item.name}</option>
+                  ))
+                }
+              </CFormSelect>
+            </CCol>
+            <CCol>
+              <CListGroup>
+                {
+                  dataPermission.map((item, index) => (
+                    <CListGroupItem key={index} component="button">{item.permission_name}</CListGroupItem>
+                  ))
+                }
+              </CListGroup>
+            </CCol>
+          </CRow>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => {
+            setVisibleRoles(false)
+            setPermission([])
+            setIsSelected(false)
+            setRolesID()
+          }}>
+            Huỷ
+          </CButton>
+          {
+            (isSelected) ? (
+              <CButton color="warning" onClick={() => {
+                handelSave(dataUserClick.id, rolesID)
+                setIsSelected(false)
+              }}>Lưu</CButton>
+            ) : (
+              <CButton color="secondary">Lưu</CButton>
+            )
+          }
+        </CModalFooter>
+      </CModal>
+      <CModal visible={visibleRemove} onClose={() => setVisibleRemove(false)}>
+        <CModalHeader onClose={() => setVisibleRemove(false)}>
+          <CModalTitle>Xác nhận xoá người dùng</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          <CAlert color="danger">
+            Xoá người dùng `{dataUserClick.fullname}` trong hệ thống. Bạn chắc chứ ?
+          </CAlert>
+        </CModalBody>
+        <CModalFooter>
+          <CButton color="secondary" onClick={() => setVisibleRemove(false)}>
+            Huỷ
+          </CButton>
+          <CButton color="warning" onClick={() => handleDelete(dataUserClick.id)}>Xoá</CButton>
+        </CModalFooter>
+      </CModal>
     </>
   )
 }
