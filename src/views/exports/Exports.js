@@ -8,34 +8,24 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CInputGroup,
-  CInputGroupText,
-  CFormInput,
   CCard,
-  CCardHeader,
   CCardBody,
   CRow,
   CCol,
   CButton,
-  CListGroupItem,
   CFormSelect,
-  CListGroup
-} from '@coreui/react';
-import { getData, postData } from '../api/Api';
+} from '@coreui/react'
+import { getData } from '../api/Api'
 import TextField from '@mui/material/TextField'
-import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation';
-// import { ShowImport } from './ShowImport';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DateTimePicker from '@mui/lab/DateTimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { DataExportTable } from './DataExports';
-import { ShowExport } from './ShowExport';
-import CurrencyFormat from 'react-currency-format';
-import CIcon from '@coreui/icons-react';
-import { cilDelete } from '@coreui/icons';
-import { getToken } from 'src/components/utils/Common';
+import Validator from './Validation'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import { ShowExport } from './ShowExport'
+import CIcon from '@coreui/icons-react'
+import { cilDelete } from '@coreui/icons'
+import { getToken } from 'src/components/utils/Common'
 
 
 const Exports = (props) => {
@@ -51,6 +41,7 @@ const Exports = (props) => {
   const [unit, setUnit] = useState('')
   const [created_by, setCreatedBy] = useState('')
   const [amount, setAmount] = useState('')
+  const [amountCurrent, setAmountCurrent] = useState(0)
   const [price, setPrice] = useState(0)
   const [totalPrice, setTotalPrice] = useState(0)
   const [nameWarehouse, setNameWarehouse] = useState('')
@@ -60,19 +51,20 @@ const Exports = (props) => {
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
   const [dataWarehouse, setDataWarehouse] = useState([])
-  const [dataSuppliers, setDataSuppliers] = useState([])
+  // const [dataSuppliers, setDataSuppliers] = useState([])
   const [dataShelf, setDataShelf] = useState([])
-  const [dataCategory, setDataCategory] = useState([])
+  // const [dataCategory, setDataCategory] = useState([])
   const [code, setCode] = useState('')
 
   const [validator, showValidationMessage] = Validator()
 
   const [isAmountSelected, setIsAmountSelected] = useState(false)
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
-  const [isItemSelected, setIsItemSelected] = useState(false)
+  // const [isItemSelected, setIsItemSelected] = useState(false)
 
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
+    console.log(dataItem)
     var checked = false
     dataItem.map((item) => {
       if (item.name_item === newValue) {
@@ -81,11 +73,13 @@ const Exports = (props) => {
         setCategory(item.category_id)
         setShelfID(item.shelf_id)
         setShelfName(item.shelf_name)
+        setSuppliers(item.supplier_id)
         setUnit(item.unit)
         setWarehouse(item.warehouse_id)
         setPrice(item.price)
         setName(item.name_item)
         setNameWarehouse(item.name_warehouse)
+        setAmountCurrent(item.amount)
         getDataShelf(item.warehouse_id)
         setIsWarehouseSelected(true)
         checked = true
@@ -96,6 +90,8 @@ const Exports = (props) => {
       if (dataTable.length === 0) createCode()
     }
     if (!checked) setIsAmountSelected(false)
+    console.log(dataItem.length)
+    setAmount(0)
   }
 
   const onChangeAmount = (e) => {
@@ -107,11 +103,12 @@ const Exports = (props) => {
 
   const setNull = () => {
     setName('')
-    setAmount('')
+    setAmount(0)
+    setAmountCurrent(0)
     setWarehouse('')
     setDate(new Date())
     setIsAmountSelected(false)
-    setDataWarehouse([])
+    // setDataWarehouse([])
   }
 
   const createCode = () => {
@@ -125,39 +122,55 @@ const Exports = (props) => {
 
   const onChangeWarehouse = (e, value) => {
     console.log(value)
+    console.log(e)
     if (value) {
       setIsWarehouseSelected(true)
       setWarehouse(e.target.value)
       getDataShelf(e.target.value)
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value)])
+        .then(function (res) {
+          setDataItem(res[0].data)
+          console.log(res[0].data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     } else {
       setIsWarehouseSelected(false)
       setWarehouse(null)
     }
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value)])
-      .then(function (res) {
-        setDataItem(res[0].data)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-
+    setAmount(0)
+    setAmountCurrent(0)
     setName('')
     setShelfID(null)
     setIsAmountSelected(false)
   }
 
   const onChangeShelf = (e) => {
-    const index = e.nativeEvent.target.selectedIndex
+    const index = e.nativeEvent.target.selectedIndex //using coreui
     if (index === 0) {
       setIsAmountSelected(false)
     } else {
       setIsAmountSelected(true)
       setShelfName(e.nativeEvent.target[index].text)
+
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value)])
+        .then(function (res) {
+          console.log(res[0].data)
+          setDataItem(res[0].data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
+    setName('')
+    setAmount(0)
+    setAmountCurrent(0)
   }
 
   const onRemoveRow = (e, index) => {
-    console.log(index)
+    var array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+    setDataTable([...array])
   }
 
   const getDataShelf = (id) => {
@@ -171,43 +184,80 @@ const Exports = (props) => {
   }
 
   const onAddTable = (e) => {//Button click, add data table
-    if (validator.allValid()) {
-      const data = {
-        item_id: item_id,
-        code: code,
-        batch_code: batch_code,
-        warehouse_id: warehouse_id,
-        shelf_id: shelf_id,
-        suppliers_id: suppliers_id,
-        category_id: category_id,
-        name: name,
-        unit: unit,
-        created_by: created_by,//USER
-        amount: amount,
-        price: price,
-        nameWarehouse: nameWarehouse,
-        nameShelf: shelf_name,
-        note: note,
-        totalPrice: totalPrice
+    if (validator.allValid() && amount > 0) {
+      if (dataTable.length > 0) {
+        let amountTotal = 0
+        let array = []
+        dataTable.map((item, index) => {
+          if (item.item_id === item_id) {
+            amountTotal = parseInt(item.amount) + parseInt(amount)
+            array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+          }
+        })
+        amountTotal > 0 ? amountTotal = amountTotal : amountTotal = amount
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          warehouse_id: warehouse_id,
+          shelf_id: shelf_id,
+          suppliers_id: suppliers_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: created_by,//USER
+          amount: amountTotal,
+          price: price,
+          nameWarehouse: nameWarehouse,
+          nameShelf: shelf_name,
+          note: note,
+          totalPrice: totalPrice
+        }
+        console.log(dataTable)
+        array.length > 0 ? setDataTable([...array, data]) : (dataTable.length === 1 && dataTable[0].item_id === item_id ? setDataTable([data]) : setDataTable([...dataTable, data]))
+        console.log(dataTable)
+      } else {
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          warehouse_id: warehouse_id,
+          shelf_id: shelf_id,
+          suppliers_id: suppliers_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: created_by,//USER
+          amount: amount,
+          price: price,
+          nameWarehouse: nameWarehouse,
+          nameShelf: shelf_name,
+          note: note,
+          totalPrice: totalPrice
+        }
+        setDataTable([...dataTable, data])
+        console.log(amount)
       }
-      setDataTable([...dataTable, data])
-      console.log(dataTable)
+      setAmount(0)
+      // setAmountCurrent(0)
     } else {
       showValidationMessage(true)
+      setAmount(0)
+      // setAmountCurrent(0)
     }
   }
 
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
-      getData('http://127.0.0.1:8000/api/admin/warehouse'),
-      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+    getData('http://127.0.0.1:8000/api/admin/warehouse'),
+    getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
         console.log(res[1].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
-        setCreatedBy(res[2].data.fullname)
+        setCreatedBy(res[2].data.id)
       })
   }, [])
 
@@ -218,56 +268,38 @@ const Exports = (props) => {
         <CCardBody>
           <CRow className="g-3">
             <CCol xs>
-              <div className="d-grid gap-2 d-md-flex">
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    renderInput={(props) => <TextField size='small' {...props} />}
-                    label="Ngày nhập"
-                    value={date}
-                    inputFormat={"dd/MM/yyyy hh:mm"}
-                    onChange={(newValue) => {
-                      setDate(newValue)
-                    }}
+              <CRow>
+                <CCol sm={4}>
+                  <Autocomplete
+                    id="name_item"
+                    freeSolo
+                    size='small'
+                    options={dataItem.map((option) => option.name_item)}
+                    inputValue={name}
+                    onInputChange={(e, newValue) => onChangeName(e, newValue)}
+                    renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
+                    disableClearable
                   />
-                </LocalizationProvider>
-                <CButton color="secondary" onClick={(e) => setNull()}>LÀM MỚI</CButton>
-              </div>
-            </CCol>
-            <CCol xs>
-
-            </CCol>
-          </CRow>
-          <br />
-          <CRow className="g-3">
-            <CCol xs>
-              <Autocomplete
-                id="name_item"
-                freeSolo
-                size='small'
-                options={dataItem.map((option) => option.name_item)}
-                inputValue={name}
-                onInputChange={(e, newValue) => onChangeName(e, newValue)}
-                renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
-                disableClearable
-              />
-              {validator.message("name", name, "required", {
-                messages: {
-                  required: "(*) Nhập tên vật tư"
-                }
-              })}
-            </CCol>
-            <CCol xs>
-              <CRow className="g-3">
-                <CCol xs>
-                  <TextField id=""
+                  {validator.message("name", name, "required", {
+                    messages: {
+                      required: "(*) Nhập tên vật tư"
+                    }
+                  })}
+                </CCol>
+                <CCol sm={2}>
+                  <TextField
+                    fullWidth
+                    type={'number'}
+                    inputProps={{ min: 0, max: amountCurrent, type: 'number' }}
                     size='small'
                     label="Số lượng"
                     value={amount}
                     onChange={(e) => {
                       onChangeAmount(e)
-                      setAmount(e.target.value)
+                      setAmount(parseInt(e.target.value) > amountCurrent ? amountCurrent : parseInt(e.target.value))
                     }}
-                    variant="outlined" />
+                    variant="outlined"
+                  />
                   <br />
                   {validator.message("amount", amount, "required", {
                     messages: {
@@ -276,42 +308,63 @@ const Exports = (props) => {
                   })}
                 </CCol>
                 <CCol xs>
-                  <CFormSelect size="md" className="mb-3" value={warehouse_id} onChange={
-                    (e) => {
-                      (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
-                    }
-                  } >
-                    <option>TẠI KHO</option>
-                    {
-                      dataWarehouse.map((item, index) => (
-                        <option key={index} value={item.id}>{item.name}</option>
-                      ))
-                    }
-                  </CFormSelect>
-                </CCol>
-                <CCol xs>
-                  {
-                    (isWarehouseSelected) ? (
-                      <CFormSelect size="md" className="mb-3" value={shelf_id} onChange={
-                        (e) => {
-                          onChangeShelf(e)
-                          setShelfID(e.target.value)
-                        }}>
-                        <option>Giá/kệ</option>
-                        {
-                          dataShelf.map((item, index) => (
-                            <option key={index} value={item.shelf_id} >{item.shelf_name}</option>
-                          ))
-                        }
-                      </CFormSelect>
-                    ) : (
-                      <></>
-                    )
-                  }
+                  <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
+                      <DateTimePicker
+                        renderInput={(props) => <TextField size='small' {...props} />}
+                        label="Ngày nhập"
+                        value={date}
+                        inputFormat={"dd/MM/yyyy hh:mm"}
+                        onChange={(newValue) => {
+                          setDate(newValue)
+                        }}
+                      />
+                    </LocalizationProvider>
+                    <CButton color="secondary" onClick={(e) => setNull()}>LÀM MỚI</CButton>
+                  </div>
                 </CCol>
               </CRow>
             </CCol>
+
           </CRow>
+          <br />
+          <CRow className="g-3">
+            <CCol xs>
+              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={
+                (e) => {
+                  (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
+                }
+              } >
+                <option>TẠI KHO</option>
+                {
+                  dataWarehouse.map((item, index) => (
+                    <option key={index} value={item.id}>{item.name}</option>
+                  ))
+                }
+              </CFormSelect>
+            </CCol>
+            <CCol xs>
+              {
+                (isWarehouseSelected) ? (
+                  <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={
+                    (e) => {
+                      onChangeShelf(e)
+                      setShelfID(e.target.value)
+                    }}>
+                    <option>Giá/kệ</option>
+                    {
+                      dataShelf.map((item, index) => (
+                        <option key={index} value={item.shelf_id} >{item.shelf_name}</option>
+                      ))
+                    }
+                  </CFormSelect>
+                ) : (
+                  <></>
+                )
+              }
+            </CCol>
+          </CRow>
+          <br />
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
             {
               (isAmountSelected) ? (
@@ -337,7 +390,7 @@ const Exports = (props) => {
             <CTableHeaderCell className="text-center">SL</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Đơn giá</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Giá/kệ</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">#</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Thao tac</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody id="myTable">

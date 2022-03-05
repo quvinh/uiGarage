@@ -29,25 +29,22 @@ import CIcon from '@coreui/icons-react';
 
 import React, { useEffect, useState } from 'react'
 import {
-  CTable,
   CTableHead,
   CTableRow,
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CTableCaption,
   CButton
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
+  return <Slide direction="left" ref={ref} {...props} />
 })
 
 const DataImport = (props) => {
   const [open, setOpen] = React.useState(false)
-
   const handleDelete = () => {
     if (tableHistoryImport.length > 0) {
       tableHistoryImport.map((item, index) => {
@@ -55,13 +52,14 @@ const DataImport = (props) => {
         Promise.all([delData('http://127.0.0.1:8000/api/admin/import/delete/' + item.id)])
           .then(function (res) {
             console.log("Deleted")
+            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
+
   }
   const handleDStatus = () => {
     if (tableHistoryImport.length > 0) {
@@ -70,13 +68,14 @@ const DataImport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/import/dStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 0->1")
+            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
+
   }
   const handleUpdateStatus = () => {
     if (tableHistoryImport.length > 0) {
@@ -86,13 +85,14 @@ const DataImport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 1->2")
+            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    // window.location.reload();
+
   }
 
   const handleClickOpen = () => {
@@ -129,96 +129,96 @@ const DataImport = (props) => {
     <>
       <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '0'?'info':'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0'?false:true}><CIcon icon={cilSend}/></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1'?'success':'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1'?false:true}><CIcon icon={cilCheckCircle} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 
-        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-          <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={handleClose}
-                aria-label="close"
-              >
-                <CloseIcon />
-              </IconButton>
+      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+        <AppBar style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>
+          <Toolbar className="d-grid gap-2 d-md-flex justify-content-md-end">
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
               <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                 Thoát
               </Typography>
-            </Toolbar>
-          </AppBar>
-          <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
-            <Card>
-              <CardContent>
-                <Stack spacing={2}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Card>
-                        <CardContent>
-                          LOGO
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={8}>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary="NAM KHÁNH"
-                              secondary={'GARAGE'}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemText
-                              primary="Địa chỉ: Lê Hồng Phong"
-                              secondary={'Liên hệ: 0123456789'}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary="Người Tạo: Nguyễn Thị T"
-                              secondary={'Thủ kho'}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemText
-                              primary={"Số phiếu: " + props.code}
-                              secondary={'Thời gian nhập: ' + props.created_at}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    {/* </Grid> */}
-                    <Grid item xs={12}>
-                      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
-                      {tableHistoryImport.map((item, index) => (
-                      <TableContainer component={Paper} key={index}>
-                        <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
-                        <CTableHead color="warning">
-                            <CTableRow>
-                              <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Mã kệ</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Giá nhập</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Số lượng nhập</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-                            </CTableRow>
-                          </CTableHead>
-                          <CTableBody>
-                            <CTableRow v-for="item in tableItems" >
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Card>
+                      <CardContent>
+                        LOGO
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={8}>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary="NAM KHÁNH"
+                            secondary={'GARAGE'}
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText
+                            primary="Địa chỉ: Lê Hồng Phong"
+                            secondary={'Liên hệ: 0123456789'}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary={"Người Tạo: " + props.created_by}
+                            secondary={'Thủ kho'}
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText
+                            primary={"Số phiếu: " + props.code}
+                            secondary={'Thời gian nhập: ' + props.created_at}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  {/* </Grid> */}
+                  <Grid item xs={12}>
+                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
+                    <TableContainer component={Paper}>
+                      <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
+                        <TableHead color="warning">
+                          <TableRow>
+                            <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Mã kệ</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Giá nhập</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Số lượng nhập</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
+                            <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {tableHistoryImport.map((item, index) => (
+                            <CTableRow key={index} v-for="item in tableItems" >
                               <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
@@ -229,30 +229,30 @@ const DataImport = (props) => {
                               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                               <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
                             </CTableRow>
-                          </CTableBody>
-                        </Table>
-                      </TableContainer>
-                      ))}
-                    </Grid>
-                    <Grid item xs={6}>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
                   </Grid>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Container>
-        </Dialog>
+                  <Grid item xs={6}>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Container>
+      </Dialog>
     </>
 
   )

@@ -12,18 +12,14 @@ import {
   CInputGroupText,
   CFormInput,
   CCard,
-  CCardHeader,
   CCardBody,
   CRow,
   CCol,
   CButton,
-  CListGroupItem,
   CFormSelect,
-  CListGroup
 } from '@coreui/react'
-import { getData, postData } from '../api/Api'
+import { getData } from '../api/Api'
 import TextField from '@mui/material/TextField'
-import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
 import Validator from './Validation'
 import { ShowImport } from './ShowImport'
@@ -32,18 +28,19 @@ import DateTimePicker from '@mui/lab/DateTimePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import { getToken, getUserID } from 'src/components/utils/Common'
 import CurrencyFormat from 'react-currency-format'
+import CIcon from '@coreui/icons-react'
+import { cilDelete } from '@coreui/icons'
 
 const Imports = () => {
   const [item_id, setItemID] = useState('')
   const [batch_code, setBatchCode] = useState('')
   const [warehouse_id, setWarehouse] = useState('')
-  const [suppliers_id, setSuppliers] = useState()
+  const [supplier_id, setSuppliers] = useState()
   const [shelf_id, setShelf] = useState('')
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
   const [unit, setUnit] = useState('')
   const [subUnit, setSubUnit] = useState('')
-  // const [created_by, setCreatedBy] = useState('Nguyễn Thị T')
   const [amount, setAmount] = useState(0)
   const [subAmount, setSubAmount] = useState(1)
   const [price, setPrice] = useState(0)
@@ -60,7 +57,7 @@ const Imports = () => {
   const [dataSuppliers, setDataSuppliers] = useState([])
   const [dataShelf, setDataShelf] = useState([])
   const [dataCategory, setDataCategory] = useState([])
-  const [dataNameSelected, setDataNameSelected] = useState([])
+  // const [dataNameSelected, setDataNameSelected] = useState([])
 
   const [code, setCode] = useState('')
   // const simpleValidator = useRef(SimpleReactValidator())
@@ -84,25 +81,15 @@ const Imports = () => {
     setSuppliers('')
     setShelf('')
     setIsItemSelected(false)
-    // setCreatedBy('Kế toán')
+    setIsWarehouseSelected(false)
     setDate(new Date())
-    // setDataTable([])
   }
 
   const reset = () => {
     setNull()
     setDataTable([])
   }
-  // const onChangeName = (e) => {
-  //   setName(e.target.value)
-  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value + '/1')])
-  //     .then(function (res) {
-  //       setDataItem(res[0].data)
-  //     })
-  //     .catch(err => {
-  //       console.log("Error API get ITEM")
-  //     })
-  // }
+
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
     if (dataTable.length === 0) createCode()
@@ -111,6 +98,7 @@ const Imports = () => {
     console.log(newValue)
     dataItem.map((item) => {
       if (item.name_item === newValue) {
+        getDataShelf(item.warehouse_id)
         setItemID(item.item_id)
         setBatchCode(item.batch_code)
         setCategory(item.category_id)
@@ -118,11 +106,13 @@ const Imports = () => {
         setAmount(item.amount)
         setUnit(item.unit)
         setWarehouse(item.warehouse_id)
+        setNameWarehouse(item.name_warehouse)
         setPrice(item.price)
-        setSuppliers("NO1")
+        setSuppliers(item.supplier_id)
         setName(item.name_item)
         setTotalPrice((item.amount) * (item.price))
         setIsItemSelected(true)
+        setIsWarehouseSelected(true)
         console.log(item.name_item)
       }
     })
@@ -166,31 +156,66 @@ const Imports = () => {
       })
   }
   const onAddTable = (e) => {//Button click, add data table
-    console.log(unit)
-    if (validator.allValid()) {
-      const data = {
-        item_id: item_id,
-        code: code,
-        batch_code: batch_code,
-        warehouse_id: warehouse_id,
-        shelf_id: shelf_id,
-        suppliers_id: suppliers_id,
-        category_id: category_id,
-        name: name,
-        unit: unit,
-        created_by: getUserID(),//USER
-        amount: amount,
-        price: price,
-        nameWarehouse: nameWarehouse,
-        note: note,
-        totalPrice: totalPrice
+    if (validator.allValid() && amount > 0) {
+      if (dataTable.length > 0) {
+        let amountTotal = 0
+        let array = []
+        dataTable.map((item, index) => {
+          if (item.item_id === item_id) {
+            amountTotal = parseInt(item.amount) + parseInt(amount)
+            array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+          }
+        })
+        amountTotal > 0 ? amountTotal = amountTotal : amountTotal = amount
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          warehouse_id: warehouse_id,
+          shelf_id: shelf_id,
+          supplier_id: supplier_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: getUserID(),//USER
+          amount: amountTotal,
+          price: price,
+          nameWarehouse: nameWarehouse,
+          note: note,
+          totalPrice: parseInt(amountTotal) * parseInt(price)
+        }
+        console.log(dataTable)
+        array.length > 0 ? setDataTable([...array, data]) : (dataTable.length === 1 && dataTable[0].item_id === item_id ? setDataTable([data]) : setDataTable([...dataTable, data]))
+        console.log(dataTable)
+      } else {
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          warehouse_id: warehouse_id,
+          shelf_id: shelf_id,
+          supplier_id: supplier_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: getUserID(),//USER
+          amount: amount,
+          price: price,
+          nameWarehouse: nameWarehouse,
+          note: note,
+          totalPrice: totalPrice
+        }
+        setDataTable([...dataTable, data])
+        console.log(dataTable)
       }
-      setDataTable([...dataTable, data])
-      // setCode(code)
-      console.log(dataTable)
     } else {
       showValidationMessage(true)
     }
+  }
+
+  const onRemoveRow = (e, index) => {
+    var array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+    setDataTable([...array])
   }
 
   useEffect(() => {
@@ -212,7 +237,7 @@ const Imports = () => {
         setUserProfile(res[5].data.fullname)
         console.log(res[5].data.fullname)
       })
-      .catch(err => { console.log(err)})
+      .catch(err => { console.log(err) })
   }, [])
 
   return (
@@ -237,12 +262,14 @@ const Imports = () => {
                 renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
                 disableClearable
               />
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("name", name, "required", {
+                  messages: {
+                    required: "(*) Nhập tên vật tư"
+                  }
+                })}
+              </div>
               <br />
-              {validator.message("name", name, "required", {
-                messages: {
-                  required: "Nhập tên vật tư"
-                }
-              })}
             </CCol>
             <CCol xs>
               <div className="d-grid gap-2 d-md-flex justify-content-md-start">
@@ -263,20 +290,23 @@ const Imports = () => {
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm" >
                 <CInputGroupText id="" style={{ width: "120px" }}>Mã vật tư</CInputGroupText>
                 <CFormInput placeholder="Mã vật tư" name='item_id' value={item_id} onChange={(e) => setItemID(e.target.value)} />
               </CInputGroup>
-              {validator.message("item_id", item_id, "required", {
-                messages: {
-                  required: "Nhập mã vật tư"
-                }
-              })}
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("item_id", item_id, "required", {
+                  messages: {
+                    required: "(*) Nhập mã vật tư"
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
             <CCol xs>
               <CRow>
                 <CCol xs={4}>
-                  <CFormSelect disabled={isItemSelected} size="sm" className="mb-3" value={unit} onChange={
+                  <CFormSelect disabled={isItemSelected} size="sm" value={unit} onChange={
                     (e) => {
                       // setUnit(e.target.value)
                       (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
@@ -298,7 +328,7 @@ const Imports = () => {
                     (isUnitSelected) ? (
                       <CRow>
                         <CCol xs>
-                          <CInputGroup size="sm" className="mb-3">
+                          <CInputGroup size="sm">
                             <CInputGroupText>SL/lô</CInputGroupText>
                             <CurrencyFormat className="form-control" type="text" placeholder="Số lượng" value={subAmount} thousandSeparator={true} onValueChange={(values) => {
                               const { formattedValue, value } = values
@@ -313,7 +343,7 @@ const Imports = () => {
                           </CInputGroup>
                         </CCol>
                         <CCol>
-                          <CFormSelect size="sm" className="mb-3" value={subUnit} onChange={(e) => setSubUnit(e.target.value)}>
+                          <CFormSelect size="sm" value={subUnit} onChange={(e) => setSubUnit(e.target.value)}>
                             <option value={'Chiếc'}>Chiếc</option>
                             <option value={'Bộ'}>Bộ</option>
                             <option value={'Cái'}>Cái</option>
@@ -333,30 +363,41 @@ const Imports = () => {
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Mã sản xuất</CInputGroupText>
                 <CFormInput placeholder="Mã sản xuất" name='batch_code' value={batch_code} onChange={(e) => setBatchCode(e.target.value)} />
               </CInputGroup>
-              {validator.message("batch_code", batch_code, "required", {
-                messages: {
-                  required: "Nhập mã sản xuất"
-                }
-              })}
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("batch_code", batch_code, "required", {
+                  messages: {
+                    required: "(*) Nhập mã sản xuất"
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
             <CCol xs>
-              <CFormSelect disabled={isItemSelected} size="sm" className="mb-3" value={category_id} onChange={(e) => setCategory(e.target.value)}>
+              <CFormSelect disabled={isItemSelected} size="sm" name="category_id" value={category_id} onChange={(e) => setCategory(e.target.value)}>
                 <option>Chọn loại vật tư</option>
                 {dataCategory.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("category_id", category_id, "required", {
+                  messages: {
+                    required: "(*) Chọn loại vật tư"
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Số lượng</CInputGroupText>
-                <CurrencyFormat className="form-control" type="text" placeholder="Số lượng" value={amount} thousandSeparator={true} onValueChange={(values) => {
+                <CurrencyFormat className="form-control" type="text" placeholder="Số lượng" name="amount" value={amount} thousandSeparator={true} onValueChange={(values) => {
                   const { formattedValue, value } = values
                   setAmount(value)
                   setTotalPrice(value * price * subAmount)
@@ -366,14 +407,18 @@ const Imports = () => {
                   setTotalPrice((e.target.value) * price * subAmount)
                 }} /> */}
               </CInputGroup>
-              {validator.message("amount", amount, "required", {
-                messages: {
-                  required: "Nhập số lượng"
-                }
-              })}
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("amount", amount, "required|numberic|min:1,num", {
+                  messages: {
+                    required: "(*) Nhập số lượng",
+                    min: "(*) Số lượng nhập lớn hơn 0"
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={
+              <CFormSelect size="sm" name="warehouse_id" value={warehouse_id} onChange={
                 (e) => {
                   (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
                 }
@@ -383,41 +428,59 @@ const Imports = () => {
                   <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("warehouse_id", warehouse_id, "required", {
+                  messages: {
+                    required: "(*) Chọn nhà nhà kho",
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Đơn giá</CInputGroupText>
                 {/* <CFormInput placeholder="Nhập đơn giá" name='price' value={price.toLocaleString('it-IT')} onChange={(e) => {
                   setPrice(e.target.value)
                   setTotalPrice((e.target.value) * amount * subAmount)
                 }} /> */}
-                <CurrencyFormat className="form-control" type="text" placeholder="Nhập đơn giá" value={price} thousandSeparator={true} prefix={'VND '} onValueChange={(values) => {
+                <CurrencyFormat className="form-control" type="text" placeholder="Nhập đơn giá" name="price" value={price} thousandSeparator={true} prefix={'VND '} onValueChange={(values) => {
                   const { formattedValue, value } = values
                   setPrice(value)
                   setTotalPrice(value * amount * subAmount)
                 }} />
               </CInputGroup>
-              {validator.message("price", price, "required", {
-                messages: {
-                  required: "Nhập đơn giá"
-                }
-              })}
-
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("price", price, "required|numberic|min:1,num", {
+                  messages: {
+                    required: "(*) Nhập đơn giá",
+                    min: "(*) Nhập đơn giá"
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={suppliers_id} onChange={(e) => setSuppliers(e.target.value)}>
+              <CFormSelect size="sm" name="supplier_id" value={supplier_id} onChange={(e) => setSuppliers(e.target.value)}>
                 <option>Chọn nhà cung cấp</option>
                 {dataSuppliers.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
                 ))}
               </CFormSelect>
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("supplier_id", supplier_id, "required", {
+                  messages: {
+                    required: "(*) Chọn nhà cung cấp",
+                  }
+                })}
+              </div>
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Thành tiền</CInputGroupText>
                 {/* <CFormInput placeholder="0" value={totalPrice.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })} readOnly /> */}
                 <CurrencyFormat className="form-control" type="text" disabled value={totalPrice} thousandSeparator={true} prefix={'VND '} />
@@ -426,7 +489,7 @@ const Imports = () => {
             <CCol xs>
               {
                 (isWarehouseSelected) ? (
-                  <CFormSelect size="sm" className="mb-3" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
+                  <CFormSelect size="sm" name="shelf_id" value={shelf_id} onChange={(e) => setShelf(e.target.value)}>
                     <option>Chọn giá/kệ</option>
                     {dataShelf.map((item, index) => (
                       <option key={index} value={item.shelf_id}>{item.shelf_name}</option>
@@ -438,20 +501,30 @@ const Imports = () => {
                   </CFormSelect>
                 )
               }
+              <div style={{ color: "red", fontStyle: "italic" }}>
+                {validator.message("shelf_id", shelf_id, "required", {
+                  messages: {
+                    required: "(*) Chọn giá/kệ để chứa vật tư/phụ tùng",
+                  }
+                })}
+              </div>
+              <br />
             </CCol>
           </CRow>
           <CRow className="g-3">
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Người tạo</CInputGroupText>
                 <CFormInput readOnly placeholder="Họ và tên" name='created_by' value={userProfile} />
               </CInputGroup>
+              <br />
             </CCol>
             <CCol xs>
-              <CInputGroup size="sm" className="mb-3">
+              <CInputGroup size="sm">
                 <CInputGroupText id="" style={{ width: "120px" }}>Ghi chú</CInputGroupText>
                 <CFormInput placeholder="Ghi chú" name='note' value={note} onChange={(e) => setNote(e.target.value)} />
               </CInputGroup>
+              <br />
             </CCol>
           </CRow>
           <div className="d-grid gap-2 d-md-flex justify-content-md-center">
@@ -469,12 +542,12 @@ const Imports = () => {
             <CTableHeaderCell className="text-center">Mã sản xuất</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
             <CTableHeaderCell className="text-center">ĐVT</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">SLYC</CTableHeaderCell>
-            <CTableHeaderCell className="text-center">SL thực nhận</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Số lượng</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Đơn giá</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Tiền hàng</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Kho</CTableHeaderCell>
             <CTableHeaderCell className="text-center">Ghi chú</CTableHeaderCell>
+            <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
           </CTableRow>
         </CTableHead>
         <CTableBody id="myTable">
@@ -485,12 +558,19 @@ const Imports = () => {
               <CTableDataCell className="text-center">{item.batch_code}</CTableDataCell>
               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
               <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
-              <CTableDataCell className="text-center">-</CTableDataCell>
               <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
-              <CTableDataCell className="text-center">{item.price}</CTableDataCell>
-              <CTableDataCell className="text-center">...</CTableDataCell>
+              <CTableDataCell className="text-center">{item.price.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</CTableDataCell>
+              <CTableDataCell className="text-center">{item.totalPrice.toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</CTableDataCell>
               <CTableDataCell className="text-center">{item.nameWarehouse}</CTableDataCell>
               <CTableDataCell className="text-center">{item.note}</CTableDataCell>
+              <CTableHeaderCell className="text-center">
+                <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                  onRemoveRow(e, index)
+                }}>
+                  <CIcon icon={cilDelete} />
+                </CButton>
+
+              </CTableHeaderCell>
             </CTableRow>
           ))}
         </CTableBody>

@@ -12,37 +12,29 @@ import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Slide from '@mui/material/Slide'
 import Grid from '@mui/material/Grid'
-import styled from "@emotion/styled"
 import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import CIcon from '@coreui/icons-react';
 
-
 import React, { useEffect, useState } from 'react'
 import {
-  CTable,
   CTableHead,
   CTableRow,
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CTableCaption,
   CButton
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
+  return <Slide direction="left" ref={ref} {...props} />
 })
 const DataExport = (props) => {
   const [open, setOpen] = React.useState(false)
@@ -55,13 +47,13 @@ const DataExport = (props) => {
         Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id)])
           .then(function (res) {
             console.log("Deleted")
+            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
   const handleDStatus = () => {
     if (tableHistoryExport.length > 0) {
@@ -70,13 +62,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 0->1")
+            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
   const handleUpdateStatus = () => {
     if (tableHistoryExport.length > 0) {
@@ -85,13 +77,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 1->2")
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
 
 
@@ -128,79 +120,79 @@ const DataExport = (props) => {
     <>
       <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '0'?'info':'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0'?false:true}><CIcon icon={cilSend}/></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1'?'success':'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1'?false:true}><CIcon icon={cilCheckCircle} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 
-        <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} >
-          <AppBar sx={{ position: 'relative' }}>
-            <Toolbar>
-              <IconButton
-                edge="start"
-                color="inherit"
-                onClick={handleClose}
-                aria-label="close"
-              >
-                <CloseIcon />
-              </IconButton>
+      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} >
+        <AppBar style={{ background: "#ffa64d" }} sx={{ position: 'relative' }}>
+          <Toolbar className="d-grid gap-2 d-md-flex justify-content-md-end">
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
               <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                 Thoát
               </Typography>
-            </Toolbar>
-          </AppBar>
-          <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
-            <Card>
-              <CardContent>
-                <Stack spacing={2}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                      <Card>
-                        <CardContent>
-                          LOGO
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={8}>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary="NAM KHÁNH"
-                              secondary={'GARAGE'}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemText
-                              primary="Địa chỉ: Lê Hồng Phong"
-                              secondary={'Liên hệ: 0123456789'}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary="Người Tạo: Nguyễn Thị T"
-                              secondary={'Thủ kho'}
-                            />
-                          </ListItem>
-                          <ListItem>
-                            <ListItemText
-                              primary={"Số phiếu: " + props.code}
-                              secondary={'Thời gian nhập: ' + props.created_at}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                    {/* </Grid> */}
-                    <Grid item xs={12}>
-                      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
-                      {tableHistoryExport.map((item, index) => (
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+          <Card>
+            <CardContent>
+              <Stack spacing={2}>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Card>
+                      <CardContent>
+                        LOGO
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={8}>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary="NAM KHÁNH"
+                            secondary={'GARAGE'}
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText
+                            primary="Địa chỉ: Lê Hồng Phong"
+                            secondary={'Liên hệ: 0123456789'}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary="Người Tạo: Nguyễn Thị T"
+                            secondary={'Thủ kho'}
+                          />
+                        </ListItem>
+                        <ListItem>
+                          <ListItemText
+                            primary={"Số phiếu: " + props.code}
+                            secondary={'Thời gian nhập: ' + props.created_at}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  {/* </Grid> */}
+                  <Grid item xs={12}>
+                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
+                    {tableHistoryExport.map((item, index) => (
                       <TableContainer component={Paper} key={index}>
                         <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
                           <CTableHead color="warning">
@@ -231,27 +223,27 @@ const DataExport = (props) => {
                           </CTableBody>
                         </Table>
                       </TableContainer>
-                       ))}
-                    </Grid>
-                    <Grid item xs={6}>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Card>
-                        <CardContent>
-                          <ListItem>
-                            <ListItemText
-                              primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                            />
-                          </ListItem>
-                        </CardContent>
-                      </Card>
-                    </Grid>
+                    ))}
                   </Grid>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Container>
-        </Dialog>
+                  <Grid item xs={6}>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Card>
+                      <CardContent>
+                        <ListItem>
+                          <ListItemText
+                            primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
+                          />
+                        </ListItem>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Container>
+      </Dialog>
 
     </>
 

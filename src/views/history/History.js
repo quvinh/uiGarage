@@ -12,19 +12,33 @@ import {
   CCardBody,
   CButton,
   CButtonGroup
-} from '@coreui/react';
+} from '@coreui/react'
 import { getData, putData } from '../api/Api.js'
-import DataImport from './DataImport.js';
-import { Link } from 'react-router-dom';
+import DataImport from './DataImport.js'
+import { Link } from 'react-router-dom'
+import { getToken } from 'src/components/utils/Common'
 
 const History = () => {
 
   const [codeImport, setCodeImport] = useState([])
+  const [nameCreatedBy, setNameCreatedBy] = useState('')
+  // const getCreatedBy = (user_id) => {
+  //   if (user_id > 0) {
+  //     Promise.all([getData('http://127.0.0.1:8000/api/auth/get-user/' + user_id + '?token=' + getToken())])
+  //       .then(function (res) {
+  //         setNameCreatedBy(res[0].data[0].fullname)
+  //       })
+  //       .catch((err) => {
+  //         console.log(err)
+  //       })
+  //     return nameCreatedBy
+  //   } else { return 'ERROR' }
+  // }
+
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')])
       .then(function (res) {
-        // console.log(res[0].data)
         setCodeImport(res[0].data)
       }).catch((error) => {
         console.log(error)
@@ -67,12 +81,17 @@ const History = () => {
                   <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.code}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.tenKho}</CTableDataCell>
-                  <CTableDataCell className="text-center">Nguyễn T ...</CTableDataCell>
+                  <CTableDataCell className="text-center">{item.fullname}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
                   <CTableDataCell className="text-center">
                     <div className="d-grid gap-2 d-md-block">
-                      <DataImport code={item.code} status={item.status} created_at={item.created_at}/>
+                      <DataImport
+                        code={item.code}
+                        status={item.status}
+                        created_at={item.created_at}
+                        created_by={item.fullname}
+                      />
                     </div>
                   </CTableDataCell>
                 </CTableRow>

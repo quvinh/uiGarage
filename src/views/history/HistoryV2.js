@@ -16,10 +16,25 @@ import {
 import { getData } from '../api/Api.js'
 import DataExport from './DataExport.js';
 import { Link } from 'react-router-dom';
+import { getToken } from 'src/components/utils/Common.js';
 
 const HistoryV2 = () => {
 
   const [codeExport, setCodeExport] = useState([])
+  const [nameCreatedBy, setNameCreatedBy] = useState('')
+  // const getCreatedBy = (user_id) => {
+  //   if (user_id > 0) {
+  //     Promise.all([getData('http://127.0.0.1:8000/api/auth/get-user/' + user_id + '?token=' + getToken())])
+  //       .then(function (res) {
+  //         setNameCreatedBy(res[0].data[0].fullname)
+  //         // console.log(res)
+  //       })
+  //       .catch((err) => {
+  //         console.log(err)
+  //       })
+  //     return nameCreatedBy
+  //   } else { return 'ERROR' }
+  // }
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeExport')])
@@ -66,12 +81,12 @@ const HistoryV2 = () => {
                   <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.code}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.tenKho}</CTableDataCell>
-                  <CTableDataCell className="text-center">Nguyễn T ...</CTableDataCell>
+                  <CTableDataCell className="text-center">{item.fullname}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                   <CTableDataCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
                   <CTableDataCell className="text-center">
                     <div className="d-grid gap-2 d-md-block">
-                      <DataExport code={item.code} status={item.status} created_at={item.created_at}/>
+                      <DataExport code={item.code} status={item.status} created_at={item.created_at} />
                     </div>
                   </CTableDataCell>
                 </CTableRow>

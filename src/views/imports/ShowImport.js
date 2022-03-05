@@ -61,6 +61,7 @@ export const ShowImport = (props) => {
   }
 
   const handleSave = () => {
+    console.log(props.dataTable)
     if (props.dataTable.length > 0) {
       props.dataTable.map((item, index) => {
         console.log(item)
