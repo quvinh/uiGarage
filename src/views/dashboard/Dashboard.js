@@ -70,7 +70,7 @@ const Dashboard = () => {
             <CCard key={index} textColor='black' className='mb-3 border-warning'>
               <CCardBody >
                 <h4>Tổng tồn kho {item.name}: {item.tonKho} <CBadge color='success'> Active </CBadge></h4>
-                <h5>Tổng tiền trong kho:</h5>
+                <h5>Tổng tiền trong kho: </h5>
                 <h6>{item.total} VND</h6>
               </CCardBody>
             </CCard>

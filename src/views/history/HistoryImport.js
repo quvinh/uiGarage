@@ -14,10 +14,10 @@ import {
   CButtonGroup
 } from '@coreui/react';
 import { getData, putData } from '../api/Api.js'
-import DataImport from './DataImport.js';
 import { Link } from 'react-router-dom';
+import DataImport from './DataImport.js';
 
-const History = () => {
+const HistoryImport = () => {
 
   const [codeImport, setCodeImport] = useState([])
 
@@ -35,11 +35,14 @@ const History = () => {
     <>
       <div>
         <CButtonGroup>
-          <Link to='/history' className='btn btn-primary'>
+        <Link className='btn btn-primary' to='/history_import'>
             Phiếu Nhập
           </Link>
-          <Link to="/historyV2" className='btn btn-warning'>
+          <Link className='btn btn-warning' to='/history_export'>
             Phiếu Xuất
+          </Link>
+          <Link className='btn btn-success' to='/history_transfer'>
+            Phiếu Chuyển Kho
           </Link>
         </CButtonGroup>
       </div>
@@ -83,4 +86,4 @@ const History = () => {
     </>
   )
 }
-export default History
+export default HistoryImport

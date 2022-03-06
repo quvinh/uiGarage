@@ -45,14 +45,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
 
-const DataImport = (props) => {
+const DataTransfer = (props) => {
   const [open, setOpen] = React.useState(false)
 
   const handleDelete = () => {
-    if (tableHistoryImport.length > 0) {
-      tableHistoryImport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([delData('http://127.0.0.1:8000/api/admin/import/delete/' + item.id)])
+        Promise.all([delData('http://127.0.0.1:8000/api/admin/transfer/delete/' + item.id)])
           .then(function (res) {
             console.log("Deleted")
             window.location.reload();
@@ -64,10 +64,10 @@ const DataImport = (props) => {
     }
   }
   const handleDStatus = () => {
-    if (tableHistoryImport.length > 0) {
-      tableHistoryImport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/dStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/transfer/dStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 0->1")
             window.location.reload();
@@ -79,10 +79,10 @@ const DataImport = (props) => {
     }
   }
   const handleUpdateStatus = () => {
-    if (tableHistoryImport.length > 0) {
-      tableHistoryImport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/transfer/updateStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 1->2")
             window.location.reload();
@@ -95,7 +95,7 @@ const DataImport = (props) => {
   }
 
   const handleClickOpen = () => {
-    if (tableHistoryImport.length > 0) {
+    if (tableHistoryTransfer.length > 0) {
       setOpen(true)
     }
   }
@@ -103,21 +103,12 @@ const DataImport = (props) => {
     setOpen(false)
   }
 
-  const handleTotalPrice = () => {
-    let total = 0
-    tableHistoryImport.map((item) => {
-      total += item.luongNhap * item.price
-    })
-    console.log(total)
-    return total
-  }
 
-
-  const [tableHistoryImport, setTableHistoryImport] = useState([])
+  const [tableHistoryTransfer, setTableHistoryTransfer] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryImport/' + props.code)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryTransfer/' + props.code)])
       .then(function (res) {
-        setTableHistoryImport(res[0].data)
+        setTableHistoryTransfer(res[0].data)
       })
       .catch((error) => {
         console.log(error)
@@ -200,7 +191,7 @@ const DataImport = (props) => {
                   {/* </Grid> */}
                   <Grid item xs={12}>
                     <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
-                    {tableHistoryImport.map((item, index) => (
+                    {tableHistoryTransfer.map((item, index) => (
                       <TableContainer component={Paper} key={index}>
                         <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
                           <CTableHead color="warning">
@@ -208,9 +199,9 @@ const DataImport = (props) => {
                               <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Mã kệ</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Giá nhập</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Số lượng nhập</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Từ Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Đến Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Số lượng </CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
@@ -221,9 +212,9 @@ const DataImport = (props) => {
                               <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.price}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.luongNhap}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.from_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.to_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                               <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
@@ -234,17 +225,6 @@ const DataImport = (props) => {
                     ))}
                   </Grid>
                   <Grid item xs={6}>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
                   </Grid>
                 </Grid>
               </Stack>
@@ -257,4 +237,4 @@ const DataImport = (props) => {
   )
 }
 
-export default DataImport
+export default DataTransfer

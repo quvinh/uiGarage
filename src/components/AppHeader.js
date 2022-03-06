@@ -52,13 +52,13 @@ const AppHeader = () => {
                 Xuất kho
               </CNavLink>
             </CNavItem>
-            {/* <CNavItem>
-              <CNavLink to="/status" component={NavLink}>
-                Duyệt phiếu
-              </CNavLink>
-            </CNavItem> */}
             <CNavItem>
-              <CNavLink to="/history" component={NavLink}>
+              <CNavLink to="/transfer" component={NavLink}>
+                Điều phối kho
+              </CNavLink>
+            </CNavItem>
+            <CNavItem>
+              <CNavLink to="/history_import" component={NavLink}>
                 QL Phiếu
               </CNavLink>
             </CNavItem>

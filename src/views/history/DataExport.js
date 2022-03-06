@@ -39,7 +39,7 @@ import {
   CButton
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
-import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
+import { cilCheckCircle, cilDelete, cilDescription, cilSend } from '@coreui/icons'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
@@ -55,13 +55,13 @@ const DataExport = (props) => {
         Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id)])
           .then(function (res) {
             console.log("Deleted")
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
   const handleDStatus = () => {
     if (tableHistoryExport.length > 0) {
@@ -70,13 +70,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 0->1")
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
   const handleUpdateStatus = () => {
     if (tableHistoryExport.length > 0) {
@@ -85,13 +85,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id)])
           .then(function (res) {
             console.log("Changed 1->2")
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
           })
       })
     }
-    window.location.reload();
   }
 
 

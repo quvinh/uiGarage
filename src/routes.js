@@ -8,9 +8,9 @@ const Imports = React.lazy(() => import('./views/imports/Imports'))
 const Exports = React.lazy(() => import('./views/exports/Exports'))
 const Reports = React.lazy(() => import('./views/reports/Reports'))
 
-const History = React.lazy(() => import('./views/history/History'))
-const DataImport = React.lazy(() => import('./views/history/DataImport'))
-const HistoryV2 = React.lazy(() => import('./views/history/HistoryV2'))
+const HistoryImport = React.lazy(() => import('./views/history/HistoryImport'))
+const HistoryTransfer = React.lazy(() => import('./views/history/HistoryTransfer'))
+const HistoryExport = React.lazy(() => import('./views/history/HistoryExport'))
 
 const Transfer = React.lazy(() => import('./views/transfer/Transfer'))
 
@@ -34,9 +34,9 @@ const routes = [
   { path: '/exports', name: 'Thông tin xuất kho', component: Exports },
   { path: '/status', name: 'Duyệt phiếu', component: Status },
   { path: '/imports', name: 'Thông tin nhập kho', component: Imports },
-  { path: '/history', name: 'Kiểm kê tồn kho', component: History },
-  { path: '/dataExport', name: 'Kiểm kê tồn kho', component: DataImport },
-  { path: '/historyV2', name: 'Kiểm kê tồn kho', component: HistoryV2 },
+  { path: '/history_import', name: 'Kiểm kê tồn kho', component: HistoryImport },
+  { path: '/history_transfer', name: 'Kiểm kê tồn kho', component: HistoryTransfer },
+  { path: '/history_export', name: 'Kiểm kê tồn kho', component: HistoryExport },
   { path: '/reports', name: 'Báo cáo', component: Reports },
   { path: '/transfer', name: 'Điều phối kho', component: Transfer },
 
