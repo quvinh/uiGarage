@@ -35,6 +35,10 @@ const EditDetailItem = React.lazy(() => import('./views/detail_item/Edit'))
 //Chart
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
+//Notification
+const Notification = React.lazy(() => import('./views/notifications/Notification'))
+const AddNotification = React.lazy(() => import('./views/notifications/AddNeedItem'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Bản tin', component: Dashboard },
@@ -61,6 +65,9 @@ const routes = [
   // { path: '/shelf-add/:id', name: 'Tạo kho', component: AddShelves1 },
   { path: '/shelf-edit/:id', name: 'Chỉnh sửa kho', component: EditShelves },
   { path: '/detail_item-edit/:id', name: 'Chỉnh sửa vật tư', component: EditDetailItem },
+
+  { path: '/notification', name: 'Thông báo', component: Notification },
+  { path: '/notification-add', name: 'Tạo thông báo', component: AddNotification },
 ]
 
 export default routes

@@ -36,7 +36,7 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPlus } from '@coreui/icons'
-import { getData, putData, delData,postData } from '../api/Api.js'
+import { getData, putData, delData, postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
 import '../../css/dropdown.css'
 
@@ -63,9 +63,9 @@ const Warehouses = () => {
 
   const handleReload = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse')])
-    .then(function (res) {
-      setDataWarehouse(res[0].data)
-    })
+      .then(function (res) {
+        setDataWarehouse(res[0].data)
+      })
   }
 
   const handleAddWarehouse = () => {
@@ -83,7 +83,7 @@ const Warehouses = () => {
         console.log(':(((')
         console.log(error)
       })
-      window.location.reload(false)
+    window.location.reload(false)
   }
 
   const handleDelete = (e, id) => {
@@ -118,72 +118,38 @@ const Warehouses = () => {
   return (
     <>
       {/* <WidgetsDropdown /> */}
-      <CButton href='#/warehouses-add' className='btn1'><CIcon icon={cilPlus}/></CButton>
-      <CRow>{dataWarehouse.map((item, index) => (
-        <CCol sm={6} lg={6} key={index}>
-
-          <CCard color='warning' textColor='black' className='mb-3 border-warning'>
-            <CCardBody >
-              <h4>{item.name} </h4>
-              <p>Mã kho: {item.id} - Thủ kho:</p>
-              <p>Địa chỉ: {item.location}</p>
-              <p> </p>
-              {/* <CBadge color='success'> Active </CBadge> */}
-              <>
-                <CDropdown className='dropdown'>
-                  <CDropdownToggle color="transparent" caret={false} className="p-0">
-                    <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                  </CDropdownToggle>
-                  <CDropdownMenu>
-                    <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
-                    <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
-                    <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
-                  </CDropdownMenu>
-                </CDropdown>
-                {/* <CModal alignment="center" visible={visible} onClose={() => setVisible(false)}>
-                  <CModalHeader>
-                    <CModalTitle>Tạo kho</CModalTitle>
-                  </CModalHeader>
-                  <CModalBody>
-                    <CRow className="justify-content-center">
-                      <CCol md={9} lg={9} xl={9}>
-                        <CCard className="mx-4">
-                          <CCardBody className="p-4">
-                            <CForm>
-                              <CInputGroup className="mb-3">
-                                <CInputGroupText id="" style={{ width: "100px" }}>Tên kho</CInputGroupText>
-                                <CFormInput id='name' placeholder="Tên" onChange={(e)=>handleName(e)} value={name} />
-                              </CInputGroup>
-                              <CInputGroup className="mb-3">
-                                <CInputGroupText id="" style={{ width: "100px" }}>Địa chỉ</CInputGroupText>
-                                <CFormInput id="location" onChange={(e)=>handleLocation(e)} value={location}></CFormInput>
-                              </CInputGroup>
-                              <CInputGroup className="mb-3">
-                                <CInputGroupText id="" style={{ width: "100px" }}>Ghi chú</CInputGroupText>
-                                <CFormTextarea id="note" rows="2" onChange={(e)=>handleNote(e)} value={note}></CFormTextarea>
-                              </CInputGroup>
-                            </CForm>
-                          </CCardBody>
-                        </CCard>
-                      </CCol>
-                    </CRow>
-                  </CModalBody>
-                  <CModalFooter>
-                    <CButton color="danger" onClick={() => setVisible(false)}>
-                      Close
-                    </CButton>
-                    <CButton color="warning" onClick={(e)=>handleAddWarehouse()}>Lưu</CButton>
-                  </CModalFooter>
-                </CModal> */}
-                
-              </>
-
-            </CCardBody>
-          </CCard>
-
-        </CCol>))}
-
-      </CRow>
+      <CButton href='#/warehouses-add' className='btn1'><CIcon icon={cilPlus} /></CButton>
+      <CCard>
+        <CCardBody>
+          <CRow>{dataWarehouse.map((item, index) => (
+            <CCol sm={6} lg={6} key={index}>
+              <CCard color='secondary' textColor='black' className='mb-3 border-info'>
+                <CCardHeader style={{ backgroundColor: "#ffa366" }}><h4>{item.name} </h4></CCardHeader>
+                <CCardBody>
+                  <CRow>
+                    <CCol sm={10} lg={10}>
+                      <p>Mã kho: {item.id} - Thủ kho: Nguyễn Thị T</p>
+                      <p>Địa chỉ: {item.location}</p>
+                    </CCol>
+                    <CCol>
+                        <CDropdown direction='dropstart'>
+                          <CDropdownToggle color="transparent" caret={false} className="p-0">
+                            <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
+                          </CDropdownToggle>
+                          <CDropdownMenu>
+                            <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
+                            <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
+                            <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
+                          </CDropdownMenu>
+                        </CDropdown>
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+            </CCol>))}
+          </CRow>
+        </CCardBody>
+      </CCard>
     </>
   )
 }

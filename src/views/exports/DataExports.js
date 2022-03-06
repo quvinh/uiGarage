@@ -91,6 +91,7 @@ export const DataExportTable = () => {
 
   return (
     <div>
+      
       <button className="btn btn-default" onClick={handleGetSelectedData}>Get Current Selected Rows</button>
       <BootstrapTable
         keyField='id'
