@@ -37,7 +37,7 @@ const History = () => {
 
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeImport?token=' + getToken())])
       .then(function (res) {
         setCodeImport(res[0].data)
       }).catch((error) => {

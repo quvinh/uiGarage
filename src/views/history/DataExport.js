@@ -32,6 +32,7 @@ import {
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
+import { getToken } from 'src/components/utils/Common.js'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
@@ -44,7 +45,7 @@ const DataExport = (props) => {
     if (tableHistoryExport.length > 0) {
       tableHistoryExport.map((item, index) => {
         console.log(item)
-        Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id)])
+        Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Deleted")
             window.location.reload()
@@ -59,7 +60,7 @@ const DataExport = (props) => {
     if (tableHistoryExport.length > 0) {
       tableHistoryExport.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 0->1")
             window.location.reload()
@@ -74,7 +75,7 @@ const DataExport = (props) => {
     if (tableHistoryExport.length > 0) {
       tableHistoryExport.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 1->2")
             window.location.reload();
@@ -107,7 +108,7 @@ const DataExport = (props) => {
 
   const [tableHistoryExport, setTableHistoryExport] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryExport/' + props.code)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryExport/' + props.code + '?token=' + getToken())])
       .then(function (res) {
         setTableHistoryExport(res[0].data)
       })

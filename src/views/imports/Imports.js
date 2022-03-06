@@ -146,7 +146,7 @@ const Imports = () => {
   // console.log(createCode())
 
   const getDataShelf = (id) => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id + '?token=' + getToken())])
       .then(function (res) {
         console.log(res[0].data)
         setDataShelf(res[0].data)
@@ -220,22 +220,23 @@ const Imports = () => {
 
   useEffect(() => {
     Promise.all([
-      getData('http://127.0.0.1:8000/api/admin/warehouse'),
-      getData('http://127.0.0.1:8000/api/admin/suppliers'),
-      getData('http://127.0.0.1:8000/api/admin/category'),
-      getData('http://127.0.0.1:8000/api/admin/shelf'),
-      getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
+      getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/suppliers?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/shelf?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/items/searchItem/1?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
-        console.log(res[1].data)
+        console.log('aabcv')
+        console.log(res)
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
         setDataShelf(res[3].data)
         setDataItem(res[4].data)
         setUserProfile(res[5].data.fullname)
-        console.log(res[5].data.fullname)
+        // console.log(res[5].data.fullname)
       })
       .catch(err => { console.log(err) })
   }, [])

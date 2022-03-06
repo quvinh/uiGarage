@@ -101,7 +101,7 @@ const Account = () => {
 
   const showPermission = (roles_id) => {
     if (roles_id) {
-      Promise.all([getData('http://127.0.0.1:8000/api/admin/auth_model/detail_roles/' + roles_id)])
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/auth_model/detail_roles/' + roles_id + '?token=' + getToken())])
         .then(function (res) {
           // console.log(res[0].data)
           setPermission(res[0].data)
@@ -114,16 +114,21 @@ const Account = () => {
 
   const handleGetUsers = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/auth/users?token=' + getToken())])
+    // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers:{'Authorization': 'Bearer ' + getToken()}})])
       .then(function (response) {
+        console.log("daTA:", response)
         setDataTable(response[0].data)
       })
-      .catch(err => { history.push('/login') })
+      .catch(err => {
+        // history.push('/login')
+        console.log(err)
+      })
   }
 
   const handelSave = (user_id, roles_id) => {
     console.log(user_id)
     console.log(roles_id)
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/auth_model/user_roles', {
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/auth_model/user_roles?token=' + getToken(), {
       user_id: user_id,
       roles_id: roles_id
     })])
@@ -138,7 +143,7 @@ const Account = () => {
   }
 
   const handleDelete = (id) => {
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/detail_user/delete/' + id)])
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/detail_user/delete/' + id + '?token=' + getToken())])
       .then(function (res) {
         console.log('Deleted')
         handleGetUsers()
@@ -152,11 +157,12 @@ const Account = () => {
   useEffect(() => {
     // const header = `Authorization: Bearer ${getToken()}`
     Promise.all([getData('http://127.0.0.1:8000/api/auth/users?token=' + getToken()),
-    // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers: header}),
-    getData('http://127.0.0.1:8000/api/admin/detail_user/show/' + getUserID()),
-    getData('http://127.0.0.1:8000/api/admin/auth_model/roles'),
-    getData('http://127.0.0.1:8000/api/admin/auth_model/permission')])
+    // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers:{'Authorization': 'Bearer ' + getToken()}}),
+    getData('http://127.0.0.1:8000/api/admin/detail_user/show/' + getUserID() + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/auth_model/roles?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/auth_model/permission?token=' + getToken())])
       .then(function (res) {
+        console.log(res)
         setDataTable(res[0].data)
         setUserDetail(res[1].data)
         setRoles(res[2].data)
@@ -164,7 +170,7 @@ const Account = () => {
       })
       .catch(error => {
         console.log(error)
-        history.push('/login')
+        // history.push('/login')
       })
   }, [])
 
@@ -283,7 +289,7 @@ const Account = () => {
               <CListGroup>
                 {
                   dataPermission.map((item, index) => (
-                    <CListGroupItem key={index} component="button">{item.permission_name}</CListGroupItem>
+                    <CListGroupItem key={index} component="button">{item.name}</CListGroupItem>
                   ))
                 }
               </CListGroup>

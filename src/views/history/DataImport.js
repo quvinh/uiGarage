@@ -38,6 +38,7 @@ import {
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
+import { getToken } from 'src/components/utils/Common.js'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
@@ -49,7 +50,7 @@ const DataImport = (props) => {
     if (tableHistoryImport.length > 0) {
       tableHistoryImport.map((item, index) => {
         console.log(item)
-        Promise.all([delData('http://127.0.0.1:8000/api/admin/import/delete/' + item.id)])
+        Promise.all([delData('http://127.0.0.1:8000/api/admin/import/delete/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Deleted")
             window.location.reload()
@@ -65,7 +66,7 @@ const DataImport = (props) => {
     if (tableHistoryImport.length > 0) {
       tableHistoryImport.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/dStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/dStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 0->1")
             window.location.reload()
@@ -82,7 +83,7 @@ const DataImport = (props) => {
       console.log(tableHistoryImport)
       tableHistoryImport.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + item.id)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/import/updateStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 1->2")
             window.location.reload()
@@ -116,7 +117,7 @@ const DataImport = (props) => {
 
   const [tableHistoryImport, setTableHistoryImport] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryImport/' + props.code)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryImport/' + props.code + '?token=' + getToken())])
       .then(function (res) {
         setTableHistoryImport(res[0].data)
       })

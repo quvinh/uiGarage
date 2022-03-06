@@ -31,7 +31,7 @@ const Add = () => {
   const [location, setLocation] = useState('');
   const [note, setNote] = useState('');
   const history = useHistory()
-  
+
   const handleName = (e) => {
     setName(e.target.value);
   }

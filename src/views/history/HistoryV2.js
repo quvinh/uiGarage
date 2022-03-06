@@ -37,7 +37,7 @@ const HistoryV2 = () => {
   // }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeExport')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeExport?token=' + getToken())])
       .then(function (res) {
         setCodeExport(res[0].data)
       })

@@ -25,6 +25,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { postData } from '../api/Api'
+import { getToken } from "src/components/utils/Common"
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />
 })
@@ -73,7 +74,7 @@ export const ShowExport = (props) => {
       props.dataTable.map((item, index) => {
         console.log("LOG")
         console.log(item)
-        Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store', item)])
+        Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store?token=' + getToken(), item)])
           .then(function (res) {
             console.log("SAVED")
             setIsSave(true)

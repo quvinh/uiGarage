@@ -154,7 +154,9 @@ const Exports = (props) => {
       setIsAmountSelected(true)
       setShelfName(e.nativeEvent.target[index].text)
 
-      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value)])
+      Promise.all([
+        getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value + '?token=' + getToken())
+      ])
         .then(function (res) {
           console.log(res[0].data)
           setDataItem(res[0].data)
@@ -174,7 +176,7 @@ const Exports = (props) => {
   }
 
   const getDataShelf = (id) => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + id + '?token=' + getToken())])
       .then(function (res) {
         setDataShelf(res[0].data)
       })
@@ -249,8 +251,8 @@ const Exports = (props) => {
 
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1'),
-    getData('http://127.0.0.1:8000/api/admin/warehouse'),
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
     getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {

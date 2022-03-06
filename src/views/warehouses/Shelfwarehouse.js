@@ -61,6 +61,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 
 import { StyledEngineProvider } from "@mui/material/styles";
 import { Button } from '@mui/material';
+import { getToken } from 'src/components/utils/Common';
 
 const ShelfWarehouse = (props) => {
 
@@ -127,7 +128,7 @@ const ShelfWarehouse = (props) => {
 
   const handleSearch = (searchName) => {
 
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/searchItems/' + searchName + '/' + props.match.params.id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/searchItems/' + searchName + '/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
         setItemWarehouse(response[0].data);
       })
@@ -141,7 +142,7 @@ const ShelfWarehouse = (props) => {
       price: item_price,
       status: item_status,
     }
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/detail_item/update/' + dataItemClick, dataItem)])
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/detail_item/update/' + dataItemClick + '?token=' + getToken(), dataItem)])
       .then(response => {
         console.log('Edited successfully ^^')
         handleClick(shelfId)
@@ -152,14 +153,14 @@ const ShelfWarehouse = (props) => {
   console.log(dataItem)
 
   const handleReload = () => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
         setDataShelf(response[0].data)
       })
   }
 
   const handleDeleteShelf = (e, id) => {
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id)])
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id + '?token=' + getToken())])
       .then(function (res) {
         handleReload()
         setIsShelfSelected(false)
@@ -170,8 +171,8 @@ const ShelfWarehouse = (props) => {
   }
 
   const handleClick = (e, id) => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + props.match.params.id + '/' + id),
-    getData('http://127.0.0.1:8000/api/admin/shelf/show/' + id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + props.match.params.id + '/' + id + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/shelf/show/' + id + '?token=' + getToken())])
       .then(response => {
         console.log(response[0].data)
         setItemWarehouse(response[0].data);
@@ -182,11 +183,11 @@ const ShelfWarehouse = (props) => {
 
   }
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id),
-    getData('http://127.0.0.1:8000/api/admin/category'),
-    getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id),
-    getData('http://127.0.0.1:8000/api/admin/warehouse/amountShelf/' + props.match.params.id),
-    getData('http://127.0.0.1:8000/api/admin/warehouse/sumAmountItem/' + props.match.params.id),
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/category' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse/amountShelf/' + props.match.params.id + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse/sumAmountItem/' + props.match.params.id + '?token=' + getToken()),
     ])
       .then(response => {
         setDataShelf(response[0].data)

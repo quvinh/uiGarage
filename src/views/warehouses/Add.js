@@ -18,6 +18,7 @@ import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 import { cilX, cilCheckAlt } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { getToken } from 'src/components/utils/Common';
 
 const Add = () => {
   const [open, setOpen] = React.useState(false);
@@ -45,7 +46,7 @@ const Add = () => {
       note: note
     }
     console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store', data)])
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store' + '?token=' + getToken(), data)])
       .then(res => {
         console.log('Added succesfully', res)
         // history.push('/warehouses')

@@ -38,6 +38,7 @@ import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPlus } from '@coreui/icons'
 import { getData, putData, delData, postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
+import { getToken } from 'src/components/utils/Common.js'
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
@@ -61,7 +62,7 @@ const Warehouses = () => {
   const [dataTable, setDataTable] = useState([])
 
   const handleReload = () => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()  )])
       .then(function (res) {
         setDataWarehouse(res[0].data)
       })
@@ -74,7 +75,7 @@ const Warehouses = () => {
       note: note
     }
     console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store', data)])
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store?token=' + getToken(), data)])
       .then(res => {
         console.log('Added succesfully', res)
       }).catch(error => {
@@ -87,7 +88,7 @@ const Warehouses = () => {
 
   const handleDelete = (e, id) => {
     console.log(id)
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/warehouse/delete/' + id)])
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/warehouse/delete/' + id + '?token=' + getToken())])
       .then(function (response) {
         handleReload()
         // eClick.closest('tr').remove();
@@ -101,8 +102,8 @@ const Warehouses = () => {
   const [dataWarehouse, setDataWarehouse] = useState([])
   const [dataCountWarehouse, setDataCountWarehouse] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse'),
-    getData('http://127.0.0.1:8000/api/admin/warehouse/warehouseShow'),
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse/warehouseShow?token=' + getToken()),
       // getData('http://127.0.0.1:8000/api/admin/warehouse/countWarehouse')
     ])
       .then(function (res) {

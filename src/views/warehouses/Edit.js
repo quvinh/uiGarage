@@ -19,6 +19,7 @@ import { getData, putData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 import { cilX, cilCheckAlt } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { getToken } from 'src/components/utils/Common';
 
 
 const Edit = (props) => {
@@ -47,7 +48,7 @@ const Edit = (props) => {
     }
     console.log(warehouse)
     console.log(props)
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/warehouse/update/' + props.match.params.id, warehouse)])
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/warehouse/update/' + props.match.params.id + '?token=' + getToken(), warehouse)])
       .then(response => {
         // console.log(data)
         console.log('Edited successfully ^^')
@@ -60,7 +61,7 @@ const Edit = (props) => {
 
   useEffect(() => {
     console.log(props)
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
         setName(response[0].data.name)
         setLocation(response[0].data.location)
