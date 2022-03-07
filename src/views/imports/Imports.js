@@ -30,8 +30,10 @@ import { getToken, getUserID } from 'src/components/utils/Common'
 import CurrencyFormat from 'react-currency-format'
 import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
+import { useHistory } from 'react-router-dom'
 
 const Imports = () => {
+  const history = useHistory()
   const [item_id, setItemID] = useState('')
   const [batch_code, setBatchCode] = useState('')
   const [warehouse_id, setWarehouse] = useState('')
@@ -238,7 +240,14 @@ const Imports = () => {
         setUserProfile(res[5].data.fullname)
         // console.log(res[5].data.fullname)
       })
-      .catch(err => { console.log(err) })
+      .catch(error => {
+        console.log(error)
+        if (error.response.status === 403) {
+          history.push('/404')
+        } else if(error.response.status === 401) {
+          history.push('/login')
+        }
+      })
   }, [])
 
   return (

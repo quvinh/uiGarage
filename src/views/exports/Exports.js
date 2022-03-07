@@ -26,14 +26,14 @@ import { ShowExport } from './ShowExport'
 import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
 import { getToken } from 'src/components/utils/Common'
-
+import { useHistory } from 'react-router-dom'
 
 const Exports = (props) => {
 
   const [item_id, setItemID] = useState('')
   const [batch_code, setBatchCode] = useState('')
   const [warehouse_id, setWarehouse] = useState('')
-  const [suppliers_id, setSuppliers] = useState()
+  const [supplier_id, setSuppliers] = useState()
   const [shelf_id, setShelfID] = useState('')
   const [category_id, setCategory] = useState()
   const [name, setName] = useState('')
@@ -60,6 +60,8 @@ const Exports = (props) => {
 
   const [isAmountSelected, setIsAmountSelected] = useState(false)
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+
+  const history = useHistory()
   // const [isItemSelected, setIsItemSelected] = useState(false)
 
   const onChangeName = (e, newValue) => {
@@ -111,6 +113,11 @@ const Exports = (props) => {
     // setDataWarehouse([])
   }
 
+  const reset = () => {
+    setNull()
+    setDataTable([])
+  }
+
   const createCode = () => {
     const time = new Date()
     const date = time.getDate() + "" + (time.getMonth() + 1) + "" + time.getFullYear() + "" +
@@ -127,7 +134,7 @@ const Exports = (props) => {
       setIsWarehouseSelected(true)
       setWarehouse(e.target.value)
       getDataShelf(e.target.value)
-      Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value)])
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/' + e.target.value + '?token=' + getToken())])
         .then(function (res) {
           setDataItem(res[0].data)
           console.log(res[0].data)
@@ -161,8 +168,12 @@ const Exports = (props) => {
           console.log(res[0].data)
           setDataItem(res[0].data)
         })
-        .catch(err => {
-          console.log(err)
+        .catch(error => {
+          if (error.response.status === 403) {
+            history.push('/404')
+          } else if(error.response.status === 401) {
+            history.push('/login')
+          }
         })
     }
     setName('')
@@ -203,7 +214,7 @@ const Exports = (props) => {
           batch_code: batch_code,
           warehouse_id: warehouse_id,
           shelf_id: shelf_id,
-          suppliers_id: suppliers_id,
+          supplier_id: supplier_id,
           category_id: category_id,
           name: name,
           unit: unit,
@@ -225,7 +236,7 @@ const Exports = (props) => {
           batch_code: batch_code,
           warehouse_id: warehouse_id,
           shelf_id: shelf_id,
-          suppliers_id: suppliers_id,
+          supplier_id: supplier_id,
           category_id: category_id,
           name: name,
           unit: unit,
@@ -256,10 +267,15 @@ const Exports = (props) => {
     getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
-        console.log(res[1].data)
+        console.log(res[0].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
         setCreatedBy(res[2].data.id)
+      })
+      .catch(error => {
+        if (error.response.status === 403) {
+          history.push('/404')
+        }
       })
   }, [])
 
@@ -373,9 +389,13 @@ const Exports = (props) => {
                 <>
                   <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
                   <ShowExport dataTable={dataTable} code={code} />
+                  <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
                 </>
               ) : (
-                <CButton size="sm" color="secondary">THÊM VÀO PHIẾU</CButton>
+                <>
+                  <CButton size="sm" color="secondary">THÊM VÀO PHIẾU</CButton>
+                  <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
+                </>
               )
             }
           </div>

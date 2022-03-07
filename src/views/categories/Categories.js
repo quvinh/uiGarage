@@ -13,15 +13,17 @@ import {
   CButton
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
+import { useHistory } from 'react-router-dom';
+import { getToken } from 'src/components/utils/Common';
 
 const Categories = () => {
   const [dataTable, setDataTable] = useState([])
-
+  const history = useHistory()
   const handleDelete = (e, id) => {
     const eClick = e.currentTarget;
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/category/delete/' + id)])
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/category/delete/' + id + '?token=' + getToken())])
       .then(function (res) {
-        eClick.closest('tr').remove();
+        eClick.closest('tr').remove()
       })
       .catch(error => {
         console.log(error)
@@ -29,12 +31,17 @@ const Categories = () => {
   }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/category')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken())])
       .then(function (res) {
         setDataTable(res[0].data)
       })
       .catch(error => {
         console.log(error)
+        if (error.response.status === 403) {
+          history.push('/404')
+        } else if(error.response.status === 401) {
+          history.push('/login')
+        }
       })
   }, [])
 

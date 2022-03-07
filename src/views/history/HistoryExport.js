@@ -18,7 +18,7 @@ import DataExport from './DataExport.js';
 import { Link } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common.js';
 
-const HistoryV2 = () => {
+const HistoryExport = () => {
 
   const [codeExport, setCodeExport] = useState([])
   const [nameCreatedBy, setNameCreatedBy] = useState('')
@@ -50,11 +50,14 @@ const HistoryV2 = () => {
     <>
       <div>
         <CButtonGroup>
-          <Link className='btn btn-primary' to='/history'>
+          <Link className='btn btn-primary' to='/history_import'>
             Phiếu Nhập
           </Link>
-          <Link className='btn btn-warning' to='/historyV2'>
+          <Link className='btn btn-warning' to='/history_export'>
             Phiếu Xuất
+          </Link>
+          <Link className='btn btn-success' to='/history_transfer'>
+            Phiếu Chuyển Kho
           </Link>
         </CButtonGroup>
       </div>
@@ -98,4 +101,4 @@ const HistoryV2 = () => {
     </>
   )
 }
-export default HistoryV2
+export default HistoryExport

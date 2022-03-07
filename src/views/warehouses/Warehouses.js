@@ -44,7 +44,6 @@ import { getToken } from 'src/components/utils/Common.js'
 const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Warehouses = () => {
-
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [note, setNote] = useState('');
@@ -111,7 +110,9 @@ const Warehouses = () => {
         setDataCountWarehouse(res[1].data)
       })
       .catch((error) => {
-        // console.log(error)
+        if (error.response.status === 403) {
+          history.push('/404')
+        }
       })
   }, [])
 

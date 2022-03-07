@@ -43,7 +43,8 @@ const Add = () => {
     const data = {
       name: name,
       location: location,
-      note: note
+      note: note,
+      status: 1,
     }
     console.log(data);
     Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store' + '?token=' + getToken(), data)])

@@ -170,7 +170,9 @@ const Account = () => {
       })
       .catch(error => {
         console.log(error)
-        // history.push('/login')
+        if (error.response.status === 403) {
+          history.push('/404')
+        }
       })
   }, [])
 

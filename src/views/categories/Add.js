@@ -16,6 +16,7 @@ import {
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { getToken } from 'src/components/utils/Common';
 
 const Add = () => {
   const [name, setName] = useState('');
@@ -34,14 +35,16 @@ const Add = () => {
       note: note
     }
     console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/category/store', data)])
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/category/store?token=' + getToken(), data)])
       .then(res => {
         console.log('Added successfully', res)
         history.push('/categories')
       }).catch(error => {
-        // validatorAll()
-        console.log(':(((')
-        console.log(error)
+        if (error.response.status === 403) {
+          history.push('/404')
+        } else if(error.response.status === 401) {
+          history.push('/login')
+        }
       })
   }
 

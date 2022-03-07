@@ -26,23 +26,18 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { postData } from '../api/Api'
 import { getToken } from "src/components/utils/Common"
+
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="left" ref={ref} {...props} />
+  return <Slide direction="up" ref={ref} {...props} />
 })
-export const ShowExport = (props) => {
+export const ShowTransfer = (props) => {
 
   console.log(props.dataTable)
-  const [data, setData] = React.useState([])
   const [open, setOpen] = React.useState(false)
   const [isSave, setIsSave] = React.useState(false)
-  // const length = props.dataTable.length - 1
   const handleClickOpen = () => {
     if (props.dataTable.length > 0) {
-
       console.log("data...")
-      // console.log(props.dataTable[length])
-      // setData([...])
-      // console.log(data)
       setOpen(true)
     }
   }
@@ -58,23 +53,13 @@ export const ShowExport = (props) => {
     return date
   }
 
-  // const handleTotalPrice = () => {
-  //   let total = 0
-  //   props.dataTable.map((item) => {
-  //     total += item.totalPrice
-  //   })
-  //   console.log(total)
-  //   return total
-  // }
-
   const handleSave = (e) => {
     if (props.dataTable.length > 0) {
-      // const length = props.dataTable.length
       console.log(props.dataTable)
       props.dataTable.map((item, index) => {
         console.log("LOG")
         console.log(item)
-        Promise.all([postData('http://127.0.0.1:8000/api/admin/export/store?token=' + getToken(), item)])
+        Promise.all([postData('http://127.0.0.1:8000/api/admin/transfer/store?token=' + getToken(), item)])
           .then(function (res) {
             console.log("SAVED")
             setIsSave(true)
@@ -86,18 +71,9 @@ export const ShowExport = (props) => {
     }
   }
 
-  // function generate(element) {
-  //   return [0, 1, 2].map((value) =>
-  //     React.cloneElement(element, {
-  //       key: value,
-  //     }),
-  //   );
-  // }
-
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
-      // backgroundColor: theme.palette.common.black,
-      // color: theme.palette.common.white,
+
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -106,9 +82,7 @@ export const ShowExport = (props) => {
 
   const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      // backgroundColor: theme.palette.action.hover,
     },
-    // hide last border
     '&:last-child td, &:last-child th': {
       border: 0,
     },
@@ -116,19 +90,8 @@ export const ShowExport = (props) => {
 
   return (
     <div>
-      {/* {
-        (props.isAmountSelected) ? (
-          <Button variant="outlined" size="sm" color="warning" onClick={handleClickOpen}>
-            Tạo phiếu xuất
-          </Button>
-        ) : (
-          <Button variant="outlined" size="sm" color="secondary">
-            Chọn số lượng để tạo phiếu
-          </Button>
-        )
-      } */}
       <Button variant="outlined" size="sm" color="warning" onClick={handleClickOpen}>
-        Tạo phiếu xuất
+        Tạo phiếu luân chuyển
       </Button>
       <Dialog
         fullScreen
@@ -136,7 +99,7 @@ export const ShowExport = (props) => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative' }} style={{ background: "#ffa64d" }}>
+        <AppBar sx={{ position: 'relative' }}>
           <Toolbar>
             <IconButton
               edge="start"
@@ -215,55 +178,45 @@ export const ShowExport = (props) => {
                   </Grid>
                   {/* </Grid> */}
                   <Grid item xs={12}>
-                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
+                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU CHUYỂN KHO</p>
                     <TableContainer component={Paper}>
                       <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
                         <TableHead>
                           <TableRow>
-                            <StyledTableCell align="center">STT</StyledTableCell>
-                            <StyledTableCell align="center">Mã vật tư</StyledTableCell>
-                            <StyledTableCell align="center">Mã sản xuất</StyledTableCell>
-                            <StyledTableCell align="center">Tên vật tư</StyledTableCell>
-                            <StyledTableCell align="center">ĐVT</StyledTableCell>
-                            <StyledTableCell align="center">SL</StyledTableCell>
-                            <StyledTableCell align="center">Đơn giá</StyledTableCell>
+                            <StyledTableCell className="text-center">STT</StyledTableCell>
+                            <StyledTableCell className="text-center">Mã vật tư</StyledTableCell>
+                            <StyledTableCell className="text-center">Tên vật tư</StyledTableCell>
+                            <StyledTableCell className="text-center">ĐVT</StyledTableCell>
+                            <StyledTableCell className="text-center">SL</StyledTableCell>
+                            <StyledTableCell className="text-center">Từ kho</StyledTableCell>
+                            <StyledTableCell className="text-center">Tại Giá/kệ</StyledTableCell>
+                            <StyledTableCell className="text-center">Đến kho</StyledTableCell>
+                            <StyledTableCell className="text-center">Tại Giá/kệ</StyledTableCell>
                           </TableRow>
                         </TableHead>
                         <TableBody>
                           {props.dataTable.map((row, index) => (
                             <StyledTableRow key={index}>
-                              <StyledTableCell align="center">{index + 1}</StyledTableCell>
-                              <StyledTableCell align="center">{row.item_id}</StyledTableCell>
-                              <StyledTableCell align="center">{row.batch_code}</StyledTableCell>
-                              <StyledTableCell align="center" component="th" scope="row">{row.name}</StyledTableCell>
-                              <StyledTableCell align="center">{row.unit}</StyledTableCell>
-                              <StyledTableCell align="center">{row.amount}</StyledTableCell>
-                              <StyledTableCell align="center">{parseInt(row.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</StyledTableCell>
+                              <StyledTableCell className="text-center">{String(index + 1)}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.item_id}</StyledTableCell>
+                              <StyledTableCell className="text-center" component="th" scope="row">{row.name}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.unit}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.amount}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.nameFromWarehouse}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.nameFromShelf}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.nameToWarehouse}</StyledTableCell>
+                              <StyledTableCell className="text-center">{row.nameToShelf}</StyledTableCell>
                             </StyledTableRow>
                           ))}
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Grid>
-                  <Grid item xs={6}>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                          // primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
                 </Grid>
               </Stack>
             </CardContent>
           </Card>
         </Container>
-
       </Dialog>
     </div>
   )

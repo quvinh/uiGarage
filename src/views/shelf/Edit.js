@@ -20,6 +20,7 @@ import {
 
 import CIcon from '@coreui/icons-react';
 import { cilX, cilCheckAlt } from '@coreui/icons';
+import { getToken } from 'src/components/utils/Common';
 
 const Edit = (props) => {
 
@@ -43,7 +44,7 @@ const Edit = (props) => {
   const handleStatus = (e) => {
     setStatus(e.target.value);
   }
-  
+
 
   const handleUpdate = (e) => {
     const shelf = {
@@ -53,7 +54,7 @@ const Edit = (props) => {
       status: status,
     }
     console.log(props.match.params.id)
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/shelf/update/' + props.match.params.id, shelf)])
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/shelf/update/' + props.match.params.id + '?token=' + getToken(), shelf)])
       .then(response => {
         console.log(response)
         console.log('Edited successfully ^^')
@@ -65,7 +66,7 @@ const Edit = (props) => {
   }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf/show/' + props.match.params.id)])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf/show/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
         setName(response[0].data.name)
         setPosition(response[0].data.position)

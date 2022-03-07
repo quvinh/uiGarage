@@ -41,8 +41,8 @@ const Dashboard = () => {
     getData('http://127.0.0.1:8000/api/admin/dashboard/solgKho?token=' + getToken()),
     getData('http://127.0.0.1:8000/api/admin/dashboard/import/' + year + '?token=' + getToken()),
     getData('http://127.0.0.1:8000/api/admin/dashboard/export/' + year + '?token=' + getToken()),
-    // getData('http://127.0.0.1:8000/api/admin/dashboard/importCode/' + month + '/' + year),
-    // getData('http://127.0.0.1:8000/api/admin/dashboard/exportCode/' + month + '/' + year),
+      // getData('http://127.0.0.1:8000/api/admin/dashboard/importCode/' + month + '/' + year),
+      // getData('http://127.0.0.1:8000/api/admin/dashboard/exportCode/' + month + '/' + year),
     ])
       .then(function (res) {
         // res.header('Access-Control-Allow-Origin: *')
@@ -55,8 +55,10 @@ const Dashboard = () => {
       })
       .catch((error) => {
         // console.log(error)
-        if(error.response.status === 403) {
+        if (error.response.status === 403) {
           history.push('/404')
+        } else if(error.response.status === 401) {
+          history.push('/login')
         }
       })
   }, [])
@@ -69,16 +71,17 @@ const Dashboard = () => {
           {solgKho.map((item, index) => (
             <CCard key={index} textColor='black' className='mb-3 border-warning'>
               <CCardBody>
-                <h1>Kho đang hoạt động: {item.solgKho}</h1>
+                {/* <h3>Kho đang hoạt động: {item.solgKho}</h3> */}
+                <h4>Kho đang hoạt động</h4>
               </CCardBody>
             </CCard>
           ))}
           {tonKho.map((item, index) => (
             <CCard key={index} textColor='black' className='mb-3 border-warning'>
               <CCardBody >
-                <h4>Tổng tồn kho {item.name}: {item.tonKho} <CBadge color='success'> Active </CBadge></h4>
-                <h5>Tổng tiền trong kho:</h5>
-                <h6>{item.total} VND</h6>
+                <h4>{item.name} <CBadge color='success'> Active </CBadge>  <p style={{fontSize: '18px', fontStyle: 'italic', color: 'blue'}}>Số lượng vật tư:{item.tonKho}</p></h4>
+                <h5>Giá trị vật tư trong kho: </h5>
+                <h6>{parseInt(item.total).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</h6>
               </CCardBody>
             </CCard>
           ))}

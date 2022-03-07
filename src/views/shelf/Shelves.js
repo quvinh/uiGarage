@@ -13,13 +13,14 @@ import {
   CButton
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
+import { getToken } from 'src/components/utils/Common';
 
 const Shelves = () => {
   const [dataTable, setDataTable] = useState([])
 
   const handleDelete = (e, id) => {
     const eClick = e.currentTarget;
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id)])
+    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id + '?token=' + getToken())])
       .then(function (res) {
         eClick.closest('tr').remove();
       })
@@ -29,7 +30,7 @@ const Shelves = () => {
   }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf' + '?token=' + getToken())])
       .then(function (res) {
         setDataTable(res[0].data)
       })

@@ -12,43 +12,51 @@ import Typography from '@mui/material/Typography'
 import CloseIcon from '@mui/icons-material/Close'
 import Slide from '@mui/material/Slide'
 import Grid from '@mui/material/Grid'
+import styled from "@emotion/styled"
 import Container from '@mui/material/Container';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import CIcon from '@coreui/icons-react';
 
+
 import React, { useEffect, useState } from 'react'
 import {
+  CTable,
   CTableHead,
   CTableRow,
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
+  CTableCaption,
   CButton
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
-import { cilCheckCircle, cilDelete, cilDescription, cilSend } from '@coreui/icons'
+import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
 import { getToken } from 'src/components/utils/Common.js'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
 })
-const DataExport = (props) => {
+
+const DataTransfer = (props) => {
   const [open, setOpen] = React.useState(false)
 
-
   const handleDelete = () => {
-    if (tableHistoryExport.length > 0) {
-      tableHistoryExport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id + '?token=' + getToken())])
+        Promise.all([delData('http://127.0.0.1:8000/api/admin/transfer/delete/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Deleted")
-            window.location.reload()
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
@@ -57,13 +65,13 @@ const DataExport = (props) => {
     }
   }
   const handleDStatus = () => {
-    if (tableHistoryExport.length > 0) {
-      tableHistoryExport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id + '?token=' + getToken())])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/transfer/dStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 0->1")
-            window.location.reload()
+            window.location.reload();
           })
           .catch(err => {
             console.log(err)
@@ -72,10 +80,10 @@ const DataExport = (props) => {
     }
   }
   const handleUpdateStatus = () => {
-    if (tableHistoryExport.length > 0) {
-      tableHistoryExport.map((item, index) => {
+    if (tableHistoryTransfer.length > 0) {
+      tableHistoryTransfer.map((item, index) => {
         console.log(item)
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id + '?token=' + getToken())])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/transfer/updateStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 1->2")
             window.location.reload();
@@ -87,9 +95,8 @@ const DataExport = (props) => {
     }
   }
 
-
   const handleClickOpen = () => {
-    if (tableHistoryExport.length > 0) {
+    if (tableHistoryTransfer.length > 0) {
       setOpen(true)
     }
   }
@@ -97,20 +104,12 @@ const DataExport = (props) => {
     setOpen(false)
   }
 
-  const handleTotalPrice = () => {
-    let total = 0
-    tableHistoryExport.map((item) => {
-      total += item.luongXuat * item.price
-    })
-    console.log(total)
-    return total
-  }
 
-  const [tableHistoryExport, setTableHistoryExport] = useState([])
+  const [tableHistoryTransfer, setTableHistoryTransfer] = useState([])
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryExport/' + props.code + '?token=' + getToken())])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryTransfer/' + props.code + '?token=' + getToken())])
       .then(function (res) {
-        setTableHistoryExport(res[0].data)
+        setTableHistoryTransfer(res[0].data)
       })
       .catch((error) => {
         console.log(error)
@@ -121,12 +120,12 @@ const DataExport = (props) => {
     <>
       <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 
-      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} >
-        <AppBar style={{ background: "#ffa64d" }} sx={{ position: 'relative' }}>
-          <Toolbar className="d-grid gap-2 d-md-flex justify-content-md-end">
+      <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
+        <AppBar sx={{ position: 'relative' }}  style={{ background: "#ffa64d" }}>
+          <Toolbar>
             <IconButton
               edge="start"
               color="inherit"
@@ -134,10 +133,10 @@ const DataExport = (props) => {
               aria-label="close"
             >
               <CloseIcon />
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Thoát
-              </Typography>
             </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              Thoát
+            </Typography>
           </Toolbar>
         </AppBar>
         <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
@@ -192,8 +191,8 @@ const DataExport = (props) => {
                   </Grid>
                   {/* </Grid> */}
                   <Grid item xs={12}>
-                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
-                    {tableHistoryExport.map((item, index) => (
+                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
+                    {tableHistoryTransfer.map((item, index) => (
                       <TableContainer component={Paper} key={index}>
                         <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
                           <CTableHead color="warning">
@@ -201,9 +200,9 @@ const DataExport = (props) => {
                               <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Mã kệ</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Giá xuất</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Số lượng Xuất</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Từ Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Đến Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Số lượng </CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
@@ -214,9 +213,9 @@ const DataExport = (props) => {
                               <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.price}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.luongXuat}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.from_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.to_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                               <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
@@ -228,27 +227,15 @@ const DataExport = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                   </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
                 </Grid>
               </Stack>
             </CardContent>
           </Card>
         </Container>
       </Dialog>
-
     </>
 
   )
 }
 
-export default DataExport
+export default DataTransfer

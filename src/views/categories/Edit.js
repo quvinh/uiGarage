@@ -16,6 +16,7 @@ import {
 } from '@coreui/react'
 import { getData, putData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
+import { getToken } from 'src/components/utils/Common.js'
 
 const Edit = (props) => {
   const [name, setName] = useState('');
@@ -32,12 +33,17 @@ const Edit = (props) => {
       name: name,
       note: note
     }
-    Promise.all([putData('http://127.0.0.1:8000/api/admin/category/update/' + props.match.params.id, data)])
+    Promise.all([putData('http://127.0.0.1:8000/api/admin/category/update/' + props.match.params.id + '?token=' + getToken(), data)])
       .then(response => {
         console.log('Edited successfully ^^')
         history.push('/categories')
-      }).catch((err) => {
-        console.log(err)
+      }).catch((error) => {
+        console.log(error)
+        if(error.response.status === 403) {
+          history.push('/403')
+        } else if(error.response.status === 401) {
+          history.push('/login')
+        }
       })
   }
 
@@ -46,6 +52,13 @@ const Edit = (props) => {
       .then(response => {
         setName(response[0].data.name)
         setNote(response[0].data.note)
+      })
+      .catch(error => {
+        if (error.response.status === 403) {
+          history.push('/404')
+        } else if(error.response.status === 401) {
+          history.push('/login')
+        }
       })
   }, []);
   return (

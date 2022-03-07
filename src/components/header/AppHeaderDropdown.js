@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   CAvatar,
   CBadge,
@@ -25,6 +25,7 @@ import CIcon from '@coreui/icons-react'
 import avatar8 from './../../assets/images/avatars/8.jpg'
 import { getToken, getUser, removeUserSession } from '../utils/Common'
 import { useHistory } from 'react-router-dom'
+import { getData } from 'src/views/api/Api'
 
 const AppHeaderDropdown = () => {
   const history = useHistory()
@@ -34,6 +35,19 @@ const AppHeaderDropdown = () => {
     console.log(getToken())
     history.push('/login')
   }
+
+  // useEffect(() => {
+  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/category')])
+  //     .then(function (res) {
+  //       setDataTable(res[0].data)
+  //     })
+  //     .catch(error => {
+  //       console.log(error)
+  //       if (error.response.status === 403) {
+  //         history.push('/404')
+  //       }
+  //     })
+  // }, [])
 
   return (
     <CDropdown variant="nav-item">

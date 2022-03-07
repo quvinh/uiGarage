@@ -16,6 +16,7 @@ import {
   CFormInput,
 } from '@coreui/react';
 import { ShowExport } from './ShowExport'
+import { getToken } from 'src/components/utils/Common';
 
 const headerStyle = {
   backgroundColor: '#ff944d',
@@ -168,7 +169,7 @@ export const DataExportTable = () => {
   };
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/itemInWarehouse/1')])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/itemInWarehouse/1?token=' + getToken())])
       .then(function (res) {
         console.log(res[0].data)
         setTableDashboard(res[0].data)

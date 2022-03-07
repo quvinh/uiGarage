@@ -27,7 +27,7 @@ import Stack from '@mui/material/Stack';
 import { postData } from '../api/Api'
 import { getToken } from "src/components/utils/Common"
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />
+  return <Slide direction="left" ref={ref} {...props} />
 })
 export const ShowImport = (props) => {
   // console.log()
@@ -117,7 +117,7 @@ export const ShowImport = (props) => {
         onClose={handleClose}
         TransitionComponent={Transition}
       >
-        <AppBar sx={{ position: 'relative' }}>
+        <AppBar sx={{ position: 'relative' }} style={{ background: "#ffa64d" }}>
           <Toolbar>
             <IconButton
               edge="start"
@@ -221,8 +221,8 @@ export const ShowImport = (props) => {
                               <StyledTableCell align="center" component="th" scope="row">{row.name}</StyledTableCell>
                               <StyledTableCell align="center">{row.unit}</StyledTableCell>
                               <StyledTableCell align="center">{row.amount}</StyledTableCell>
-                              <StyledTableCell align="center">{row.price}</StyledTableCell>
-                              <StyledTableCell align="center">{row.totalPrice}</StyledTableCell>
+                              <StyledTableCell align="center">{parseInt(row.price).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</StyledTableCell>
+                              <StyledTableCell align="center">{parseInt(row.totalPrice).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</StyledTableCell>
                               <StyledTableCell align="center">{row.note ? row.note : ""}</StyledTableCell>
                             </StyledTableRow>
                           ))}

@@ -45,21 +45,21 @@ const _nav = [
         name: 'Loại phụ tùng',
         to: '/categories',
       },
-      {
-        component: CNavItem,
-        name: 'Báo giá',
-        to: '/',
-      },
-      {
-        component: CNavItem,
-        name: 'Nhà cung cấp',
-        to: '/',
-      },
-      {
-        component: CNavItem,
-        name: 'Khách hàng',
-        to: '/',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Báo giá',
+      //   to: '/',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Nhà cung cấp',
+      //   to: '/',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Khách hàng',
+      //   to: '/',
+      // },
     ],
   },
   {

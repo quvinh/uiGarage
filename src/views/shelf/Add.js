@@ -19,6 +19,7 @@ import CIcon from '@coreui/icons-react';
 import { cilX, cilCheckAlt } from '@coreui/icons';
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
+import { getToken } from 'src/components/utils/Common';
 
 const Add = (props) => {
   const [dataTable, setDataTable] = useState([])
@@ -39,7 +40,7 @@ const Add = (props) => {
       warehouse_id: props.props,
     }
     console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/shelf/store/' + props.match.params.id, data)])
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/shelf/store/' + props.match.params.id + '?token=' + getToken(), data)])
       .then(res => {
         console.log('Added succesfully', res)
         history.goBack()

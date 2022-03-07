@@ -60,7 +60,6 @@ const DataImport = (props) => {
           })
       })
     }
-
   }
   const handleDStatus = () => {
     if (tableHistoryImport.length > 0) {
@@ -76,7 +75,6 @@ const DataImport = (props) => {
           })
       })
     }
-
   }
   const handleUpdateStatus = () => {
     if (tableHistoryImport.length > 0) {
@@ -93,7 +91,6 @@ const DataImport = (props) => {
           })
       })
     }
-
   }
 
   const handleClickOpen = () => {
