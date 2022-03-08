@@ -172,6 +172,8 @@ const Account = () => {
         console.log(error)
         if (error.response.status === 403) {
           history.push('/404')
+        } else if( error.response.status === 401) {
+          history.push('/login')
         }
       })
   }, [])

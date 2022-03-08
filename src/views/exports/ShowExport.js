@@ -200,7 +200,7 @@ export const ShowExport = (props) => {
                       <CardContent>
                         <ListItem>
                           <ListItemText
-                            primary="Người Tạo: Nguyễn Thị T"
+                            primary={"Người Tạo: " + props.createdBy}
                             secondary={'Thủ kho'}
                           />
                         </ListItem>

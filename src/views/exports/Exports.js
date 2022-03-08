@@ -25,7 +25,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import { ShowExport } from './ShowExport'
 import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
-import { getToken } from 'src/components/utils/Common'
+import { getToken, getUserID } from 'src/components/utils/Common'
 import { useHistory } from 'react-router-dom'
 
 const Exports = (props) => {
@@ -218,7 +218,7 @@ const Exports = (props) => {
           category_id: category_id,
           name: name,
           unit: unit,
-          created_by: created_by,//USER
+          created_by: getUserID(),//USER
           amount: amountTotal,
           price: price,
           nameWarehouse: nameWarehouse,
@@ -240,7 +240,7 @@ const Exports = (props) => {
           category_id: category_id,
           name: name,
           unit: unit,
-          created_by: created_by,//USER
+          created_by: getUserID(),//USER
           amount: amount,
           price: price,
           nameWarehouse: nameWarehouse,
@@ -267,10 +267,10 @@ const Exports = (props) => {
     getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
-        console.log(res[0].data)
+        console.log(res[2].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
-        setCreatedBy(res[2].data.id)
+        setCreatedBy(res[2].data[0].fullname)
       })
       .catch(error => {
         if (error.response.status === 403) {
@@ -388,7 +388,7 @@ const Exports = (props) => {
               (isAmountSelected) ? (
                 <>
                   <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
-                  <ShowExport dataTable={dataTable} code={code} />
+                  <ShowExport dataTable={dataTable} code={code} createdBy={created_by} />
                   <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
                 </>
               ) : (
