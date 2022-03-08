@@ -39,6 +39,11 @@ const Charts = React.lazy(() => import('./views/charts/Charts'))
 const Notification = React.lazy(() => import('./views/notifications/Notification'))
 const AddNotification = React.lazy(() => import('./views/notifications/AddNeedItem'))
 
+//Supplier
+const Suppliers = React.lazy(() => import('./views/suppliers/Suppliers'))
+const AddSuppliers = React.lazy(() => import('./views/suppliers/Add'))
+const EditSuppliers = React.lazy(() => import('./views/suppliers/Edit'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Bản tin', component: Dashboard },
@@ -68,6 +73,10 @@ const routes = [
 
   { path: '/notification', name: 'Thông báo', component: Notification },
   { path: '/notification-add', name: 'Tạo thông báo', component: AddNotification },
+
+  { path: '/supplier', name: 'Nhà cung cấp', component: Suppliers },
+  { path: '/supplier-add', name: 'Tạo mới nhà cung cấp', component: AddSuppliers },
+  { path: '/supplier-edit/:id', name: 'Chỉnh sửa nhà cung cấp', component: EditSuppliers },
 ]
 
 export default routes

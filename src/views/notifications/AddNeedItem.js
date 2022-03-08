@@ -83,8 +83,8 @@ const Add = () => {
         const date = time.getDate() + "" + (time.getMonth() + 1) + "" + time.getFullYear() + "" +
             time.getHours() + "" + time.getMinutes() + "" + time.getSeconds()
         const code = "NH_" + date
-        console.log('CREATED: ' + code)
         setCode(code)
+        console.log('CREATED: ' + code)
     }
     const handleDetailItemId = (e) => {
         setDetailItemId(e.target.value);
@@ -120,7 +120,9 @@ const Add = () => {
     // setWarehouseId(1)
 
     const onAddTable = (e) => {//Button click, add data table
+
         if (validator.allValid() && amount > 0) {
+            createCode()
             if (dataTable.length > 0) {
                 let amountTotal = 0
                 let array = []
@@ -188,8 +190,8 @@ const Add = () => {
             console.log(dataTable)
             createCode()
             dataTable.map((item, index) => {
-                
-                console.log(item)
+                {item.code = code}
+                console.log(item.code)
                 Promise.all([postData('http://127.0.0.1:8000/api/admin/notification/store', item)])
                     .then(res => {
                         setIsSave(true)
@@ -207,12 +209,12 @@ const Add = () => {
 
     useEffect(() => {
         Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse')])
-            .then(function(response) {
+            .then(function (response) {
                 console.log(response[0].data)
                 setDataWarehouses(response[0].data)
                 console.log(dataWarehouse);
             })
-            
+
     }, []);
     return (
         <>
@@ -264,18 +266,18 @@ const Add = () => {
                                         {/* <CButton color="success" onClick={(e) => setNull()}>LÀM MỚI</CButton> */}
                                     </CCol>
                                 </CRow>
-                                <CFormFloating>
-                                    <CFormSelect size="sm" name="warehouse_id" value={warehouseId} onChange={
-                                        (e) =>
-                                            setWarehouseId(e.target.value)
-                                            // (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
-                                    }>
-                                        <option>Chọn nhà kho</option>
-                                        {dataWarehouse.map((item, index) => (
-                                            <option key={index} value={item.id}>{item.name}</option>
-                                        ))}
-                                    </CFormSelect>
-                                </CFormFloating>
+                                {/* <CFormFloating> */}
+                                <CFormSelect size="sm" name="warehouse_id" value={warehouseId} onChange={
+                                    (e) =>
+                                        setWarehouseId(e.target.value)
+                                    // (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
+                                }>
+                                    <option>Chọn nhà kho</option>
+                                    {dataWarehouse.map((item, index) => (
+                                        <option key={index} value={item.id}>{item.name}</option>
+                                    ))}
+                                </CFormSelect>
+                                {/* </CFormFloating> */}
                             </CCardBody>
                         </CCard>
                         <br />
@@ -327,7 +329,7 @@ const Add = () => {
 
                             <div className="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
                                 <CButton onClick={(e) => {
-                                    
+                                    // createCode()
                                     onAddTable(e)
                                 }} size="sm" color="success" >THÊM VÀO PHIẾU</CButton>
                                 <CButton onClick={(e) => { handlAddNotification() }} color="warning">Thông báo</CButton> {/**/}

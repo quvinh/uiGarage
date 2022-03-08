@@ -51,6 +51,7 @@ import {
     cilX,
     cilPaperPlane,
     cilMagnifyingGlass,
+    cilPlus,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import ReactShadowScroll from 'react-shadow-scroll';
@@ -168,7 +169,10 @@ const AppNotificationsDropdown = () => {
                             </CRow>
 
                         </CDropdownItem>
+
                     ))}
+                    <CDropdownDivider />
+                    <CDropdownItem><i><a href='#/notification-add'>tạo thông báo</a></i></CDropdownItem>
                 </CDropdownMenu>
 
             </CDropdown>
@@ -193,22 +197,22 @@ const AppNotificationsDropdown = () => {
                                     </CTableRow>
                                 </CTableHead>
                                 <CTableBody>
-                                    {dataNotification.map((item,index) => (
-                                    <CTableRow key={index}>
-                                        <CTableDataCell>{item.item_id}</CTableDataCell>
-                                        <CTableDataCell>{item.item_name}</CTableDataCell>
-                                        <CTableDataCell>{item.amount}</CTableDataCell>
-                                        <CTableDataCell>{item.unit}</CTableDataCell>
-                                        <CTableDataCell>
-                                            <CButton onClick={() => {
-                                                setVisible1(!visible1)
-                                                handleNotValid(item.item_id)
-                                                handleListItem(item.item_id)
-                                            }} color="white">
-                                                <CIcon icon={cilMagnifyingGlass} />
-                                            </CButton>
-                                        </CTableDataCell>
-                                    </CTableRow>
+                                    {dataNotification.map((item, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableDataCell>{item.item_id}</CTableDataCell>
+                                            <CTableDataCell>{item.item_name}</CTableDataCell>
+                                            <CTableDataCell>{item.amount}</CTableDataCell>
+                                            <CTableDataCell>{item.unit}</CTableDataCell>
+                                            <CTableDataCell>
+                                                <CButton onClick={() => {
+                                                    setVisible1(!visible1)
+                                                    handleNotValid(item.item_id)
+                                                    handleListItem(item.item_id)
+                                                }} color="white">
+                                                    <CIcon icon={cilMagnifyingGlass} />
+                                                </CButton>
+                                            </CTableDataCell>
+                                        </CTableRow>
                                     ))}
                                 </CTableBody>
                             </CTable>
@@ -216,6 +220,11 @@ const AppNotificationsDropdown = () => {
                     </CCard>
                 </CModalBody>
                 <CModalFooter>
+                    <CButton href='#/notification-add' onClick={() => {
+                        setVisible1(false)
+                        setVisible(false)
+                    }} color="warning"><CIcon icon={cilPlus} />
+                    </CButton>
                     <CButton color="success"><CIcon icon={cilPaperPlane} /></CButton>
                     <CButton color="danger" onClick={() => setVisible(false)}>
                         <CIcon icon={cilX} />
@@ -269,7 +278,7 @@ const AppNotificationsDropdown = () => {
                     <CButton color="secondary" onClick={() => setVisible1(false)}>
                         Close
                     </CButton>
-                    <CButton color="primary">Save changes</CButton>
+                    {/* <CButton href='#/notification-add' onClick={() => setVisible1(false)} color="primary">Tạo phiếu</CButton> */}
                 </CModalFooter>
             </CModal>
         </>

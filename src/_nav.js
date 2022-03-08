@@ -54,7 +54,7 @@ const _nav = [
       {
         component: CNavItem,
         name: 'Nhà cung cấp',
-        to: '/',
+        to: '/supplier',
       },
       {
         component: CNavItem,
