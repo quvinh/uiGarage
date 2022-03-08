@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, history } from 'react'
 import {
   CTable,
   CTableHead,
@@ -77,7 +77,7 @@ const Transfer = (props) => {
     const time = new Date()
     const date = time.getDate() + "" + (time.getMonth() + 1) + "" + time.getFullYear() + "" +
       time.getHours() + "" + time.getMinutes() + "" + time.getSeconds()
-    const code = "EX_" + date
+    const code = "TF_" + date
     console.log('CREATED: ' + code)
     setCode(code)
   }
@@ -117,6 +117,22 @@ const Transfer = (props) => {
       setIsAmountSelected(false)
     } else {
       setNameFromShelf(e.nativeEvent.target[index].text)
+      setFromShelf(e.target.value)
+      Promise.all([
+        getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + fromWarehouse + '/' + e.target.value /*+ '?token=' + getToken()*/)
+      ])
+        .then(function (res) {
+          console.log(res[0].data)
+          setDataItem(res[0].data)
+        })
+        .catch(error => {
+          if (error.response.status === 403) {
+            history.push('/404')
+          }
+          // else if (error.response.status === 401) {
+          //   history.push('/login')
+          // }
+        })
     }
   }
 
@@ -145,17 +161,19 @@ const Transfer = (props) => {
   }
   const onChangeToShelf = (e) => {
     const index = e.nativeEvent.target.selectedIndex
-    if (index === 0) {
-      setIsAmountSelected(false)
-    } else {
+    if (index !== 0 && fromShelf !== null && fromShelf !== 'Giá/kệ' && index !== fromShelf) {
       setIsAmountSelected(true)
       setNameToShelf(e.nativeEvent.target[index].text)
+
+    } else {
+      setIsAmountSelected(false)
     }
   }
 
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
     var checked = false
+    console.log(dataItem)
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         setItemID(item.item_id)
@@ -183,7 +201,9 @@ const Transfer = (props) => {
   }
 
   const onChangeAmount = (e) => {
-    (e.target.value > 0 && name.length > 0) ? setIsAmountSelected(true) : setIsAmountSelected(false)
+    (e.target.value > 0 && name.length > 0 &&
+      toWarehouse !== '' && toWarehouse !== null &&
+      toShelf !== '' && toShelf !== 'Giá/kệ') ? setIsAmountSelected(true) : setIsAmountSelected(false)
     if (dataTable.length === 0) createCode()
   }
 
@@ -202,42 +222,82 @@ const Transfer = (props) => {
 
 
 
-  // const onRemoveRow = (e, index) => {
-  //   console.log(index)
-  // }
+  const onRemoveRow = (e, index) => {
+    var array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+    setDataTable([...array])
+  }
 
 
 
   const onAddTable = (e) => {//Button click, add data table
-    if (validator.allValid()) {
-      const data = {
-        item_id: item_id,
-        code: code,
-        batch_code: batch_code,
-        fromWarehouse: fromWarehouse,
-        fromShelf: fromShelf,
-        nameFromWarehouse: nameFromWarehouse,
-        nameFromShelf: nameFromShelf,
-        supplier_id: supplier_id,
-        category_id: category_id,
-        name: name,
-        unit: unit,
-        created_by: created_by,//USER
-        amount: amount,
-        price: price,
-        toWarehouse: toWarehouse,
-        toShelf: toShelf,
-        nameToWarehouse: nameToWarehouse,
-        nameToShelf: nameToShelf,
-        note: note,
+    if (validator.allValid() && amount > 0) {
+      if (dataTable.length > 0) {
+        let amountTotal = 0
+        let array = []
+        dataTable.map((item, index) => {
+          if (item.item_id === item_id) {
+            amountTotal = parseInt(item.amount) + parseInt(amount)
+            array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
+          }
+        })
+        amountTotal > 0 ? amountTotal = amountTotal : amountTotal = amount
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          fromWarehouse: fromWarehouse,
+          fromShelf: fromShelf,
+          nameFromWarehouse: nameFromWarehouse,
+          nameFromShelf: nameFromShelf,
+          supplier_id: supplier_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: created_by,//USER
+          amount: amountTotal,
+          price: price,
+          toWarehouse: toWarehouse,
+          toShelf: toShelf,
+          nameToWarehouse: nameToWarehouse,
+          nameToShelf: nameToShelf,
+          note: note,
+        }
+        console.log(dataTable)
+        array.length > 0 ? setDataTable([...array, data]) : (dataTable.length === 1 && dataTable[0].item_id === item_id ? setDataTable([data]) : setDataTable([...dataTable, data]))
+        console.log(dataTable)
+      } else {
+        const data = {
+          item_id: item_id,
+          code: code,
+          batch_code: batch_code,
+          fromWarehouse: fromWarehouse,
+          fromShelf: fromShelf,
+          nameFromWarehouse: nameFromWarehouse,
+          nameFromShelf: nameFromShelf,
+          supplier_id: supplier_id,
+          category_id: category_id,
+          name: name,
+          unit: unit,
+          created_by: created_by,//USER
+          amount: amount,
+          price: price,
+          toWarehouse: toWarehouse,
+          toShelf: toShelf,
+          nameToWarehouse: nameToWarehouse,
+          nameToShelf: nameToShelf,
+          note: note,
+        }
+        setDataTable([...dataTable, data])
+        console.log('abc')
+        console.log(dataTable)
       }
-      setDataTable([...dataTable, data])
-      console.log('abc')
-      console.log(dataTable)
+      setAmount(0)
     } else {
       showValidationMessage(true)
+      setAmount(0)
     }
   }
+
 
 
   useEffect(() => {
@@ -417,7 +477,7 @@ const Transfer = (props) => {
           </div>
         </CCardBody>
       </CCard>
-      <CTable id='dataExport' striped hover responsive bordered borderColor="warning" >
+      <CTable id='dataTransfer' striped hover responsive bordered borderColor="warning" >
         <CTableHead color="warning">
           <CTableRow>
             <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
@@ -445,11 +505,11 @@ const Transfer = (props) => {
               <CTableDataCell className="text-center">{item.nameToWarehouse}</CTableDataCell>
               <CTableDataCell className="text-center">{item.nameToShelf}</CTableDataCell>
               <CTableDataCell className="text-center">
-                {/* <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
                   onRemoveRow(e, index)
                 }}>
                   <CIcon icon={cilDelete} />
-                </CButton> */}
+                </CButton>
               </CTableDataCell>
             </CTableRow>
           ))}
