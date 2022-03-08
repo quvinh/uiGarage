@@ -4,35 +4,15 @@ import React, { lazy, useEffect, useState } from 'react'
 
 import {
   CButton,
-  CButtonGroup,
   CCol,
   CRow,
   CCard,
   CCardBody,
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
   CDropdownMenu,
   CDropdownItem,
   CDropdown,
-  CDropdownDivider,
   CDropdownToggle,
   CCardHeader,
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-  CForm,
-  CInputGroup,
-  CFormSelect,
-  CFormInput,
-  CFormTextarea,
-  CInputGroupText,
-
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilOptions, cilPlus } from '@coreui/icons'
@@ -41,7 +21,7 @@ import { useHistory } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common.js'
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
-const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
+// const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Warehouses = () => {
   const [name, setName] = useState('');
@@ -61,7 +41,7 @@ const Warehouses = () => {
   const [dataTable, setDataTable] = useState([])
 
   const handleReload = () => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()  )])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken())])
       .then(function (res) {
         setDataWarehouse(res[0].data)
       })
@@ -119,26 +99,21 @@ const Warehouses = () => {
   return (
     <>
       {/* <WidgetsDropdown /> */}
-      <CButton href='#/warehouses-add' color='info'><CIcon icon={cilPlus} /></CButton>
+      <CButton href='#/warehouses-add' className='btn1'><CIcon icon={cilPlus} /></CButton>
       <CCard>
         <CCardBody>
-
-
           <CRow>{dataWarehouse.map((item, index) => (
             <CCol sm={6} lg={6} key={index}>
               <CCard color='secondary' textColor='black' className='mb-3 border-info'>
-                <CCardHeader style={{backgroundColor: "#ffa366"}}>
-                  <h4>{item.name} </h4>
-                </CCardHeader>
-                <CCardBody >
+                <CCardHeader style={{ backgroundColor: "#ffa366" }}><h4>{item.name} </h4></CCardHeader>
+                <CCardBody>
                   <CRow>
-                    <CCol>
-                      <p>Mã kho: {item.id} - Thủ kho:</p>
+                    <CCol sm={10} lg={10}>
+                      <p>Mã kho: {item.id} - Thủ kho: Nguyễn Thị T</p>
                       <p>Địa chỉ: {item.location}</p>
                     </CCol>
                     <CCol>
-                      <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <CDropdown className='dropdown'>
+                        <CDropdown direction='dropstart'>
                           <CDropdownToggle color="transparent" caret={false} className="p-0">
                             <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
                           </CDropdownToggle>
@@ -148,12 +123,8 @@ const Warehouses = () => {
                             <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
                           </CDropdownMenu>
                         </CDropdown>
-                      </div>
-
                     </CCol>
                   </CRow>
-
-
                 </CCardBody>
               </CCard>
             </CCol>))}

@@ -1,6 +1,7 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cilBell,
   cilCalculator,
   cilChartPie,
   cilNotes,
@@ -67,6 +68,12 @@ const _nav = [
     name: 'Thống kê',
     to: '/charts',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Thông báo',
+    to: '/notification',
+    icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
   },
   // {
   //   component: CNavGroup,

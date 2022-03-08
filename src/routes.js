@@ -41,6 +41,15 @@ const EditDetailItem = React.lazy(() => import('./views/detail_item/Edit'))
 //Chart
 const Charts = React.lazy(() => import('./views/charts/Charts'))
 
+//Notification
+const Notification = React.lazy(() => import('./views/notifications/Notification'))
+const AddNotification = React.lazy(() => import('./views/notifications/AddNeedItem'))
+
+//Supplier
+const Suppliers = React.lazy(() => import('./views/suppliers/Suppliers'))
+const AddSuppliers = React.lazy(() => import('./views/suppliers/Add'))
+const EditSuppliers = React.lazy(() => import('./views/suppliers/Edit'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/account', name: 'User', component: Account },
@@ -70,6 +79,13 @@ const routes = [
   // { path: '/shelf-add/:id', name: 'Tạo kho', component: AddShelves1 },
   { path: '/shelf-edit/:id', name: 'Chỉnh sửa kho', component: EditShelves },
   { path: '/detail_item-edit/:id', name: 'Chỉnh sửa vật tư', component: EditDetailItem },
+
+  { path: '/notification', name: 'Thông báo', component: Notification },
+  { path: '/notification-add', name: 'Tạo thông báo', component: AddNotification },
+
+  { path: '/supplier', name: 'Nhà cung cấp', component: Suppliers },
+  { path: '/supplier-add', name: 'Tạo mới nhà cung cấp', component: AddSuppliers },
+  { path: '/supplier-edit/:id', name: 'Chỉnh sửa nhà cung cấp', component: EditSuppliers },
 ]
 
 export default routes
