@@ -32,7 +32,8 @@ const Profile = (props) => {
   const [address, setAddress] = React.useState()
   const [birthday, setBirthday] = React.useState()
   const [gender, setGender] = React.useState()
-
+  const [dataUser, setDataUser] = React.useState([])
+  const [isBirthdaySelected, setIsBirthdaySelected] = React.useState(false)
 
   const onSave = (e) => {
     const data = {
@@ -41,8 +42,8 @@ const Profile = (props) => {
       phone: phone,
       fullname: fullName,
       address: address,
-      birthday: birthday,
-      gender: gender === null ? 3 : gender
+      birthday: isBirthdaySelected ? birthday : null,
+      gender: gender
     }
     console.log(data)
     Promise.all([postData('http://127.0.0.1:8000/api/auth/update-user/' + getUserID() + '?token=' + getToken(), data)])
@@ -120,6 +121,7 @@ const Profile = (props) => {
                       label="Ngày sinh"
                       value={birthday}
                       onChange={(newValue) => {
+                        setIsBirthdaySelected(true)
                         setBirthday(newValue.getFullYear() + "/" + (newValue.getMonth() + 1) + "/" + newValue.getDate())
                         console.log(birthday)
                       }}
@@ -139,7 +141,7 @@ const Profile = (props) => {
                       <FormControl color="warning">
                         <FormLabel>Giới tính</FormLabel>
                         <RadioGroup
-                          defaultValue={gender === null ? 0 : gender}
+                          defaultValue={gender === null ? null : (gender === 0 ? 0 : 1)}
                           color="warning"
                           onChange={(e) => { e.target.value === 0 ? setGender(0) : setGender(1) }}
                         >
