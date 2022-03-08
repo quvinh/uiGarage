@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, history } from 'react'
 import {
   CTable,
   CTableHead,
@@ -80,7 +80,7 @@ const Transfer = (props) => {
     const time = new Date()
     const date = time.getDate() + "" + (time.getMonth() + 1) + "" + time.getFullYear() + "" +
       time.getHours() + "" + time.getMinutes() + "" + time.getSeconds()
-    const code = "EX_" + date
+    const code = "TF_" + date
     console.log('CREATED: ' + code)
     setCode(code)
   }
@@ -121,6 +121,22 @@ const Transfer = (props) => {
     } else {
       setIsAmountSelected(true)
       setNameFromShelf(e.nativeEvent.target[index].text)
+      setFromShelf(e.target.value)
+      Promise.all([
+        getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + fromWarehouse + '/' + e.target.value /*+ '?token=' + getToken()*/)
+      ])
+        .then(function (res) {
+          console.log(res[0].data)
+          setDataItem(res[0].data)
+        })
+        .catch(error => {
+          if (error.response.status === 403) {
+            history.push('/404')
+          }
+          // else if (error.response.status === 401) {
+          //   history.push('/login')
+          // }
+        })
     }
   }
 
@@ -157,10 +173,10 @@ const Transfer = (props) => {
   }
   const onChangeToShelf = (e) => {
     const index = e.nativeEvent.target.selectedIndex
-    if (index !== 0 && fromShelf !== null && fromShelf !== 'Giá/kệ') {
+    if (index !== 0 && fromShelf !== null && fromShelf !== 'Giá/kệ' && index !== fromShelf) {
       setIsAmountSelected(true)
       setNameToShelf(e.nativeEvent.target[index].text)
-      // console.log(fromShelf)
+
     } else {
       setIsAmountSelected(false)
     }
@@ -169,6 +185,7 @@ const Transfer = (props) => {
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
     var checked = false
+    console.log(dataItem)
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         setItemID(item.item_id)
@@ -218,10 +235,16 @@ const Transfer = (props) => {
     setToShelf('')
   }
 
+
+
+
+
   const onRemoveRow = (e, index) => {
     var array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
     setDataTable([...array])
   }
+
+
 
   const onAddTable = (e) => {//Button click, add data table
     if (validator.allValid() && amount > 0) {
@@ -291,6 +314,7 @@ const Transfer = (props) => {
       setAmount(0)
     }
   }
+
 
 
   useEffect(() => {
@@ -478,7 +502,7 @@ const Transfer = (props) => {
           </div>
         </CCardBody>
       </CCard>
-      <CTable id='dataExport' striped hover responsive bordered borderColor="warning" >
+      <CTable id='dataTransfer' striped hover responsive bordered borderColor="warning" >
         <CTableHead color="warning">
           <CTableRow>
             <CTableHeaderCell className="text-center">STT</CTableHeaderCell>

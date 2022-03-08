@@ -201,7 +201,9 @@ const DataTransfer = (props) => {
                               <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Từ Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Từ Giá</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Đến Kho</CTableHeaderCell>
+                              <CTableHeaderCell className="text-center">Đến Giá</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Số lượng </CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
                               <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
@@ -213,8 +215,10 @@ const DataTransfer = (props) => {
                               <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.from_warehouse}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.to_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.name_from_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.name_from_shelf}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.name_to_warehouse}</CTableDataCell>
+                              <CTableDataCell className="text-center">{item.name_to_shelf}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>

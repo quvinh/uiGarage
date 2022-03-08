@@ -1,18 +1,33 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react'
+// import {
+//   CTable,
+//   CTableHead,
+//   CTableRow,
+//   CTableHeaderCell,
+//   CTableBody,
+//   CTableDataCell,
+//   CCard,
+//   CCardHeader,
+//   CCardBody,
+//   CButton,
+//   CButtonGroup,
+// } from '@coreui/react';
 import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CButton,
-  CButtonGroup,
-} from '@coreui/react';
+  Card,
+  CardHeader,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination,
+  Stack,
+  ButtonGroup,
+  TableFooter
+} from '@mui/material';
 import { getData, putData } from '../api/Api.js'
 import { Link } from 'react-router-dom';
 import DataTransfer from './DataTransfer';
@@ -21,6 +36,18 @@ import { getToken } from 'src/components/utils/Common.js';
 const HistoryTransfer = () => {
 
   const [codeTransfer, setCodeTransfer] = useState([])
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, codeTransfer.length - page * rowsPerPage);
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeTransfer' + '?token=' + getToken())])
@@ -33,57 +60,74 @@ const HistoryTransfer = () => {
 
   return (
     <>
-      <div>
-        <CButtonGroup>
-          <Link className='btn btn-primary' to='/history_import'>
-            Phiếu Nhập
-          </Link>
-          <Link className='btn btn-warning' to='/history_export'>
-            Phiếu Xuất
-          </Link>
-          <Link className='btn btn-success' to='/history_transfer'>
-            Phiếu Chuyển Kho
-          </Link>
-        </CButtonGroup>
-      </div>
-
-      <CCard>
-        <CCardHeader>
-          <span>Phiếu luân chuyển kho</span>
-        </CCardHeader>
-        <CCardBody>
-          <CTable striped hover responsive bordered borderColor="warning">
-            <CTableHead color="warning">
-              <CTableRow>
-                <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Mã Phiếu</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Người Tạo</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Thời gian</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {codeTransfer.map((item, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
-                  <CTableDataCell className="text-center">{item.code}</CTableDataCell>
-                  <CTableDataCell className="text-center">Nguyễn T ...</CTableDataCell>
-                  <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-                  <CTableDataCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
-                  <CTableDataCell className="text-center">
-                    <div className="d-grid gap-2 d-md-block">
-                      <DataTransfer code={item.code} created_at={item.created_at} status={item.status}/>
-                    </div>
-                  </CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
-        </CCardBody>
-      </CCard>
-
-
+      <Stack direction="row" spacing={2}>
+        <Link className='btn btn-primary' to='/history_import'>
+          Phiếu Nhập
+        </Link>
+        <Link className='btn btn-warning' to='/history_export'>
+          Phiếu Xuất
+        </Link>
+        <Link className='btn btn-success' to='/history_transfer'>
+          Phiếu Chuyển Kho
+        </Link>
+      </Stack>
+      <br />
+      <Card>
+        <CardHeader title='Phiếu chuyển kho' />
+        <TableContainer>
+          <Table striped hover responsive bordered borderColor="warning">
+            <TableHead style={{backgroundColor:'#66ff66'}}>
+              <TableRow>
+                <TableCell className="text-center">STT</TableCell>
+                <TableCell className="text-center">Mã Phiếu</TableCell>
+                <TableCell className="text-center">Người Tạo</TableCell>
+                <TableCell className="text-center">Từ Kho</TableCell>
+                <TableCell className="text-center">Đến Kho</TableCell>
+                <TableCell className="text-center">Thời gian</TableCell>
+                <TableCell className="text-center">Trạng thái</TableCell>
+                <TableCell className="text-center">Thao tác</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {codeTransfer
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((rows, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-center">{index + 1}</TableCell>
+                    <TableCell className="text-center">{rows.code}</TableCell>
+                    <TableCell className="text-center">Nguyễn T ...</TableCell>
+                    <TableCell className="text-center">{rows.name_from_warehouse}</TableCell>
+                    <TableCell className="text-center">{rows.name_to_warehouse}</TableCell>
+                    <TableCell className="text-center">{rows.created_at}</TableCell>
+                    <TableCell className="text-center">{rows.status === '2' ? 'Đã duyệt' : (rows.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
+                    <TableCell className="text-center">
+                      <div className="d-grid gap-2 d-md-block">
+                        <DataTransfer code={rows.code} created_at={rows.created_at} status={rows.status} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={codeTransfer.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </Card>
     </>
   )
 }
