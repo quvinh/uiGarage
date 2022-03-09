@@ -20,14 +20,21 @@ import {
     CModalTitle,
     CModalBody,
     CModalFooter,
+    CTableFoot,
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
 import CIcon from '@coreui/icons-react';
 import { cilPlus, cilFile, cilDelete } from '@coreui/icons';
+import { getToken } from 'src/components/utils/Common';
+import TablePagination from '@mui/material/TablePagination';
+
 const Suppliers = () => {
 
     const [dataTable, setDataTable] = useState([])
+    const [dataImport, setDataImport] = useState([])
     const [visible, setVisible] = useState(false)
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [page, setPage] = useState(0);
 
     const [code, setCode] = useState('')
     const [name, setName] = useState('')
@@ -39,14 +46,24 @@ const Suppliers = () => {
     const [email, setEmail] = useState('');
 
     const handleReload = () => {
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers')])
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers?token=' + getToken())])
             .then(function (response) {
                 setDataTable(response[0].data)
             })
     }
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = event => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const handleSuppliers = (id) => {
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers/show/' + id)])
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers/show/' + id + '?token=' + getToken()),
+        getData('http://127.0.0.1:8000/api/admin/suppliers/listImport/' + id + '?token=' + getToken())]
+        )
             .then(function (res) {
                 console.log(res[0].data)
                 setName(res[0].data.name)
@@ -57,12 +74,14 @@ const Suppliers = () => {
                 setSupplierInitials(res[0].data.supplier_initials)
                 setAddress(res[0].data.address)
                 setNote(res[0].data.note)
+                console.log(res[1].list)
+                setDataImport(res[1].list)
             })
     }
 
     const handleDelete = (e, id) => {
         console.log(id)
-        Promise.all([delData('http://127.0.0.1:8000/api/admin/suppliers/delete/' + id)])
+        Promise.all([delData('http://127.0.0.1:8000/api/admin/suppliers/delete/' + id + '?token=' + getToken())])
             .then(function (res) {
                 handleReload()
                 // eClick.closest('tr').remove();
@@ -73,9 +92,9 @@ const Suppliers = () => {
     }
 
     useEffect(() => {
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers')])
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers?token=' + getToken())])
             .then(function (res) {
-                console.log(res[0].data)
+                // console.log(res[0].data) 
                 setDataTable(res[0].data)
             })
             .catch(error => {
@@ -143,7 +162,7 @@ const Suppliers = () => {
                 </CCardBody>
             </CCard>
             <CModal scrollable fullscreen visible={visible} onClose={() => setVisible(false)}>
-                <CModalHeader style={{backgroundColor: "#ffa64d"}}>
+                <CModalHeader style={{ backgroundColor: "#ffa64d" }}>
                     <CModalTitle >CHI TIẾT NHÀ CUNG CẤP</CModalTitle>
                 </CModalHeader>
                 <CModalBody>
@@ -210,10 +229,47 @@ const Suppliers = () => {
                             </CRow>
                         </CCardBody>
                     </CCard>
-                    <CCard style={{marginTop: "20px"}} >
+                    <CCard style={{ marginTop: "20px" }} >
                         <CCardHeader color='w'><h5>Danh sách phiếu nhập</h5></CCardHeader>
                         <CCardBody>
-                            
+                            <CTable>
+                                <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell>STT</CTableHeaderCell>
+                                        <CTableHeaderCell>Mã Phiếu</CTableHeaderCell>
+                                        <CTableHeaderCell>Mô tả</CTableHeaderCell>
+                                        <CTableHeaderCell>Ngày tạo</CTableHeaderCell>
+                                        <CTableHeaderCell>Người tạo</CTableHeaderCell>
+                                        <CTableHeaderCell>Trạng thái</CTableHeaderCell>
+                                    </CTableRow>
+                                </CTableHead>
+                                <CTableBody>
+                                    {dataImport
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((item, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableDataCell>{index + 1}</CTableDataCell>
+                                            <CTableDataCell>{item.code}</CTableDataCell>
+                                            <CTableDataCell>{item.note}</CTableDataCell>
+                                            <CTableDataCell>{item.created_at}</CTableDataCell>
+                                            <CTableDataCell>{item.created_by}</CTableDataCell>
+                                            <CTableDataCell>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
+                                        </CTableRow>
+                                    ))}
+                                </CTableBody>
+                                <CTableFoot>
+                                    <CTableRow>
+                                        <TablePagination
+                                            rowsPerPageOptions={[5, 10, 25]}
+                                            count={dataImport.length}
+                                            rowsPerPage={rowsPerPage}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                        />
+                                    </CTableRow>
+                                </CTableFoot>
+                            </CTable>
                         </CCardBody>
                     </CCard>
                 </CModalBody>

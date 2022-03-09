@@ -71,6 +71,7 @@ const ShelfWarehouse = (props) => {
 
 
   const [dataItemClick, setDataItemClick] = useState([])
+  const [listItem, setListItem] = useState([])
 
   const [itemWarehouse, setItemWarehouse] = useState([])
   const [categoryname, setCategory] = useState([])
@@ -149,6 +150,12 @@ const ShelfWarehouse = (props) => {
     setPrice('')
     setStatus(0)
   }
+  const showAll = () => {
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/listItem/' + props.match.params.id + '?token=' + getToken())])
+      .then(function (res) {
+        setItemWarehouse(res[0].data)
+      })
+  }
 
   const handleSearch = (searchName) => {
 
@@ -184,9 +191,10 @@ const ShelfWarehouse = (props) => {
       })
   }
 
-  const handleValid = (id) => {
+  const handleValid = (id,shelfid,warehouseid) => {
     if (id !== '') {
-      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKD/' + id, { delay: false })])
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKD/' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),{ delay: false })])
+      // getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKDTransfer' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(), 
         .then(function (response) {
           setAmountNotValid(response[0].data)
         })
@@ -197,8 +205,12 @@ const ShelfWarehouse = (props) => {
   }
 
   const handleDetailItem = (id, shelfid, warehouseid) => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/detailItemId/' + id + '/' + shelfid + '/' + warehouseid, { delay: false })])
+    console.log(id)
+    console.log(shelfid)
+    console.log(warehouseid)
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/detailItemId/' + id + '/' + shelfid + '/' + warehouseid + '?token=' + getToken(), { delay: false })])
       .then(function (response) {
+        console.log(response[0].data)
         setIdItem(response[0].data[0].id)
         setNameItem(response[0].data[0].itemname)
         setCategoryIdItem(response[0].data[0].categoryid)
@@ -244,7 +256,9 @@ const ShelfWarehouse = (props) => {
     getData('http://127.0.0.1:8000/api/admin/category' + getToken()),
     getData('http://127.0.0.1:8000/api/admin/warehouse/show/' + props.match.params.id + '?token=' + getToken()),
     getData('http://127.0.0.1:8000/api/admin/warehouse/amountShelf/' + props.match.params.id + '?token=' + getToken()),
-    getData('http://127.0.0.1:8000/api/admin/warehouse/sumAmountItem/' + props.match.params.id + '?token=' + getToken()),
+    getData('http://127.0.0.1:8000/api/admin/warehouse/listItem/' + props.match.params.id + '?token=' + getToken()),
+      // getData('http://127.0.0.1:8000/api/admin/warehouse/sumAmountItem/' + props.match.params.id + '?token=' + getToken()),
+
     ])
       .then(function (response) {
         setDataShelf(response[0].data)
@@ -252,6 +266,8 @@ const ShelfWarehouse = (props) => {
         setWarehouseName(response[2].data.name)
         setAmountShelf(response[3].data)
         setAmountItem(response[3].count)
+        console.log(response[4].data)
+        setItemWarehouse(response[4].data)
       })
   }, []);
   return (
@@ -266,7 +282,7 @@ const ShelfWarehouse = (props) => {
             <CCol sm={3} lg={3}>
               <CForm>
                 <CInputGroup>
-                  <CFormTextarea id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormTextarea>
+                  <CFormTextarea placeholder='Nhập tên vật tư' id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormTextarea>
                   <CButton color='warning' onClick={(e) => { handleSearch(searchName) }} ><CIcon icon={cilSearch} /></CButton>
                 </CInputGroup>
               </CForm>
@@ -276,7 +292,12 @@ const ShelfWarehouse = (props) => {
         <CCardBody>
           <CRow>
             <CCol sm={3} lg={2}><div className="d-grid gap-2 d-md-block">
-              <CButton color="warning" href={'#/shelf-add/' + props.match.params.id}><CIcon icon={cilPlus} /></CButton>
+              <CButton color="warning" className='m-2' href={'#/shelf-add/' + props.match.params.id}><CIcon icon={cilPlus} /></CButton>
+              <CButton style={{ backgroundColor: "#99ff66", width: "120px", height: "38px", border: "none", color: "#262626" }}
+                onClick={(e) => {
+                  showAll()
+                  setIsShelfSelected(false)
+                }}>Tất cả</CButton>
             </div>
               <br />
               {dataShelf.map((item, index) => (
@@ -336,7 +357,7 @@ const ShelfWarehouse = (props) => {
                         <CTableRow key={index}>
                           <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.id}</CTableDataCell>
-                          <CTableDataCell className="text-center">{item.itemname}</CTableDataCell>
+                          <CTableDataCell className="text-center">{item.name_item}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.categoryname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelfname}</CTableDataCell>
@@ -350,10 +371,10 @@ const ShelfWarehouse = (props) => {
                                 <CIcon icon={cilFile} />
                               </CButton>
                               <CButton color='success' onClick={() => {
-                                handleValid(item.id)
-                                handleDetailItem(item.id, item.shelf_id, item.warehouseid)
+                                handleValid(item.id,item.shelf_id,item.warehouse_id)
+                                handleDetailItem(item.id, item.shelf_id, item.warehouse_id)
                                 setVisibleXL(!visibleXL)
-                              }}><CIcon icon={cilDescription}/></CButton>
+                              }}><CIcon icon={cilDescription} /></CButton>
                               {/* <CButton className='me-2' color="success"><CIcon icon={cilDescription} /></CButton> */}
                             </div>
                           </CTableDataCell>

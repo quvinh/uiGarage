@@ -33,10 +33,11 @@ const Categories = () => {
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken())])
       .then(function (res) {
+        console.log(res[0].data)
         setDataTable(res[0].data)
       })
       .catch(error => {
-        console.log(error)
+        console.log(error.response.status)
         if (error.response.status === 403) {
           history.push('/404')
         } else if(error.response.status === 401) {

@@ -51,11 +51,11 @@ const _nav = [
       //   name: 'Báo giá',
       //   to: '/',
       // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Nhà cung cấp',
-      //   to: '/',
-      // },
+      {
+        component: CNavItem,
+        name: 'Nhà cung cấp',
+        to: '/supplier',
+      },
       // {
       //   component: CNavItem,
       //   name: 'Khách hàng',
@@ -72,7 +72,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Thông báo',
-    to: '/notification',
+    to: '/notification-event',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
   },
   // {
