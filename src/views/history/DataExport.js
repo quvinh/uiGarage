@@ -130,7 +130,11 @@ const DataExport = (props) => {
       {
         getAllPermissions().includes('Xoá phiếu nhập ' + getIdWarehouseRole()) ? (
           <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
-        ) : (<></>)
+        ) : (
+          getRoleNames() === 'admin' ? (
+            <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+          ) : (<></>)
+        )
       }
       <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
       <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>

@@ -1,9 +1,9 @@
 {
   "short_name": "CoreUI-React",
-  "name": "CoreUI-React sample",
+  "name": "Nam Khánh Garage",
   "icons": [
     {
-      "src": "./assets/img/favicon.png",
+      "src": "./assets/img/icon.png",
       "sizes": "100x100",
       "type": "image/png"
     }
