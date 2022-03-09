@@ -65,8 +65,8 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Thống kê',
-    to: '/charts',
+    name: 'Thông tin tài khoản',
+    to: '/profile',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
   },
   {
@@ -87,27 +87,27 @@ const _nav = [
   //     },
   //   ],
   // },
-  {
-    component: CNavTitle,
-    name: 'Mở rộng',
-  },
-  {
-    component: CNavGroup,
-    name: 'Pages',
-    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Admin',
-        to: '/account',
-      },
-      {
-        component: CNavItem,
-        name: 'Cấp tài khoản',
-        to: '/register',
-      },
-    ],
-  },
+  // {
+  //   component: CNavTitle,
+  //   name: 'Mở rộng',
+  // },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Pages',
+  //   icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Admin',
+  //       to: '/account',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Cấp tài khoản',
+  //       to: '/register',
+  //     },
+  //   ],
+  // },
 ]
 
 export default _nav

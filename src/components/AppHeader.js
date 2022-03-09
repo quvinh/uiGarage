@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
@@ -12,6 +13,10 @@ import {
   CNavLink,
   CNavItem,
   CButton,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
@@ -19,6 +24,7 @@ import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown, AppNotificationsDropdown } from './header/index'
 import { logo } from 'src/assets/brand/logo'
+import { getRoleNames } from './utils/Common'
 
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -63,6 +69,19 @@ const AppHeader = () => {
                 QL Phiếu
               </CNavLink>
             </CNavItem>
+            {
+              getRoleNames() === "admin" ? (
+                <CNavItem>
+                  <CDropdown variant="nav-item">
+                    <CDropdownToggle>Quản trị</CDropdownToggle>
+                    <CDropdownMenu>
+                      <CDropdownItem href="#/account">Người dùng</CDropdownItem>
+                      <CDropdownItem href="#/register">Tạo mới tài khoản</CDropdownItem>
+                    </CDropdownMenu>
+                  </CDropdown>
+                </CNavItem>
+              ) : (<></>)
+            }
             {/* <CNavItem>
               <CNavLink to="/reports" component={NavLink}>
                 Báo cáo

@@ -14,6 +14,7 @@ import {
   CCol,
   CButton,
   CFormSelect,
+  CFormInput,
 } from '@coreui/react'
 import { getData } from '../api/Api'
 import TextField from '@mui/material/TextField'
@@ -25,7 +26,7 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns'
 import { ShowExport } from './ShowExport'
 import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
-import { getToken, getUserID } from 'src/components/utils/Common'
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
 import { useHistory } from 'react-router-dom'
 
 const Exports = (props) => {
@@ -47,6 +48,7 @@ const Exports = (props) => {
   const [nameWarehouse, setNameWarehouse] = useState('')
   const [date, setDate] = useState(new Date)
   const [note, setNote] = useState('')
+  const [kd, setKD] = useState('')
 
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
@@ -60,6 +62,7 @@ const Exports = (props) => {
 
   const [isAmountSelected, setIsAmountSelected] = useState(false)
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+  const [showWarehouse, setShowWarehouse] = useState(false)
 
   const history = useHistory()
   // const [isItemSelected, setIsItemSelected] = useState(false)
@@ -85,6 +88,10 @@ const Exports = (props) => {
         getDataShelf(item.warehouse_id)
         setIsWarehouseSelected(true)
         checked = true
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/' + item.warehouse_id + '/' + item.shelf_id + '?token=' + getToken())])
+          .then(function (res) {
+            setKD(res[0].data)
+          })
       }
     })
     if (amount > 0) {
@@ -110,6 +117,7 @@ const Exports = (props) => {
     setWarehouse('')
     setDate(new Date())
     setIsAmountSelected(false)
+    setKD('')
     // setDataWarehouse([])
   }
 
@@ -159,8 +167,9 @@ const Exports = (props) => {
       setIsAmountSelected(false)
     } else {
       setIsAmountSelected(true)
+      console.log(e.nativeEvent.target[index].text)
       setShelfName(e.nativeEvent.target[index].text)
-
+      setShelfID(e.target.value)
       Promise.all([
         getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value + '?token=' + getToken())
       ])
@@ -171,7 +180,7 @@ const Exports = (props) => {
         .catch(error => {
           if (error.response.status === 403) {
             history.push('/404')
-          } else if(error.response.status === 401) {
+          } else if (error.response.status === 401) {
             history.push('/login')
           }
         })
@@ -260,17 +269,33 @@ const Exports = (props) => {
     }
   }
 
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    return nameRole
+  }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/items/searchItem/1?token=' + getToken()),
-    getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
-    getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+    Promise.all([
+      getData(getRoleNames() === 'admin' ?
+        'http://127.0.0.1:8000/api/admin/items/itemInWarehouse?token=' + getToken() :
+        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getIdWarehouseRole() + '?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken())
     ])
       .then(res => {
         console.log(res[2].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
         setCreatedBy(res[2].data[0].fullname)
+        if (getRoleNames() !== 'admin') {
+          setWarehouse(getIdWarehouseRole())
+          // getDataShelf(getIdWarehouseRole())
+          setIsWarehouseSelected(true)
+          setShowWarehouse(true)
+        } else { setShowWarehouse(false) }
       })
       .catch(error => {
         if (error.response.status === 403) {
@@ -308,13 +333,13 @@ const Exports = (props) => {
                   <TextField
                     fullWidth
                     type={'number'}
-                    inputProps={{ min: 0, max: amountCurrent, type: 'number' }}
+                    inputProps={{ min: 0, max: kd, type: 'number' }}
                     size='small'
                     label="Số lượng"
                     value={amount}
                     onChange={(e) => {
                       onChangeAmount(e)
-                      setAmount(parseInt(e.target.value) > amountCurrent ? amountCurrent : parseInt(e.target.value))
+                      setAmount(parseInt(e.target.value) > kd ? kd : parseInt(e.target.value))
                     }}
                     variant="outlined"
                   />
@@ -324,6 +349,17 @@ const Exports = (props) => {
                       required: "(*) Nhập số lượng"
                     }
                   })}
+                </CCol>
+                <CCol sm={2}>
+                  <TextField
+                    fullWidth
+                    disabled
+                    type={'number'}
+                    size='small'
+                    label="Số lượng khả dụng"
+                    value={kd}
+                    variant="outlined"
+                  />
                 </CCol>
                 <CCol xs>
                   <div className="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -348,7 +384,7 @@ const Exports = (props) => {
           <br />
           <CRow className="g-3">
             <CCol xs>
-              <CFormSelect size="sm" className="mb-3" value={warehouse_id} onChange={
+              <CFormSelect size="sm" disabled={showWarehouse} className="mb-3" value={warehouse_id} onChange={
                 (e) => {
                   (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
                 }
@@ -387,7 +423,11 @@ const Exports = (props) => {
             {
               (isAmountSelected) ? (
                 <>
-                  <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
+                  <CButton size="sm" color="success" onClick={(e) => {
+                    onAddTable(e)
+                    setKD(parseInt(kd) - parseInt(amount))
+                  }
+                  }>THÊM VÀO PHIẾU</CButton>
                   <ShowExport dataTable={dataTable} code={code} createdBy={created_by} />
                   <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
                 </>
@@ -429,6 +469,7 @@ const Exports = (props) => {
               <CTableDataCell className="text-center">
                 <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
                   onRemoveRow(e, index)
+                  setKD(parseInt(kd) + parseInt(item.amount))
                 }}>
                   <CIcon icon={cilDelete} />
                 </CButton>

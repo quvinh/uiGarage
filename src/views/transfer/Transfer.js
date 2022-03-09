@@ -54,6 +54,7 @@ const Transfer = (props) => {
   const [price, setPrice] = useState(0)
   const [date, setDate] = useState(new Date)
   const [note, setNote] = useState('')
+  const [kd, setKD] = useState('')
 
   const [nameFromShelf, setNameFromShelf] = useState('')
   const [nameFromWarehouse, setNameFromWarehouse] = useState('')
@@ -119,11 +120,10 @@ const Transfer = (props) => {
     if (index === 0) {
       setIsAmountSelected(false)
     } else {
-      setIsAmountSelected(true)
       setNameFromShelf(e.nativeEvent.target[index].text)
       setFromShelf(e.target.value)
       Promise.all([
-        getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + fromWarehouse + '/' + e.target.value /*+ '?token=' + getToken()*/)
+        getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + fromWarehouse + '/' + e.target.value + '?token=' + getToken())
       ])
         .then(function (res) {
           console.log(res[0].data)
@@ -143,18 +143,10 @@ const Transfer = (props) => {
   const onChangeToWarehouse = (e, value) => {
     const index = e.nativeEvent.target.selectedIndex
     if (value) {
-      if (fromWarehouse !== e.target.value) {
         setIsToWarehouseSelected(true)
         setToWarehouse(e.target.value)
         getDataToShelf(e.target.value)
         setNameToWarehouse(e.nativeEvent.target[index].text)
-      } else {
-        setIsToWarehouseSelected(false)
-        setToWarehouse(null)
-        getDataToShelf(null)
-        setNameToWarehouse(null)
-      }
-
     } else {
       setIsToWarehouseSelected(false)
       setToWarehouse(null)
@@ -173,10 +165,8 @@ const Transfer = (props) => {
   }
   const onChangeToShelf = (e) => {
     const index = e.nativeEvent.target.selectedIndex
-    if (index !== 0 && fromShelf !== null && fromShelf !== 'Giá/kệ' && index !== fromShelf) {
-      setIsAmountSelected(true)
+    if (index !== 0 && fromShelf !== null && fromShelf !== 'Giá/kệ' && index.toString() !== fromShelf.toString()) {
       setNameToShelf(e.nativeEvent.target[index].text)
-
     } else {
       setIsAmountSelected(false)
     }
@@ -197,7 +187,6 @@ const Transfer = (props) => {
         setFromShelf(item.shelf_id)
         setNameFromShelf(item.shelf_name)
         getDataFromShelf(item.warehouse_id)
-        setCreatedBy(1)
         setUnit(item.unit)
         setPrice(item.price)
         setName(item.name_item)
@@ -205,8 +194,12 @@ const Transfer = (props) => {
         // setNameToWarehouse(item.name_warehouse)
         // setNameToShelf(item.nameToShelf)
         setIsFromWarehouseSelected(true)
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/'+ item.warehouse_id+'/'+ item.shelf_id + '?token=' + getToken())])
+        .then(function(res) {
+          setKD(res[0].data)
+        })
         checked = true
-        console.log(fromShelf)
+        console.log('fromShelf',fromShelf)
       }
     })
     if (amount > 0) {
@@ -218,10 +211,8 @@ const Transfer = (props) => {
   const onChangeAmount = (e) => {
     (e.target.value > 0 && name.length > 0 &&
       toWarehouse !== '' && toWarehouse !== null &&
-      toShelf !== '' && toShelf !== 'Giá/kệ') ? setIsAmountSelected(true) : setIsAmountSelected(false)
+      toShelf !== '' && toShelf !== 'Giá/kệ' && toShelf.toString() !== fromShelf.toString()) ? setIsAmountSelected(true) : setIsAmountSelected(false)
     if (dataTable.length === 0) createCode()
-    console.log(toWarehouse)
-    console.log(toShelf)
   }
 
   const setNull = () => {
@@ -321,14 +312,13 @@ const Transfer = (props) => {
     Promise.all([
       getData('http://127.0.0.1:8000/api/admin/items/searchItem/1' + '?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/warehouse' + '?token=' + getToken()),
-      // getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
-        console.log(res[0].data)
         setDataItem(res[0].data)
         setDataFromWarehouse(res[1].data)
         setDataToWarehouse(res[1].data)
-        // setCreatedBy(res[2].data.fullname)
+        setCreatedBy(res[2].data[0].fullname)
       })
       .catch(error => {
         if (error.response.status === 403) {
@@ -368,7 +358,7 @@ const Transfer = (props) => {
                     size='small'
                     label="Số lượng"
                     type={'number'}
-                    inputProps={{ min: 0, max: amountCurrent, type: 'number' }}
+                    inputProps={{ min: 0, max: kd, type: 'number' }}
                     value={amount}
                     onChange={(e) => {
                       onChangeAmount(e)
@@ -383,6 +373,17 @@ const Transfer = (props) => {
                       }
                     })}
                   </div>
+                </CCol>
+                <CCol xs={3}>
+                  <TextField
+                    fullWidth
+                    disabled
+                    type={'number'}
+                    size='small'
+                    label="SL khả dụng"
+                    value={kd}
+                    variant="outlined"
+                  />
                 </CCol>
               </CRow>
               <br />
@@ -492,7 +493,10 @@ const Transfer = (props) => {
             {
               (isAmountSelected) ? (
                 <>
-                  <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
+                  <CButton size="sm" color="success" onClick={(e) => {
+                    onAddTable(e)
+                    setKD(parseInt(kd) - parseInt(amount))
+                    }}>THÊM VÀO PHIẾU</CButton>
                   <ShowTransfer dataTable={dataTable} code={code} />
                 </>
               ) : (
@@ -532,6 +536,7 @@ const Transfer = (props) => {
               <CTableDataCell className="text-center">
                 <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
                   onRemoveRow(e, index)
+                  setKD(parseInt(kd) + parseInt(item.amount))
                 }}>
                   <CIcon icon={cilDelete} />
                 </CButton>

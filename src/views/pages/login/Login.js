@@ -115,17 +115,17 @@ const Login = () => {
               </CCard>
               <CCard className="text-white bg-warning py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>
+                    {/* <div>
+                      <h2>Sign up</h2>
+                      <p>
 
-                    </p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
-                        Đăng kí
-                      </CButton>
-                    </Link>
-                  </div>
+                      </p>
+                      <Link to="/register">
+                        <CButton color="primary" className="mt-3" active tabIndex={-1}>
+                          Đăng kí
+                        </CButton>
+                      </Link>
+                    </div> */}
                 </CCardBody>
               </CCard>
             </CCardGroup>
