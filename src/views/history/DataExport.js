@@ -193,8 +193,8 @@ const DataExport = (props) => {
                   {/* </Grid> */}
                   <Grid item xs={12}>
                     <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
-                    {tableHistoryExport.map((item, index) => (
-                      <TableContainer component={Paper} key={index}>
+
+                      <TableContainer component={Paper} >
                         <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
                           <CTableHead color="warning">
                             <CTableRow>
@@ -209,7 +209,8 @@ const DataExport = (props) => {
                               <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
                             </CTableRow>
                           </CTableHead>
-                          <CTableBody>
+                    {tableHistoryExport.map((item, index) => (
+                          <CTableBody key={index}>
                             <CTableRow v-for="item in tableItems" >
                               <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
                               <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
@@ -222,9 +223,9 @@ const DataExport = (props) => {
                               <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
                             </CTableRow>
                           </CTableBody>
+                        ))}
                         </Table>
                       </TableContainer>
-                    ))}
                   </Grid>
                   <Grid item xs={6}>
                   </Grid>

@@ -92,6 +92,11 @@ const HistoryExport = () => {
                 </TableCell>
               </TableRow>
             ))}
+            {emptyRows > 0 && (
+                <TableRow style={{ height: 40 * emptyRows }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
           </TableBody>
           <TableFooter>
             <TableRow>

@@ -82,7 +82,9 @@ const HistoryTransfer = () => {
                 <TableCell className="text-center">Mã Phiếu</TableCell>
                 <TableCell className="text-center">Người Tạo</TableCell>
                 <TableCell className="text-center">Từ Kho</TableCell>
+                <TableCell className="text-center">Từ Kệ</TableCell>
                 <TableCell className="text-center">Đến Kho</TableCell>
+                <TableCell className="text-center">Đến Kệ</TableCell>
                 <TableCell className="text-center">Thời gian</TableCell>
                 <TableCell className="text-center">Trạng thái</TableCell>
                 <TableCell className="text-center">Thao tác</TableCell>
@@ -97,7 +99,9 @@ const HistoryTransfer = () => {
                     <TableCell className="text-center">{rows.code}</TableCell>
                     <TableCell className="text-center">Nguyễn T ...</TableCell>
                     <TableCell className="text-center">{rows.name_from_warehouse}</TableCell>
+                    <TableCell className="text-center">{rows.name_from_shelf}</TableCell>
                     <TableCell className="text-center">{rows.name_to_warehouse}</TableCell>
+                    <TableCell className="text-center">{rows.name_to_shelf}</TableCell>
                     <TableCell className="text-center">{rows.created_at}</TableCell>
                     <TableCell className="text-center">{rows.status === '2' ? 'Đã duyệt' : (rows.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
                     <TableCell className="text-center">
@@ -108,7 +112,7 @@ const HistoryTransfer = () => {
                   </TableRow>
                 ))}
               {emptyRows > 0 && (
-                <TableRow style={{ height: 53 * emptyRows }}>
+                <TableRow style={{ height: 40 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}

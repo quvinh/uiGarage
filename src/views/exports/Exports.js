@@ -14,6 +14,7 @@ import {
   CCol,
   CButton,
   CFormSelect,
+  CFormInput,
 } from '@coreui/react'
 import { getData } from '../api/Api'
 import TextField from '@mui/material/TextField'
@@ -47,6 +48,7 @@ const Exports = (props) => {
   const [nameWarehouse, setNameWarehouse] = useState('')
   const [date, setDate] = useState(new Date)
   const [note, setNote] = useState('')
+  const [kd, setKD] = useState('')
 
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
@@ -85,6 +87,10 @@ const Exports = (props) => {
         getDataShelf(item.warehouse_id)
         setIsWarehouseSelected(true)
         checked = true
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/'+ item.warehouse_id+'/'+ item.shelf_id + '?token=' + getToken())])
+        .then(function(res) {
+          setKD(res[0].data)
+        })
       }
     })
     if (amount > 0) {
@@ -110,6 +116,7 @@ const Exports = (props) => {
     setWarehouse('')
     setDate(new Date())
     setIsAmountSelected(false)
+    setKD('')
     // setDataWarehouse([])
   }
 
@@ -159,8 +166,9 @@ const Exports = (props) => {
       setIsAmountSelected(false)
     } else {
       setIsAmountSelected(true)
+      console.log(e.nativeEvent.target[index].text)
       setShelfName(e.nativeEvent.target[index].text)
-
+      setShelfID(e.target.value)
       Promise.all([
         getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value + '?token=' + getToken())
       ])
@@ -308,13 +316,13 @@ const Exports = (props) => {
                   <TextField
                     fullWidth
                     type={'number'}
-                    inputProps={{ min: 0, max: amountCurrent, type: 'number' }}
+                    inputProps={{ min: 0, max: kd, type: 'number' }}
                     size='small'
                     label="Số lượng"
                     value={amount}
                     onChange={(e) => {
                       onChangeAmount(e)
-                      setAmount(parseInt(e.target.value) > amountCurrent ? amountCurrent : parseInt(e.target.value))
+                      setAmount(parseInt(e.target.value) > kd ? kd : parseInt(e.target.value))
                     }}
                     variant="outlined"
                   />
@@ -325,6 +333,7 @@ const Exports = (props) => {
                     }
                   })}
                 </CCol>
+                <CCol sm={2}><CFormInput value={kd} disabled placeholder='Số lượng khả dụng'></CFormInput></CCol>
                 <CCol xs>
                   <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                     <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
@@ -387,7 +396,10 @@ const Exports = (props) => {
             {
               (isAmountSelected) ? (
                 <>
-                  <CButton size="sm" color="success" onClick={(e) => onAddTable(e)}>THÊM VÀO PHIẾU</CButton>
+                  <CButton size="sm" color="success" onClick={(e) => {
+                    onAddTable(e)
+                    setKD(parseInt(kd) - parseInt(amount))}
+                    }>THÊM VÀO PHIẾU</CButton>
                   <ShowExport dataTable={dataTable} code={code} createdBy={created_by} />
                   <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
                 </>
@@ -429,6 +441,7 @@ const Exports = (props) => {
               <CTableDataCell className="text-center">
                 <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
                   onRemoveRow(e, index)
+                  setKD(parseInt(kd) + parseInt(item.amount))
                 }}>
                   <CIcon icon={cilDelete} />
                 </CButton>

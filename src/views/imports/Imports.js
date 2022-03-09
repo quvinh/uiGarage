@@ -59,6 +59,7 @@ const Imports = () => {
   const [dataSuppliers, setDataSuppliers] = useState([])
   const [dataShelf, setDataShelf] = useState([])
   const [dataCategory, setDataCategory] = useState([])
+  const [dataUnit, setDataUnit] = useState([])
   // const [dataNameSelected, setDataNameSelected] = useState([])
 
   const [code, setCode] = useState('')
@@ -67,6 +68,7 @@ const Imports = () => {
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
   const [isItemSelected, setIsItemSelected] = useState(false)
   const [isUnitSelected, setIsUnitSelected] = useState(false)
+  const [isCategorySelected, setIsCategorySelected] = useState(false)
 
   const setNull = () => {
     setName('')
@@ -84,11 +86,14 @@ const Imports = () => {
     setShelf('')
     setIsItemSelected(false)
     setIsWarehouseSelected(false)
+    setIsCategorySelected(false)
     setDate(new Date())
   }
 
   const reset = () => {
     setNull()
+    setIsCategorySelected(false)
+    setIsItemSelected(false)
     setDataTable([])
   }
 
@@ -96,8 +101,6 @@ const Imports = () => {
     setName(e.target.value)
     if (dataTable.length === 0) createCode()
     setIsItemSelected(false)
-    console.log(e.target.value)
-    console.log(newValue)
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         getDataShelf(item.warehouse_id)
@@ -131,6 +134,29 @@ const Imports = () => {
       getDataShelf(e.target.value)
     } else {
       setIsWarehouseSelected(false)
+      setWarehouse(null)
+    }
+
+    // console.log(e.nativeEvent.target[index].text)
+  }
+  const onChangeCategory = (e, value) => {
+    if (value) {
+      let index = e.nativeEvent.target.selectedIndex;
+      setCategory(e.target.value)
+      setIsCategorySelected(true)
+      console.log('category',e.target.value)
+      Promise.all(
+        [getData('http://127.0.0.1:8000/api/admin/category/itemCategory/' + e.target.value + '?token=' + getToken()),
+        getData('http://127.0.0.1:8000/api/admin/category/unitCategory/' + e.target.value + '?token=' + getToken())],
+      ).then(function (res) {
+        setDataItem(res[0].data)
+        setUnit(res[1].data[0].unit)
+      })
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      setIsCategorySelected(false)
       setWarehouse(null)
     }
 
@@ -230,21 +256,19 @@ const Imports = () => {
       getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
-        console.log('aabcv')
-        console.log(res)
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
         setDataShelf(res[3].data)
         setDataItem(res[4].data)
-        setUserProfile(res[5].data.fullname)
-        // console.log(res[5].data.fullname)
+        setUserProfile(res[5].data[0].fullname)
+        console.log('admin',res[5].data[0].fullname)
       })
       .catch(error => {
         console.log(error)
         if (error.response.status === 403) {
           history.push('/404')
-        } else if(error.response.status === 401) {
+        } else if (error.response.status === 401) {
           history.push('/login')
         }
       })
@@ -316,9 +340,9 @@ const Imports = () => {
             <CCol xs>
               <CRow>
                 <CCol xs={4}>
-                  <CFormSelect disabled={isItemSelected} size="sm" value={unit} onChange={
+                <CFormSelect size="sm" value={unit} onChange={
                     (e) => {
-                      // setUnit(e.target.value)
+                      (e.target.value !== unit.toString())?(reset()) : unit = e.target.value
                       (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
                       setUnit(e.target.value)
                     }
@@ -349,11 +373,12 @@ const Imports = () => {
                               (e) => {
                                 setSubAmount(e.target.value)
                                 setTotalPrice(e.target.value * amount * price)
-                              }} /> */}
+                              }} />*/}
                           </CInputGroup>
                         </CCol>
                         <CCol>
-                          <CFormSelect size="sm" value={subUnit} onChange={(e) => setSubUnit(e.target.value)}>
+                          <CFormSelect disabled={isCategorySelected?true:(isItemSelected?true:false)} size="sm" value={unit} onChange={(e) => setSubUnit(e.target.value)}>
+                            {}
                             <option value={'Chiếc'}>Chiếc</option>
                             <option value={'Bộ'}>Bộ</option>
                             <option value={'Cái'}>Cái</option>
@@ -387,7 +412,10 @@ const Imports = () => {
               <br />
             </CCol>
             <CCol xs>
-              <CFormSelect disabled={isItemSelected} size="sm" name="category_id" value={category_id} onChange={(e) => setCategory(e.target.value)}>
+              <CFormSelect disabled={isItemSelected} size="sm" name="category_id" value={category_id} onChange={
+                (e) => {
+                  (parseInt(e.target.value)) ? onChangeCategory(e, true) : onChangeCategory(e, false)}
+                  }>
                 <option>Chọn loại vật tư</option>
                 {dataCategory.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
