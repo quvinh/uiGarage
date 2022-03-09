@@ -25,6 +25,7 @@ const HistoryExport = () => {
   const [codeExport, setCodeExport] = useState([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -63,7 +64,7 @@ const HistoryExport = () => {
       <Card>
         <CardHeader title='Phiếu Xuất' />
         <Table striped hover responsive bordered borderColor="warning">
-          <TableHead style={{backgroundColor:'#ffcc80'}}>
+          <TableHead style={{ backgroundColor: '#ffcc80' }}>
             <TableRow>
               <TableCell className="text-center">STT</TableCell>
               <TableCell className="text-center">Mã Phiếu</TableCell>
@@ -76,22 +77,22 @@ const HistoryExport = () => {
           </TableHead>
           <TableBody>
             {codeExport
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((item, index) => (
-              <TableRow key={index}>
-                <TableCell className="text-center">{index + 1}</TableCell>
-                <TableCell className="text-center">{item.code}</TableCell>
-                <TableCell className="text-center">{item.tenKho}</TableCell>
-                <TableCell className="text-center">{item.created_by}</TableCell>
-                <TableCell className="text-center">{item.created_at}</TableCell>
-                <TableCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
-                <TableCell className="text-center">
-                  <div className="d-grid gap-2 d-md-block">
-                    <DataExport code={item.code} status={item.status} created_at={item.created_at} />
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell className="text-center">{index + 1}</TableCell>
+                  <TableCell className="text-center">{item.code}</TableCell>
+                  <TableCell className="text-center">{item.tenKho}</TableCell>
+                  <TableCell className="text-center">{item.created_by}</TableCell>
+                  <TableCell className="text-center">{item.created_at}</TableCell>
+                  <TableCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
+                  <TableCell className="text-center">
+                    <div className="d-grid gap-2 d-md-block">
+                      <DataExport code={item.code} status={item.status} created_at={item.created_at} />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
           <TableFooter>
             <TableRow>

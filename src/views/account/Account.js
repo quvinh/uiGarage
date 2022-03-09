@@ -36,6 +36,11 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 // import DateTimePicker from '@mui/lab/DateTimePicker';
 import DatePicker from '@mui/lab/DatePicker';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 const headerStyle = {
   backgroundColor: '#ff944d',
@@ -114,7 +119,7 @@ const Account = () => {
 
   const handleGetUsers = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/auth/users?token=' + getToken())])
-    // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers:{'Authorization': 'Bearer ' + getToken()}})])
+      // Promise.all([getData('http://127.0.0.1:8000/api/auth/users', {headers:{'Authorization': 'Bearer ' + getToken()}})])
       .then(function (response) {
         console.log("daTA:", response)
         setDataTable(response[0].data)
@@ -172,7 +177,7 @@ const Account = () => {
         console.log(error)
         if (error.response.status === 403) {
           history.push('/404')
-        } else if( error.response.status === 401) {
+        } else if (error.response.status === 401) {
           history.push('/login')
         }
       })
@@ -276,49 +281,75 @@ const Account = () => {
         <CModalBody>
           <CRow>
             <CCol>
-              <CFormSelect size="lg" className="mb-3" value={rolesID ? rolesID : dataUserClick.roles_id} onChange={(e) => {
-                showPermission(e.target.value)
-                setRolesID(e.target.value)
-                setIsSelected(true)
-              }}>
-                <option>Quyền hạn</option>
-                {
-                  dataRoles.map((item, index) => (
-                    <option key={index} value={item.id}>{item.name}</option>
-                  ))
-                }
-              </CFormSelect>
+              <br /><br />
+              <CRow>
+                <CFormSelect size="lg" className="mb-3" value={rolesID ? rolesID : dataUserClick.roles_id} onChange={(e) => {
+                  showPermission(e.target.value)
+                  setRolesID(e.target.value)
+                  setIsSelected(true)
+                }}>
+                  <option>Quyền hạn</option>
+                  {
+                    dataRoles.map((item, index) => (
+                      <option key={index} value={item.id}>{item.name}</option>
+                    ))
+                  }
+                </CFormSelect>
+              </CRow>
+              <CRow>
+                <div className="d-grid gap-2 d-md-flex justify-content-md-center">
+                  <CButton color="secondary" onClick={() => {
+                    setVisibleRoles(false)
+                    setPermission([])
+                    setIsSelected(false)
+                    setRolesID()
+                  }}>
+                    Huỷ
+                  </CButton>
+                  {
+                    (isSelected) ? (
+                      <CButton color="warning" onClick={() => {
+                        handelSave(dataUserClick.id, rolesID)
+                        setIsSelected(false)
+                      }}>Lưu</CButton>
+                    ) : (
+                      <CButton color="secondary">Lưu</CButton>
+                    )
+                  }
+                </div>
+
+              </CRow>
+
             </CCol>
             <CCol>
-              <CListGroup>
+              {/* <CListGroup>
                 {
                   dataPermission.map((item, index) => (
                     <CListGroupItem key={index} component="button">{item.name}</CListGroupItem>
                   ))
                 }
-              </CListGroup>
+              </CListGroup> */}
+              <Box
+                sx={{ bgcolor: 'background.paper', display: 'flex', height: 448, minWidth: 200 }}
+              >
+                <Tabs
+                  orientation="vertical"
+                  variant="scrollable"
+
+                  sx={{ borderLeft: 2, borderColor: 'warning' }}
+                >
+                  {
+                    dataPermission.map((item, index) => (
+                      <Tab key={index} label={item.name} />
+                    ))
+                  }
+                </Tabs>
+              </Box>
             </CCol>
           </CRow>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => {
-            setVisibleRoles(false)
-            setPermission([])
-            setIsSelected(false)
-            setRolesID()
-          }}>
-            Huỷ
-          </CButton>
-          {
-            (isSelected) ? (
-              <CButton color="warning" onClick={() => {
-                handelSave(dataUserClick.id, rolesID)
-                setIsSelected(false)
-              }}>Lưu</CButton>
-            ) : (
-              <CButton color="secondary">Lưu</CButton>
-            )
-          }
+
         </CModalFooter>
       </CModal>
       <CModal visible={visibleRemove} onClose={() => setVisibleRemove(false)}>

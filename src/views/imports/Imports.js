@@ -26,7 +26,7 @@ import { ShowImport } from './ShowImport'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import DateTimePicker from '@mui/lab/DateTimePicker'
 import AdapterDateFns from '@mui/lab/AdapterDateFns'
-import { getToken, getUserID } from 'src/components/utils/Common'
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
 import CurrencyFormat from 'react-currency-format'
 import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
@@ -65,8 +65,11 @@ const Imports = () => {
   // const simpleValidator = useRef(SimpleReactValidator())
   const [validator, showValidationMessage] = Validator()
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+  const [showWarehouse, setShowWarehouse] = useState(false)
   const [isItemSelected, setIsItemSelected] = useState(false)
   const [isUnitSelected, setIsUnitSelected] = useState(false)
+
+
 
   const setNull = () => {
     setName('')
@@ -119,6 +122,20 @@ const Imports = () => {
       }
     })
     // console.log(arr)
+  }
+
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    if (nameRole !== '') {
+      setShowWarehouse(true)
+      setIsWarehouseSelected(true)
+      getDataShelf(nameRole)
+    }
+    // console.log('id:' + nameRole)
+    return nameRole
   }
 
   const onChangeWarehouse = (e, value) => {
@@ -227,24 +244,25 @@ const Imports = () => {
       getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/shelf?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/items/searchItem/1?token=' + getToken()),
-      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+      getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken())
     ])
       .then(res => {
-        console.log('aabcv')
+
         console.log(res)
+        setWarehouse(getIdWarehouseRole())
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
         setDataShelf(res[3].data)
         setDataItem(res[4].data)
-        setUserProfile(res[5].data.fullname)
-        // console.log(res[5].data.fullname)
+        setUserProfile(res[5].data[0].fullname)
+        console.log(getIdWarehouseRole())
       })
       .catch(error => {
         console.log(error)
         if (error.response.status === 403) {
           history.push('/404')
-        } else if(error.response.status === 401) {
+        } else if (error.response.status === 401) {
           history.push('/login')
         }
       })
@@ -428,7 +446,7 @@ const Imports = () => {
               <br />
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" name="warehouse_id" value={warehouse_id} onChange={
+              <CFormSelect disabled={showWarehouse} size="sm" name="warehouse_id" value={warehouse_id} onChange={
                 (e) => {
                   (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
                 }

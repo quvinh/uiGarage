@@ -18,7 +18,7 @@ import {
 import { getData, putData } from '../api/Api.js'
 import DataImport from './DataImport.js'
 import { Link, useHistory } from 'react-router-dom'
-import { getToken } from 'src/components/utils/Common'
+import { getRoleNames, getToken } from 'src/components/utils/Common'
 
 const HistoryImport = () => {
   const history = useHistory()

@@ -24,7 +24,6 @@ const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [validationMsg, setValidationMsg] = useState('')
-
   const history = useHistory()
 
   const handleUsername = (e) => {
@@ -42,10 +41,9 @@ const Login = () => {
     console.log(data)
     Promise.all([postData("http://127.0.0.1:8000/api/auth/login", data)])
       .then(function(res) {
-        console.log(res)
-        // localStorage.setItem("token", res[0].data.access_token)
-        setUserSession(res[0].data.access_token, res[0].data.user.id)
-        // console.log(localStorage.getItem("token"))
+        console.log(res[0].data.user.roles[0].name)
+        setUserSession(res[0].data.access_token, res[0].data.user.id, res[0].data.user.roles[0].name, res[0].data.role)
+        console.log("login")
         history.push("/dashboard")
       })
       .catch(error => {

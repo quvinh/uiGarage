@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react'
+/* eslint-disable prettier/prettier */
+import React, { useEffect, useState } from 'react'
 import {
   CAvatar,
   CBadge,
+  CButton,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -10,11 +12,7 @@ import {
   CDropdownToggle,
 } from '@coreui/react'
 import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
   cilEnvelopeOpen,
-  cilFile,
   cilLockLocked,
   cilSettings,
   cilTask,
@@ -23,12 +21,19 @@ import {
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
-import { getToken, getUser, removeUserSession } from '../utils/Common'
+import { getRoleNames, getToken, getUser, getUserID, removeUserSession } from '../utils/Common'
 import { useHistory } from 'react-router-dom'
 import { getData } from 'src/views/api/Api'
 
 const AppHeaderDropdown = () => {
   const history = useHistory()
+  const [user, setUser] = useState([])
+
+  var nameRole = ''
+  getRoleNames().split(' ').map((item) => {
+    if (isNaN(item)) nameRole += item + ' '
+  })
+
   const handleLogout = () => {
     console.log(getToken())
     removeUserSession()
@@ -36,26 +41,28 @@ const AppHeaderDropdown = () => {
     history.push('/login')
   }
 
-  // useEffect(() => {
-  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/category')])
-  //     .then(function (res) {
-  //       setDataTable(res[0].data)
-  //     })
-  //     .catch(error => {
-  //       console.log(error)
-  //       if (error.response.status === 403) {
-  //         history.push('/404')
-  //       }
-  //     })
-  // }, [])
+  useEffect(() => {
+    Promise.all([getData('http://127.0.0.1:8000/api/auth/get-user/' + String(getUserID()) + '?token=' + getToken())])
+      .then(function (res) {
+        setUser(res[0].data[0].fullname)
+        // console.log(res[0].data[0].fullname)
+      })
+      .catch(error => {
+        console.log(error)
+        if (error.response.status === 403) {
+          history.push('/404')
+        }
+      })
+  }, [])
 
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0" caret={false}>
         <CAvatar src={avatar8} size="md" />
+        <CButton color="light" shape="rounded-pill">{user}</CButton>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-light fw-semibold py-2">Tài khoản</CDropdownHeader>
+        <CDropdownHeader className="bg-light fw-semibold py-2">{"Chức vụ: " + nameRole.trim()}</CDropdownHeader>
         {/* <CDropdownItem href="#">
           <CIcon icon={cilBell} className="me-2" />
           Updates

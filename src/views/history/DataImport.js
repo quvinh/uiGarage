@@ -38,7 +38,7 @@ import {
 } from '@coreui/react';
 import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
-import { getToken } from 'src/components/utils/Common.js'
+import { getAllPermissions, getRoleNames, getToken } from 'src/components/utils/Common.js'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
@@ -113,6 +113,13 @@ const DataImport = (props) => {
 
 
   const [tableHistoryImport, setTableHistoryImport] = useState([])
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    return nameRole
+  }
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryImport/' + props.code + '?token=' + getToken())])
       .then(function (res) {
@@ -126,7 +133,11 @@ const DataImport = (props) => {
   return (
     <>
       <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
-      <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+      {
+        getAllPermissions().includes('Xoá phiếu xuất ' + getIdWarehouseRole()) ? (
+          <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+        ) : (<></>)
+      }
       <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
       <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 

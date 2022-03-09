@@ -13,7 +13,7 @@ import {
 import { getData } from '../api/Api.js'
 import Charts from './Charts.js'
 import ChartsV2 from './ChartsV2.js'
-import { getToken } from 'src/components/utils/Common.js'
+import { getRoleNames, getToken } from 'src/components/utils/Common.js'
 import { useHistory } from 'react-router-dom'
 
 
@@ -21,6 +21,11 @@ import { useHistory } from 'react-router-dom'
 // const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Dashboard = () => {
+  // var nameRole = ''
+  // getRoleNames().split(' ').map((item) => {
+  //   if (!isNaN(item)) nameRole = item
+  // })
+  // isNaN(nameRole) ? nameRole = nameRole : nameRole = null
 
   const [tonKho, setTonKho] = useState([])
   const [solgKho, setSolgKho] = useState([])
@@ -57,7 +62,7 @@ const Dashboard = () => {
         // console.log(error)
         if (error.response.status === 403) {
           history.push('/404')
-        } else if(error.response.status === 401) {
+        } else if (error.response.status === 401) {
           history.push('/login')
         }
       })
@@ -79,7 +84,7 @@ const Dashboard = () => {
           {tonKho.map((item, index) => (
             <CCard key={index} textColor='black' className='mb-3 border-warning'>
               <CCardBody >
-                <h4>{item.name} <CBadge color='success'> Active </CBadge>  <p style={{fontSize: '18px', fontStyle: 'italic', color: 'blue'}}>Số lượng vật tư:{item.tonKho}</p></h4>
+                <h4>{item.name} <CBadge color='success'> Active </CBadge>  <p style={{ fontSize: '18px', fontStyle: 'italic', color: 'blue' }}>Số lượng vật tư:{item.tonKho}</p></h4>
                 <h5>Giá trị vật tư trong kho: </h5>
                 <h6>{parseInt(item.total).toLocaleString('it-IT', { style: 'currency', currency: 'VND' })}</h6>
               </CCardBody>
