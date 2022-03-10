@@ -82,7 +82,7 @@ const HistoryExport = () => {
                 <TableCell className="text-center">{index + 1}</TableCell>
                 <TableCell className="text-center">{item.code}</TableCell>
                 <TableCell className="text-center">{item.tenKho}</TableCell>
-                <TableCell className="text-center">{item.created_by}</TableCell>
+                <TableCell className="text-center">{item.fullname}</TableCell>
                 <TableCell className="text-center">{item.created_at}</TableCell>
                 <TableCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
                 <TableCell className="text-center">

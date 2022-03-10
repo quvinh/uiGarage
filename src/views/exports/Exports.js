@@ -87,10 +87,10 @@ const Exports = (props) => {
         getDataShelf(item.warehouse_id)
         setIsWarehouseSelected(true)
         checked = true
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/'+ item.warehouse_id+'/'+ item.shelf_id + '?token=' + getToken())])
-        .then(function(res) {
-          setKD(res[0].data)
-        })
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/' + item.warehouse_id + '/' + item.shelf_id + '?token=' + getToken())])
+          .then(function (res) {
+            setKD(res[0].data)
+          })
       }
     })
     if (amount > 0) {
@@ -98,15 +98,12 @@ const Exports = (props) => {
       if (dataTable.length === 0) createCode()
     }
     if (!checked) setIsAmountSelected(false)
-    console.log(dataItem.length)
     setAmount(0)
   }
 
   const onChangeAmount = (e) => {
     (e.target.value > 0 && name.length > 0) ? setIsAmountSelected(true) : setIsAmountSelected(false)
     if (dataTable.length === 0) createCode()
-    console.log(shelf_id)
-    console.log(name)
   }
 
   const setNull = () => {
@@ -135,8 +132,6 @@ const Exports = (props) => {
   }
 
   const onChangeWarehouse = (e, value) => {
-    console.log(value)
-    console.log(e)
     if (value) {
       setIsWarehouseSelected(true)
       setWarehouse(e.target.value)
@@ -166,20 +161,18 @@ const Exports = (props) => {
       setIsAmountSelected(false)
     } else {
       setIsAmountSelected(true)
-      console.log(e.nativeEvent.target[index].text)
       setShelfName(e.nativeEvent.target[index].text)
       setShelfID(e.target.value)
       Promise.all([
         getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value + '?token=' + getToken())
       ])
         .then(function (res) {
-          console.log(res[0].data)
           setDataItem(res[0].data)
         })
         .catch(error => {
           if (error.response.status === 403) {
             history.push('/404')
-          } else if(error.response.status === 401) {
+          } else if (error.response.status === 401) {
             history.push('/login')
           }
         })
@@ -257,7 +250,6 @@ const Exports = (props) => {
           totalPrice: totalPrice
         }
         setDataTable([...dataTable, data])
-        console.log(amount)
       }
       setAmount(0)
       // setAmountCurrent(0)
@@ -333,8 +325,17 @@ const Exports = (props) => {
                     }
                   })}
                 </CCol>
-                <CCol sm={2}><CFormInput value={kd} disabled placeholder='Số lượng khả dụng'></CFormInput></CCol>
-                <CCol xs>
+                <CCol xs={3}>
+                  <TextField
+                    fullWidth
+                    disabled
+                    type={'number'}
+                    size='small'
+                    label="Số lượng khả dụng"
+                    value={kd}
+                    variant="outlined"
+                  />
+                </CCol>                <CCol xs>
                   <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                     <LocalizationProvider fullWidth dateAdapter={AdapterDateFns}>
                       <DateTimePicker
@@ -398,8 +399,9 @@ const Exports = (props) => {
                 <>
                   <CButton size="sm" color="success" onClick={(e) => {
                     onAddTable(e)
-                    setKD(parseInt(kd) - parseInt(amount))}
-                    }>THÊM VÀO PHIẾU</CButton>
+                    setKD(parseInt(kd) - parseInt(amount))
+                  }
+                  }>THÊM VÀO PHIẾU</CButton>
                   <ShowExport dataTable={dataTable} code={code} createdBy={created_by} />
                   <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton>
                 </>

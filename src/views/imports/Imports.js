@@ -342,8 +342,7 @@ const Imports = () => {
                 <CCol xs={4}>
                 <CFormSelect size="sm" value={unit} onChange={
                     (e) => {
-                      (e.target.value !== unit.toString())?(reset()) : unit = e.target.value
-                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
+                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false); setItemID(''); setCategory(''); setName(''); setIsItemSelected(false)
                       setUnit(e.target.value)
                     }
                   }>
