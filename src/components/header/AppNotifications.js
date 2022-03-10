@@ -53,7 +53,7 @@ import { getData, putData, delData, postData } from '../../views/api/Api';
 import { useHistory } from 'react-router-dom';
 import { getToken } from '../utils/Common';
 
-const AppNotificationsDropdown = () => {
+const AppNotifications = () => {
 
   const myRef = useRef(null)
   const [visible, setVisible] = useState(false)
@@ -262,4 +262,4 @@ const AppNotificationsDropdown = () => {
 
 }
 
-export default AppNotificationsDropdown
+export default AppNotifications

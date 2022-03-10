@@ -1,83 +1,38 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CButton
-} from '@coreui/react';
-import { delData, getData } from '../api/Api';
-import { getToken } from 'src/components/utils/Common';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 
-const Categories = () => {
-  const [dataTable, setDataTable] = useState([])
-
-  const handleDelete = (e, id) => {
-    const eClick = e.currentTarget;
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/category/delete/' + id + '?token=' + getToken())])
-      .then(function (res) {
-        eClick.closest('tr').remove();
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }
-
-  useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/category' + '?token=' + getToken())])
-      .then(function (res) {
-        setDataTable(res[0].data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
-  }, [])
-
+const LinkTab = (props) => {
   return (
-    <>
-      <p style={{fontWeight: "bold"}}>&gt;Loại phụ tùng</p>
-      <CCard>
-        <CCardHeader>
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton href='#/notification-add' color="success">Tạo thông báo</CButton>
-          </div>
-        </CCardHeader>
-        <CCardBody>
-          <CTable striped hover responsive bordered borderColor="warning">
-            <CTableHead color="warning">
-              <CTableRow>
-                <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Tên loại phụ tùng</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Ghi chú</CTableHeaderCell>
-                <CTableHeaderCell className="text-center">Thao tác</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {dataTable.map((item, index) => (
-                <CTableRow key={index}>
-                  <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
-                  <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                  <CTableDataCell className="text-center">{item.note === null ? "" : item.note}</CTableDataCell>
-                  <CTableDataCell className="text-center">
-                    <div className="d-grid gap-2 d-md-block">
-                      <CButton href={'#/categories-edit/'+item.id} color="success">Sửa</CButton>
-                      <CButton onClick={(e) => handleDelete(e, item.id)} color="secondary">Xoá</CButton>
-                    </div>
-                  </CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
-        </CCardBody>
-      </CCard>
-    </>
-  )
+    <Tab
+      component="a"
+      onClick={(event) => {
+        event.preventDefault();
+      }}
+      {...props}
+    />
+  );
 }
 
-export default Categories
+const Notification = () => {
+
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Tabs value={value} onChange={handleChange} aria-label="nav tabs example">
+        <LinkTab label="Sự kiện" href="#/notification-event"/>
+        <LinkTab label="Vật tư" href="#/notification-item" />
+        {/* <LinkTab label="Page Three" href="/spam" /> */}
+      </Tabs>
+    </Box>
+  );
+}
+
+export default Notification

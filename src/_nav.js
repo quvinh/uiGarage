@@ -31,31 +31,31 @@ const _nav = [
     name: 'Danh mục',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
     items: [
-      {
-        component: CNavItem,
-        name: 'Điều phối kho',
-        to: '/transfer',
-      },
-      {
-        component: CNavItem,
-        name: 'Quản lý kho',
-        to: '/warehouses',
-      },
-      {
-        component: CNavItem,
-        name: 'Loại phụ tùng',
-        to: '/categories',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Điều phối kho',
+      //   to: '/transfer',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Quản lý kho',
+      //   to: '/warehouses',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Loại phụ tùng',
+      //   to: '/categories',
+      // },
       // {
       //   component: CNavItem,
       //   name: 'Báo giá',
       //   to: '/',
       // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Nhà cung cấp',
-      //   to: '/',
-      // },
+      {
+        component: CNavItem,
+        name: 'Nhà cung cấp',
+        to: '/supplier',
+      },
       // {
       //   component: CNavItem,
       //   name: 'Khách hàng',
@@ -72,7 +72,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Thông báo',
-    to: '/notification',
+    to: '/notification-event',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
   },
   // {

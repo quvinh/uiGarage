@@ -13,9 +13,11 @@ import {
   CDropdown,
   CDropdownToggle,
   CCardHeader,
+  CWidgetDropdown,
+
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions, cilPlus } from '@coreui/icons'
+import { cilOptions, cilPlus, cilSettings } from '@coreui/icons'
 import { getData, putData, delData, postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common.js'
@@ -90,6 +92,7 @@ const Warehouses = () => {
         setDataCountWarehouse(res[1].data)
       })
       .catch((error) => {
+        console.log(error.response.status)
         if (error.response.status === 403) {
           history.push('/404')
         }
@@ -109,25 +112,26 @@ const Warehouses = () => {
                 <CCardBody>
                   <CRow>
                     <CCol sm={10} lg={10}>
-                      <p>Mã kho: {item.id} - Thủ kho: Nguyễn Thị T</p>
+                      <p>Mã kho: {item.id}</p>
                       <p>Địa chỉ: {item.location}</p>
                     </CCol>
                     <CCol>
-                        <CDropdown direction='dropstart'>
-                          <CDropdownToggle color="transparent" caret={false} className="p-0">
-                            <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                          </CDropdownToggle>
-                          <CDropdownMenu>
-                            <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
-                            <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
-                            <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
+                      <CDropdown variant="btn-group" direction="dropstart">
+                        <CDropdownToggle color="transparent" caret={false} className="p-0">
+                          <CIcon style={{position: "relative", right: "-10px"}} icon={ cilSettings } size={'md'} />
+                        </CDropdownToggle>
+                        <CDropdownMenu >
+                          <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
+                          <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
+                          <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
+                        </CDropdownMenu>
+                      </CDropdown>
                     </CCol>
                   </CRow>
                 </CCardBody>
               </CCard>
-            </CCol>))}
+            </CCol>
+          ))}
           </CRow>
         </CCardBody>
       </CCard>

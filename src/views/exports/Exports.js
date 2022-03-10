@@ -286,7 +286,7 @@ const Exports = (props) => {
       getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken())
     ])
       .then(res => {
-        console.log(res[2].data)
+        console.log(res[0].data)
         setDataItem(res[0].data)
         setDataWarehouse(res[1].data)
         setCreatedBy(res[2].data[0].fullname)

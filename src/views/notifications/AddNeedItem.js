@@ -26,6 +26,8 @@ import {
     CTableHeaderCell,
     CTableDataCell,
     CFormSelect,
+    CFormCheck,
+    CCardFooter,
 
 } from '@coreui/react'
 import { postData, getData } from '../api/Api';
@@ -38,7 +40,8 @@ import DateTimePicker from '@mui/lab/DateTimePicker'
 import CIcon from '@coreui/icons-react';
 import { Card } from '@mui/material';
 import Validator from './Validation';
-import { getToken } from 'src/components/utils/Common';
+import { getToken, getUserID } from 'src/components/utils/Common';
+import Checkbox from '@mui/material/Checkbox';
 
 const Add = () => {
     // const [open, setOpen] = React.useState(false);
@@ -55,9 +58,19 @@ const Add = () => {
     const [code, setCode] = useState('')
     const [createdAt, setCreatedAt] = useState(new Date)
     const [validator, showValidationMessage] = Validator()
+    const [beginAt, setBeginAt] = useState('')
+    const [endAt, setEndAt] = useState('')
     const [isUnitSelected, setIsUnitSelected] = useState(false)
     const [isSave, setIsSave] = React.useState(false)
     const [dataWarehouse, setDataWarehouses] = useState([])
+    const [typeNotification, setTypeNotification] = useState(1)
+    const [userProfile, setUserProfile] = useState('')
+    const [checked, setChecked] = React.useState(true);
+    console.log(typeNotification)
+    const handleChange = (event) => {
+        setChecked(event.target.checked)
+    };
+
 
 
     const [dataTable, setDataTable] = useState([])
@@ -87,36 +100,6 @@ const Add = () => {
         setCode(code)
         console.log('CREATED: ' + code)
     }
-    const handleDetailItemId = (e) => {
-        setDetailItemId(e.target.value);
-    }
-    const handleItemId = (e) => {
-        setItemId(e.target.value);
-    }
-    const handleName = (e) => {
-        setItemName(e.target.value)
-    }
-    const handleTitle = (e) => {
-        setTitle(e.target.value);
-    }
-    const handleContent = (e) => {
-        setContent(e.target.value);
-    }
-    const handleAmount = (e) => {
-        setAmount(e.target.value);
-    }
-    const handleUnit = (e) => {
-        setUnit(e.target.value);
-    }
-    const handleCreatedBy = (e) => {
-        setCreatedBy(e.target.value);
-    }
-    const handleCreatedAt = (e) => {
-        setCreatedAt(e.target.value);
-    }
-    const onChangeWarehouse = (e) => {
-        setDataWarehouses(e.target.value);
-    }
 
     // setWarehouseId(1)
 
@@ -140,7 +123,6 @@ const Add = () => {
                     code: code,
                     title: title,
                     content: content,
-                    warehouse_id: warehouseId,
                     //   amount: amount,
                     unit: unit,
                     created_by: 1,
@@ -157,7 +139,6 @@ const Add = () => {
                     code: code,
                     title: title,
                     content: content,
-                    warehouse_id: warehouseId,
                     //   amount: amount,
                     unit: unit,
                     created_by: 1,
@@ -191,7 +172,7 @@ const Add = () => {
             console.log(dataTable)
             createCode()
             dataTable.map((item, index) => {
-                {item.code = code}
+                { item.code = code }
                 console.log(item.code)
                 Promise.all([postData('http://127.0.0.1:8000/api/admin/notification/store' + '?token=' + getToken(), item)])
                     .then(res => {
@@ -209,11 +190,14 @@ const Add = () => {
     }
 
     useEffect(() => {
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse' + '?token=' + getToken())])
+        Promise.all([
+          getData('http://127.0.0.1:8000/api/admin/warehouse' + '?token=' + getToken()),
+          getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken()),
+        ])
             .then(function (response) {
                 console.log(response[0].data)
                 setDataWarehouses(response[0].data)
-                console.log(dataWarehouse);
+                setUserProfile(response[1].data[0].fullname)
             })
 
     }, []);
@@ -239,11 +223,19 @@ const Add = () => {
                                     <CFormTextarea value={content} style={{ height: '100px' }} type="text" id="content" placeholder="Nội dung" onChange={(e) => setContent(e.target.value)} />
                                     <CFormLabel htmlFor="content">Nội dung</CFormLabel>
                                 </CFormFloating>
+                                <CFormLabel htmlFor='type'>Thông báo sự kiện</CFormLabel>
+                                <Checkbox
+                                    id='type'
+                                    checked={checked}
+                                    onChange={handleChange}
+                                    inputProps={{ 'aria-label': 'controlled' }}
+                                />
+
                                 <CRow>
                                     <CCol sm={6} lg={6}>
                                         <CFormFloating value={createdBy} className="mb-3">
                                             <CFormInput onChange={(e) => setCreatedBy(e.target.value)} type="text" id="created_by" placeholder="Vui nhập id kiểu số" />
-                                            <CFormLabel htmlFor="created_by">Người tạo - Vui nhập id kiểu số hiện tại đang lỗi</CFormLabel>
+                                            <CFormLabel htmlFor="created_by">{userProfile}</CFormLabel>
                                         </CFormFloating>
                                     </CCol>
                                     <CCol sm={6} lg={6}>
@@ -267,8 +259,9 @@ const Add = () => {
                                         {/* <CButton color="success" onClick={(e) => setNull()}>LÀM MỚI</CButton> */}
                                     </CCol>
                                 </CRow>
+
                                 {/* <CFormFloating> */}
-                                <CFormSelect size="sm" name="warehouse_id" value={warehouseId} onChange={
+                                {/* <CFormSelect size="sm" name="warehouse_id" value={warehouseId} onChange={
                                     (e) =>
                                         setWarehouseId(e.target.value)
                                     // (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
@@ -277,101 +270,152 @@ const Add = () => {
                                     {dataWarehouse.map((item, index) => (
                                         <option key={index} value={item.id}>{item.name}</option>
                                     ))}
-                                </CFormSelect>
+                                </CFormSelect> */}
                                 {/* </CFormFloating> */}
                             </CCardBody>
                         </CCard>
                         <br />
-                        <CCard>
-                            <CCardBody>
-                                <CRow>
-                                    <CCol sm={6} lg={6}>
-                                        <CFormFloating className="mb-3">
-                                            <CFormInput onChange={(e) => setItemId(e.target.value)} value={itemId} type="text" id="itemid" placeholder="Mã vật tư" />
-                                            <CFormLabel htmlFor="itemid">Mã vật tư</CFormLabel>
-                                        </CFormFloating>
-                                        <CFormFloating className="mb-3">
-                                            <CFormInput onChange={(e) => setItemName(e.target.value)} value={itemName} type="text" id="itemname" placeholder="Tên vật tư" />
-                                            <CFormLabel htmlFor="itemname">Tên vật tư</CFormLabel>
-                                        </CFormFloating>
-                                    </CCol>
-                                    <CCol sm={6} lg={6}>
-                                        <CFormFloating value={amount} className="mb-3">
-                                            <CFormInput onChange={(e) => setAmount(e.target.value)} type="text" id="amount" placeholder="Số lượng" />
-                                            <CFormLabel htmlFor="amount">Số lượng</CFormLabel>
-                                        </CFormFloating>
-                                        <CFormFloating className="mb-3">
-                                            <CFormSelect size="sm" value={unit} onChange={
-                                                (e) => {
-                                                    // setUnit(e.target.value)
-                                                    (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
-                                                    setUnit(e.target.value)
-                                                }
-                                            }>
-                                                <option value={'Chiếc'}>Chiếc</option>
-                                                <option value={'Bộ'}>Bộ</option>
-                                                <option value={'Cái'}>Cái</option>
-                                                <option value={'Can'}>Can</option>
-                                                <option value={'Đôi'}>Đôi</option>
-                                                <option value={'Lon'}>Lon</option>
-                                                <option value={'Ông'}>Ông</option>
-                                                <option value={'Lô'}>LÔ</option>
-                                            </CFormSelect>
-                                            {/* <CFormInput onChange={(e) => setUnit(e.target.value)} value={unit} type="text" id="unit" placeholder="Đơn vị tính" />
+                        {(checked) ? (
+                            <>
+
+                                <CCard>
+                                    <CCardBody>
+                                        <CRow>
+                                            <CCol>
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <DateTimePicker
+                                                        renderInput={(props) => <TextField size='medium' {...props} />}
+                                                        label="Thời gian bắt đầu"
+                                                        value={beginAt}
+                                                        inputFormat={"dd/MM/yyyy hh:mm"}
+                                                        onChange={(newValue) => {
+                                                            setCreatedAt(newValue)
+                                                            setTypeNotification(0)
+                                                        }}
+                                                    />
+                                                </LocalizationProvider>
+                                            </CCol>
+                                            <CCol>
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <DateTimePicker
+                                                        renderInput={(props) => <TextField size='medium' {...props} />}
+                                                        label="Thời gian kết thúc"
+                                                        value={endAt}
+                                                        inputFormat={"dd/MM/yyyy hh:mm"}
+                                                        onChange={(newValue) => {
+                                                            setCreatedAt(newValue)
+                                                        }}
+                                                    />
+                                                </LocalizationProvider>
+                                            </CCol>
+                                        </CRow>
+                                    </CCardBody>
+                                </CCard>
+                            </>) :
+                            (<>
+                                <CCard>
+                                    <CCardBody>
+                                        <CRow>
+                                            <CCol sm={6} lg={6}>
+                                                <CFormFloating className="mb-3">
+                                                    <CFormInput onChange={(e) => {
+                                                        setTypeNotification(0)
+                                                        setItemId(e.target.value)
+                                                    }} value={itemId} type="text" id="itemid" placeholder="Mã vật tư" />
+                                                    <CFormLabel htmlFor="itemid">Mã vật tư</CFormLabel>
+                                                </CFormFloating>
+                                                <CFormFloating className="mb-3">
+                                                    <CFormInput onChange={(e) => setItemName(e.target.value)} value={itemName} type="text" id="itemname" placeholder="Tên vật tư" />
+                                                    <CFormLabel htmlFor="itemname">Tên vật tư</CFormLabel>
+                                                </CFormFloating>
+                                            </CCol>
+                                            <CCol sm={6} lg={6}>
+                                                <CFormFloating value={amount} className="mb-3">
+                                                    <CFormInput onChange={(e) => setAmount(e.target.value)} type="text" id="amount" placeholder="Số lượng" />
+                                                    <CFormLabel htmlFor="amount">Số lượng</CFormLabel>
+                                                </CFormFloating>
+                                                <CFormFloating className="mb-3">
+                                                    <CFormSelect size="sm" value={unit} onChange={
+                                                        (e) => {
+                                                            // setUnit(e.target.value)
+                                                            (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
+                                                            setUnit(e.target.value)
+                                                        }
+                                                    }>
+                                                        <option value={'Chiếc'}>Chiếc</option>
+                                                        <option value={'Bộ'}>Bộ</option>
+                                                        <option value={'Cái'}>Cái</option>
+                                                        <option value={'Can'}>Can</option>
+                                                        <option value={'Đôi'}>Đôi</option>
+                                                        <option value={'Lon'}>Lon</option>
+                                                        <option value={'Ông'}>Ông</option>
+                                                        <option value={'Lô'}>LÔ</option>
+                                                    </CFormSelect>
+                                                    {/* <CFormInput onChange={(e) => setUnit(e.target.value)} value={unit} type="text" id="unit" placeholder="Đơn vị tính" />
                                             <CFormLabel htmlFor="unit">Đơn vị tính</CFormLabel> */}
-                                        </CFormFloating>
-                                        {/* <CFormFloating className="mb-3">
+                                                </CFormFloating>
+                                                {/* <CFormFloating className="mb-3">
                                             <CFormInput value={createdAt} type="date" id="date" placeholder="Ngày tạo" />
                                             <CFormLabel htmlFor="date">Ngày tạo</CFormLabel>
                                         </CFormFloating> */}
-                                    </CCol>
-                                </CRow>
-                            </CCardBody>
+                                            </CCol>
+                                        </CRow>
+                                    </CCardBody>
+                                    <CCardFooter>
+                                        <div className="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+                                            <CButton onClick={(e) => {
+                                                // createCode()
+                                                onAddTable(e)
+                                            }} size="sm" color="success" >THÊM VÀO PHIẾU</CButton>
+                                        </div>
+                                    </CCardFooter>
 
-                            <div className="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
-                                <CButton onClick={(e) => {
-                                    // createCode()
-                                    onAddTable(e)
-                                }} size="sm" color="success" >THÊM VÀO PHIẾU</CButton>
-                                <CButton onClick={(e) => { handlAddNotification() }} color="warning">Thông báo</CButton> {/**/}
-                                {/* <ShowImport dataTable={dataTable} code={code} /> */}
-                                {/* <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton> */}
-                            </div>
-                        </CCard>
+
+                                </CCard>
+                                <br />
+                                <CCard>
+                                    <CCardBody>
+                                        <CTable>
+                                            <CTableHead>
+                                                <CTableRow>
+                                                    <CTableHeaderCell>Mã vật tư</CTableHeaderCell>
+                                                    <CTableHeaderCell>Tên vật tư</CTableHeaderCell>
+                                                    <CTableHeaderCell>Số lượng</CTableHeaderCell>
+                                                    <CTableHeaderCell>Đơn vị tính</CTableHeaderCell>
+                                                </CTableRow>
+                                            </CTableHead>
+                                            <CTableBody>
+                                                {dataTable.map((item, index) => (
+                                                    <CTableRow key={index}>
+                                                        <CTableDataCell>{item.item_id}</CTableDataCell>
+                                                        <CTableDataCell>{item.item_name}</CTableDataCell>
+                                                        <CTableDataCell>{item.amount}</CTableDataCell>
+                                                        <CTableDataCell>{item.unit}</CTableDataCell>
+                                                        <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
+                                                            onRemoveRow(e, index)
+                                                        }}>
+                                                            <CIcon icon={cilDelete} />
+                                                        </CButton>
+                                                    </CTableRow>
+                                                ))}
+                                            </CTableBody>
+                                        </CTable>
+                                    </CCardBody>
+                                </CCard>
+                            </>)
+                        }
+                        <br />
+
                     </CForm>
+                    <div className="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+                        <CButton onClick={(e) => { handlAddNotification() }} color="warning">Thông báo</CButton> {/**/}
+                        {/* <ShowImport dataTable={dataTable} code={code} /> */}
+                        {/* <CButton size="sm" color="secondary" onClick={(e) => reset()}>RESET</CButton> */}
+                    </div>
+                </CCardBody>
+            </CCard>
 
-                </CCardBody>
-            </CCard>
-            <br />
-            <CCard>
-                <CCardBody>
-                    <CTable>
-                        <CTableHead>
-                            <CTableRow>
-                                <CTableHeaderCell>Mã vật tư</CTableHeaderCell>
-                                <CTableHeaderCell>Tên vật tư</CTableHeaderCell>
-                                <CTableHeaderCell>Số lượng</CTableHeaderCell>
-                                <CTableHeaderCell>Đơn vị tính</CTableHeaderCell>
-                            </CTableRow>
-                        </CTableHead>
-                        <CTableBody>
-                            {dataTable.map((item, index) => (
-                                <CTableRow key={index}>
-                                    <CTableDataCell>{item.item_id}</CTableDataCell>
-                                    <CTableDataCell>{item.item_name}</CTableDataCell>
-                                    <CTableDataCell>{item.amount}</CTableDataCell>
-                                    <CTableDataCell>{item.unit}</CTableDataCell>
-                                    <CButton size="sm" className="me-2" color='danger' onClick={(e) => {
-                                        onRemoveRow(e, index)
-                                    }}>
-                                        <CIcon icon={cilDelete} />
-                                    </CButton>
-                                </CTableRow>
-                            ))}
-                        </CTableBody>
-                    </CTable>
-                </CCardBody>
-            </CCard>
+
             {/* </CModalBody>
             </CModal> */}
         </>

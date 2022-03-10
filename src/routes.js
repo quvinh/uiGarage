@@ -43,6 +43,8 @@ const Charts = React.lazy(() => import('./views/charts/Charts'))
 
 //Notification
 const Notification = React.lazy(() => import('./views/notifications/Notification'))
+const NotificationEvent = React.lazy(() => import('./views/notifications/NotificationEvent'))
+const NotificationItem = React.lazy(() => import('./views/notifications/NotificationItem'))
 const AddNotification = React.lazy(() => import('./views/notifications/AddNeedItem'))
 
 //Supplier
@@ -82,6 +84,8 @@ const routes = [
 
   { path: '/notification', name: 'Thông báo', component: Notification },
   { path: '/notification-add', name: 'Tạo thông báo', component: AddNotification },
+  { path: '/notification-event', name: 'Thông báo sự kiện', component: NotificationEvent },
+  { path: '/notification-item', name: 'Thông báo vật tư', component: NotificationItem },
 
   { path: '/supplier', name: 'Nhà cung cấp', component: Suppliers },
   { path: '/supplier-add', name: 'Tạo mới nhà cung cấp', component: AddSuppliers },

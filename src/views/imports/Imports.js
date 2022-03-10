@@ -112,7 +112,7 @@ const Imports = () => {
           getDataShelf(getIdWarehouseRole())
           setWarehouse(getIdWarehouseRole())
           setShowWarehouse(true)
-        } else {setShowWarehouse(true)}
+        } else { setShowWarehouse(false) }
         setItemID(item.id)
         setCategory(item.category_id)
         setUnit(item.unit)
@@ -383,8 +383,8 @@ const Imports = () => {
                 <CCol xs={4}>
                   <CFormSelect size="sm" value={unit} onChange={
                     (e) => {
-                      (e.target.value !== unit.toString()) ? (reset()) : unit = e.target.value
-                        (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false)
+                      // (e.target.value !== unit.toString()) ? (reset()) : setUnit(e.target.value)
+                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false); setName(''); setItemID(''); setCategory(''); setIsItemSelected(false)
                       setUnit(e.target.value)
                     }
                   }>
