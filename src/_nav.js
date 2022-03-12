@@ -72,7 +72,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Thông báo',
-    to: '/notification-event',
+    to: '/notification',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
   },
   // {

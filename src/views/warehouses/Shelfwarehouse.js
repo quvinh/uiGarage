@@ -153,6 +153,7 @@ const ShelfWarehouse = (props) => {
   const showAll = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/listItem/' + props.match.params.id + '?token=' + getToken())])
       .then(function (res) {
+        console.log(res[0].data)
         setItemWarehouse(res[0].data)
       })
   }
@@ -187,6 +188,7 @@ const ShelfWarehouse = (props) => {
   const handleReload = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
+        console.log(response[0].data)
         setDataShelf(response[0].data)
       })
   }
@@ -282,7 +284,7 @@ const ShelfWarehouse = (props) => {
             <CCol sm={3} lg={3}>
               <CForm>
                 <CInputGroup>
-                  <CFormTextarea placeholder='Nhập tên vật tư' id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormTextarea>
+                  <CFormInput placeholder='Nhập tên vật tư' id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormInput>
                   <CButton color='warning' onClick={(e) => { handleSearch(searchName) }} ><CIcon icon={cilSearch} /></CButton>
                 </CInputGroup>
               </CForm>
@@ -357,7 +359,7 @@ const ShelfWarehouse = (props) => {
                         <CTableRow key={index}>
                           <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.id}</CTableDataCell>
-                          <CTableDataCell className="text-center">{item.name_item}</CTableDataCell>
+                          <CTableDataCell className="text-center">{item.itemname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.categoryname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelfname}</CTableDataCell>
