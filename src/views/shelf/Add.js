@@ -9,7 +9,6 @@ import {
   CContainer,
   CForm,
   CFormInput,
-  CFormTextarea,
   CInputGroup,
   CInputGroupText,
   CRow,
@@ -22,7 +21,6 @@ import { useHistory } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common';
 
 const Add = (props) => {
-  const [dataTable, setDataTable] = useState([])
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const history = useHistory()

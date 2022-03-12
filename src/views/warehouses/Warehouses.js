@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 
-import React, { lazy, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   CButton,
@@ -13,10 +13,11 @@ import {
   CDropdown,
   CDropdownToggle,
   CCardHeader,
+
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions, cilPlus } from '@coreui/icons'
-import { getData, putData, delData, postData } from '../api/Api.js'
+import {  cilPlus, cilSettings } from '@coreui/icons'
+import { getData, delData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common.js'
 
@@ -24,21 +25,7 @@ import { getToken } from 'src/components/utils/Common.js'
 // const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Warehouses = () => {
-  const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
-  const [note, setNote] = useState('');
   const history = useHistory()
-
-  const handleName = (e) => {
-    setName(e.target.value);
-  }
-  const handleLocation = (e) => {
-    setLocation(e.target.value);
-  }
-  const handleNote = (e) => {
-    setNote(e.target.value);
-  }
-  const [dataTable, setDataTable] = useState([])
 
   const handleReload = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken())])
@@ -47,23 +34,23 @@ const Warehouses = () => {
       })
   }
 
-  const handleAddWarehouse = () => {
-    const data = {
-      name: name,
-      location: location,
-      note: note
-    }
-    console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store?token=' + getToken(), data)])
-      .then(res => {
-        console.log('Added succesfully', res)
-      }).catch(error => {
-        // validatorAll()
-        console.log(':(((')
-        console.log(error)
-      })
-    window.location.reload(false)
-  }
+  // const handleAddWarehouse = () => {
+  //   const data = {
+  //     name: name,
+  //     location: location,
+  //     note: note
+  //   }
+  //   console.log(data);
+  //   Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store?token=' + getToken(), data)])
+  //     .then(res => {
+  //       console.log('Added succesfully', res)
+  //     }).catch(error => {
+  //       // validatorAll()
+  //       console.log(':(((')
+  //       console.log(error)
+  //     })
+  //   window.location.reload(false)
+  // }
 
   const handleDelete = (e, id) => {
     console.log(id)
@@ -76,7 +63,6 @@ const Warehouses = () => {
         console.log(error)
       })
   }
-  const [visible, setVisible] = useState(false)
   // const [visible1, setVisible1] = useState(false)
   const [dataWarehouse, setDataWarehouse] = useState([])
   const [dataCountWarehouse, setDataCountWarehouse] = useState([])
@@ -90,6 +76,7 @@ const Warehouses = () => {
         setDataCountWarehouse(res[1].data)
       })
       .catch((error) => {
+        console.log(error.response.status)
         if (error.response.status === 403) {
           history.push('/404')
         }
@@ -109,25 +96,26 @@ const Warehouses = () => {
                 <CCardBody>
                   <CRow>
                     <CCol sm={10} lg={10}>
-                      <p>Mã kho: {item.id} - Thủ kho: Nguyễn Thị T</p>
+                      <p>Mã kho: {item.id}</p>
                       <p>Địa chỉ: {item.location}</p>
                     </CCol>
                     <CCol>
-                        <CDropdown direction='dropstart'>
-                          <CDropdownToggle color="transparent" caret={false} className="p-0">
-                            <CIcon icon={cilOptions} className="text-high-emphasis-inverse" />
-                          </CDropdownToggle>
-                          <CDropdownMenu>
-                            <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
-                            <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
-                            <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
-                          </CDropdownMenu>
-                        </CDropdown>
+                      <CDropdown variant="btn-group" direction="dropstart">
+                        <CDropdownToggle color="transparent" caret={false} className="p-0">
+                          <CIcon style={{position: "relative", right: "-10px"}} icon={ cilSettings } size={'md'} />
+                        </CDropdownToggle>
+                        <CDropdownMenu >
+                          <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
+                          <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
+                          <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
+                        </CDropdownMenu>
+                      </CDropdown>
                     </CCol>
                   </CRow>
                 </CCardBody>
               </CCard>
-            </CCol>))}
+            </CCol>
+          ))}
           </CRow>
         </CCardBody>
       </CCard>

@@ -21,7 +21,6 @@ import CIcon from '@coreui/icons-react';
 import { getToken } from 'src/components/utils/Common';
 
 const Add = () => {
-  const [open, setOpen] = React.useState(false);
   // const [visible, setVisible] = useState(false)
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
@@ -37,7 +36,6 @@ const Add = () => {
   const handleNote = (e) => {
     setNote(e.target.value);
   }
-  const [dataTable, setDataTable] = useState([])
 
   const handleAddWarehouse = () => {
     const data = {
@@ -47,9 +45,9 @@ const Add = () => {
       status: 1,
     }
     console.log(data);
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store' + '?token=' + getToken(), data)])
+    Promise.all([postData('http://127.0.0.1:8000/api/admin/warehouse/store?token=' + getToken(), data)])
       .then(res => {
-        console.log('Added succesfully', res)
+        console.log('Added successfully', res)
         // history.push('/warehouses')
         history.goBack()
       }).catch(error => {

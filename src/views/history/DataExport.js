@@ -1,38 +1,30 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import ListItemText from '@mui/material/ListItemText'
-import ListItem from '@mui/material/ListItem'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import CloseIcon from '@mui/icons-material/Close'
-import Slide from '@mui/material/Slide'
-import Grid from '@mui/material/Grid'
-import Container from '@mui/material/Container';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Table from '@mui/material/Table';
-import TableContainer from '@mui/material/TableContainer';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import CIcon from '@coreui/icons-react';
-
-import React, { useEffect, useState } from 'react'
-import {
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CButton
-} from '@coreui/react';
-import { getData, delData, putData } from '../api/Api.js'
 import { cilCheckCircle, cilDelete, cilDescription, cilSend } from '@coreui/icons'
-import { getToken } from 'src/components/utils/Common.js'
+import CIcon from '@coreui/icons-react'
+import {
+  CButton, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react'
+import { ButtonGroup, DialogTitle } from '@mui/material'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Container from '@mui/material/Container'
+import Dialog from '@mui/material/Dialog'
+import Grid from '@mui/material/Grid'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Paper from '@mui/material/Paper'
+import Slide from '@mui/material/Slide'
+import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableContainer from '@mui/material/TableContainer'
+import React, { useEffect, useState } from 'react'
+import { CSVLink } from 'react-csv'
+import { getAllPermissions, getRoleNames, getToken } from 'src/components/utils/Common.js'
+import { delData, getData, putData } from '../api/Api.js'
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
@@ -48,12 +40,12 @@ const DataExport = (props) => {
         Promise.all([delData('http://127.0.0.1:8000/api/admin/export/delete/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Deleted")
-            window.location.reload()
           })
           .catch(err => {
             console.log(err)
           })
       })
+      window.location.reload()
     }
   }
   const handleDStatus = () => {
@@ -63,12 +55,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/dStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 0->1")
-            window.location.reload()
+
           })
           .catch(err => {
             console.log(err)
           })
       })
+      window.location.reload()
     }
   }
   const handleUpdateStatus = () => {
@@ -78,12 +71,13 @@ const DataExport = (props) => {
         Promise.all([putData('http://127.0.0.1:8000/api/admin/export/updateStatus/' + item.id + '?token=' + getToken())])
           .then(function (res) {
             console.log("Changed 1->2")
-            window.location.reload();
+
           })
           .catch(err => {
             console.log(err)
           })
       })
+      window.location.reload();
     }
   }
 
@@ -107,6 +101,34 @@ const DataExport = (props) => {
   }
 
   const [tableHistoryExport, setTableHistoryExport] = useState([])
+
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    return nameRole
+  }
+  const print = () => {
+    window.print()
+  }
+
+  const headers = [
+    { label: "Mã Phiếu", key: "code" },
+    { label: "Tên Kho", key: "tenKho" },
+    { label: "Mã Vật Tư", key: "item_id" },
+    { label: "Tên Vật Tư", key: "name" },
+    { label: "Tên Kệ", key: "tenKe" },
+    { label: "Giá nhập", key: "price" },
+    { label: "Số lượng xuất ", key: "luongXuat" },
+    { label: "Đơn Vị Tính", key: "unit" },
+    { label: "Người tạo", key: "fullname" },
+    { label: "Ngày tạo", key: "created_at"},
+
+  ];
+
+  const data = tableHistoryExport;
+
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryExport/' + props.code + '?token=' + getToken())])
       .then(function (res) {
@@ -120,27 +142,32 @@ const DataExport = (props) => {
   return (
     <>
       <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
-      <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+      {
+        getAllPermissions().includes('Xoá phiếu nhập ' + getIdWarehouseRole()) ? (
+          <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+        ) : (
+          getRoleNames() === 'admin' ? (
+            <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+          ) : (<></>)
+        )
+      }
       <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
       <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} >
-        <AppBar style={{ background: "#ffa64d" }} sx={{ position: 'relative' }}>
-          <Toolbar className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-              <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                Thoát
-              </Typography>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+        <DialogTitle className="d-grid gap-2 d-md-flex justify-content-md-end" style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>
+          <ButtonGroup variant="contained">
+            <CSVLink data={data} headers={headers} className='btn btn-primary' filename={props.code}>
+              CSV
+            </CSVLink>
+            <Button onClick={print} >
+              Print
+            </Button>
+            <Button onClick={handleClose} >Thoát</Button>
+          </ButtonGroup>
+        </DialogTitle>
+        <Paper>
+                  <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -245,6 +272,8 @@ const DataExport = (props) => {
             </CardContent>
           </Card>
         </Container>
+
+        </Paper>
       </Dialog>
 
     </>

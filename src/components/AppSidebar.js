@@ -11,7 +11,7 @@ import { sygnet } from 'src/assets/brand/sygnet'
 
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
-import mado from './../assets/images/Madoka-white.png'
+import Logo from '../assets/images/logo/NamKhanh.png'
 
 // sidebar nav config
 import navigation from '../_nav'
@@ -23,7 +23,6 @@ const AppSidebar = () => {
 
   return (
     <CSidebar
-      onShow={sidebarShow}
       position="fixed"
       unfoldable={unfoldable}
       visible={sidebarShow}
@@ -34,7 +33,7 @@ const AppSidebar = () => {
       <CSidebarBrand className="d-none d-md-flex" to="/">
         {/* <CIcon className="sidebar-brand-full" icon={logoNegative} height={35} />
         <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} /> */}
-        {/* <CImage thumbnail src={mado} /> */}
+        <CImage thumbnail src={Logo} />
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

@@ -24,7 +24,6 @@ import { getToken } from 'src/components/utils/Common';
 
 const Edit = (props) => {
 
-  const [open, setOpen] = React.useState(false);
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [note, setNote] = useState('');

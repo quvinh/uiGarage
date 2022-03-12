@@ -6,8 +6,6 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CContainer,
-    CForm,
     CFormInput,
     CFormTextarea,
     CInputGroup,
@@ -16,9 +14,7 @@ import {
 } from '@coreui/react'
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
+import { getToken } from 'src/components/utils/Common';
 
 const Add = () => {
     const [code, setCode] = useState('');
@@ -75,7 +71,7 @@ const Add = () => {
             note: note
         }
         console.log(data);
-        Promise.all([postData('http://127.0.0.1:8000/api/admin/suppliers/store', data)])
+        Promise.all([postData('http://127.0.0.1:8000/api/admin/suppliers/store?token=' + getToken(), data)])
             .then(function (res){
                 console.log('Added succesfully', res)
                 history.push('/supplier')
@@ -95,11 +91,11 @@ const Add = () => {
                     <CCol>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Mã nhà cung cấp*</CInputGroupText>
-                            <CFormInput id='id' placeholder="Mã nhà cung cấp" onChange={handleCodeChange} value={code} />
+                            <CFormInput id='id' placeholder="Mã nhà cung cấp" onChange={handleCodeChange} value={code} required/>
                         </CInputGroup>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Tên nhà cung cấp*</CInputGroupText>
-                            <CFormInput id='name' placeholder="Tên nhà cung cấp" onChange={handleNameChange} value={name} />
+                            <CFormInput id='name' placeholder="Tên nhà cung cấp" onChange={handleNameChange} value={name} required/>
                         </CInputGroup>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Tên viết tắt</CInputGroupText>
@@ -109,21 +105,21 @@ const Add = () => {
                     <CCol>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Người liên hệ*</CInputGroupText>
-                            <CFormInput id='contact_person' placeholder="Người liên hệ" onChange={handleContactPerson} value={contactPerson} />
+                            <CFormInput id='contact_person' placeholder="Người liên hệ" onChange={handleContactPerson} value={contactPerson} required/>
                         </CInputGroup>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Email*</CInputGroupText>
-                            <CFormInput id='email' placeholder="Example@gmail.com" onChange={handleEmailChange} value={email} />
+                            <CFormInput id='email' placeholder="Example@gmail.com" onChange={handleEmailChange} value={email} required/>
                         </CInputGroup>
                         <CInputGroup className="mb-3">
                             <CInputGroupText id="" style={{ width: "150px" }}>Số điện thoại*</CInputGroupText>
-                            <CFormInput id='phone' placeholder="Số điện thoại" onChange={handlePhone} value={phone} />
+                            <CFormInput id='phone' placeholder="Số điện thoại" onChange={handlePhone} value={phone} required/>
                         </CInputGroup>
                     </CCol>
                 </CRow>
                 <CInputGroup className="mb-3">
                     <CInputGroupText id="" style={{ width: "150px", height: "50px" }}>Địa chỉ*</CInputGroupText>
-                    <CFormInput id='address' placeholder="Địa chỉ nhà cung cấp" onChange={handleAddress} value={address} />
+                    <CFormInput id='address' placeholder="Địa chỉ nhà cung cấp" onChange={handleAddress} value={address} required/>
                 </CInputGroup>
                 <CInputGroup className="mb-3">
                     <CInputGroupText id="" style={{ width: "150px" }}>Chú thích</CInputGroupText>

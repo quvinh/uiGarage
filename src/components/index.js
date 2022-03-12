@@ -7,7 +7,7 @@ import AppSidebar from './AppSidebar'
 import DocsCallout from './DocsCallout'
 import DocsLink from './DocsLink'
 import DocsExample from './DocsExample'
-import AppNotificationsDropdown from './header/AppNotifications'
+// import AppNotificationsDropdown from './header/AppNotifications'
 
 export {
   AppBreadcrumb,
@@ -19,5 +19,5 @@ export {
   DocsCallout,
   DocsLink,
   DocsExample,
-  AppNotificationsDropdown,
+  // AppNotificationsDropdown,
 }

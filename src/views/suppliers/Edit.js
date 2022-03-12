@@ -7,22 +7,17 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CContainer,
-    CForm,
     CFormInput,
     CFormTextarea,
     CInputGroup,
     CInputGroupText,
     CRow,
 } from '@coreui/react'
-import { postData, putData, getData } from '../api/Api';
+import { putData, getData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { id } from 'date-fns/locale';
 import { cilCheckAlt } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { getToken } from 'src/components/utils/Common';
 
 const Edit = (props) => {
     const [code, setCode] = useState('');
@@ -79,7 +74,7 @@ const Edit = (props) => {
             note: note
         }
         console.log(props.match.params.id);
-        Promise.all([putData('http://127.0.0.1:8000/api/admin/suppliers/update/' + props.match.params.id, data)])
+        Promise.all([putData('http://127.0.0.1:8000/api/admin/suppliers/update/' + props.match.params.id + '?token=' + getToken(), data)])
             .then(function (res){
                 console.log('Added succesfully', res)
                 history.goBack()
@@ -92,7 +87,7 @@ const Edit = (props) => {
 
     }
     useEffect(() => {
-        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers/show/' + props.match.params.id)])
+        Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers/show/' + props.match.params.id + '?token=' + getToken())])
             .then(function (res) {
                 console.log(res[0].data)
                 setCode(res[0].data.code)

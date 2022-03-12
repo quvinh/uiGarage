@@ -1,40 +1,23 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState, history } from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CInputGroup,
-  CInputGroupText,
-  CFormInput,
-  CCard,
-  CCardHeader,
-  CCardBody,
-  CRow,
-  CCol,
-  CButton,
-  CListGroupItem,
-  CFormSelect,
-  CListGroup
-} from '@coreui/react';
-import { getData, postData } from '../api/Api';
-import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DateTimePicker from '@mui/lab/DateTimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import CIcon from '@coreui/icons-react';
 import { cilDelete } from '@coreui/icons';
-import DateFnsUtils from '@date-io/date-fns'
-// import { getToken } from 'src/components/utils/Common';
-import { ShowTransfer } from './ShowTransfer';
-import { getToken, getUserID } from 'src/components/utils/Common';
+import CIcon from '@coreui/icons-react';
+import {
+  CButton, CCard,
+  CCardBody, CCol, CFormSelect, CRow, CTable, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import DateTimePicker from '@mui/lab/DateTimePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common';
+import { getData } from '../api/Api';
+import { ShowTransfer } from './ShowTransfer';
+import Validator from './Validation';
 
 const Transfer = (props) => {
   const history = useHistory()
@@ -67,8 +50,6 @@ const Transfer = (props) => {
   const [dataFromShelf, setDataFromShelf] = useState([])
   const [dataToWarehouse, setDataToWarehouse] = useState([])
   const [dataToShelf, setDataToShelf] = useState([])
-  // const [dataSupplier, setDataSupplier] = useState([])
-  const [dataCategory, setDataCategory] = useState([])
   const [code, setCode] = useState('')
 
   const [validator, showValidationMessage] = Validator()
@@ -76,6 +57,21 @@ const Transfer = (props) => {
   const [isAmountSelected, setIsAmountSelected] = useState(false)
   const [isFromWarehouseSelected, setIsFromWarehouseSelected] = useState(false)
   const [isToWarehouseSelected, setIsToWarehouseSelected] = useState(false)
+  const [showWarehouse, setShowWarehouse] = useState(false)
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, dataTable.length - page * rowsPerPage);
 
   const createCode = () => {
     const time = new Date()
@@ -184,8 +180,10 @@ const Transfer = (props) => {
 
   const onChangeName = (e, newValue) => {
     setName(e.target.value)
-    var checked = false
-    console.log(dataItem)
+    if (dataTable.length === 0) createCode()
+    setIsAmountSelected(false)
+    setAmount(0)
+
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         setItemID(item.item_id)
@@ -202,18 +200,12 @@ const Transfer = (props) => {
         setName(item.name_item)
         setAmountCurrent(item.amount)
         setIsFromWarehouseSelected(true)
-        checked = true
         Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/kd/' + item.item_id + '/' + item.warehouse_id + '/' + item.shelf_id + '?token=' + getToken())])
           .then(function (res) {
             setKD(res[0].data)
           })
       }
     })
-    if (amount > 0) {
-      if (dataTable.length === 0) createCode()
-    }
-    if (!checked) setIsAmountSelected(false)
-    setAmount(0)
   }
 
   const onChangeAmount = (e) => {
@@ -253,7 +245,7 @@ const Transfer = (props) => {
         let amountTotal = 0
         let array = []
         dataTable.map((item, index) => {
-          if (item.item_id === item_id) {
+          if (item.item_id === item_id && item.fromWarehouse === fromWarehouse && item.fromShelf === fromShelf && item.toWarehouse === toWarehouse && item.toShelf === toShelf) {
             amountTotal = parseInt(item.amount) + parseInt(amount)
             array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
           }
@@ -313,13 +305,21 @@ const Transfer = (props) => {
       setAmount(0)
     }
   }
-
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    return nameRole
+  }
 
 
   useEffect(() => {
     Promise.all([
-      getData('http://127.0.0.1:8000/api/admin/items/searchItem/1' + '?token=' + getToken()),
-      getData('http://127.0.0.1:8000/api/admin/warehouse' + '?token=' + getToken()),
+      getData(getRoleNames() === 'admin' ?
+        'http://127.0.0.1:8000/api/admin/items/itemInWarehouse?token=' + getToken() :
+        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getIdWarehouseRole() + '?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
     ])
       .then(res => {
@@ -327,6 +327,12 @@ const Transfer = (props) => {
         setDataFromWarehouse(res[1].data)
         setDataToWarehouse(res[1].data)
         setCreatedBy(res[2].data[0].fullname)
+        if (getRoleNames() !== 'admin') {
+          setFromWarehouse(getIdWarehouseRole())
+          // getDataShelf(getIdWarehouseRole())
+          setIsFromWarehouseSelected(true)
+          setShowWarehouse(true)
+        } else { setShowWarehouse(false) }
       })
       .catch(error => {
         if (error.response.status === 403) {
@@ -396,7 +402,7 @@ const Transfer = (props) => {
               <br />
               <CRow sm >
                 <CCol>
-                  <CFormSelect size="sm" className="mb-3" value={fromWarehouse} onChange={
+                  <CFormSelect size="sm" disabled={showWarehouse} className="mb-3" value={fromWarehouse} onChange={
                     (e) => {
                       (parseInt(e.target.value)) ? onChangeFromWarehouse(e, true) : onChangeFromWarehouse(e, false)
                     }
@@ -551,6 +557,11 @@ const Transfer = (props) => {
               </CTableDataCell>
             </CTableRow>
           ))}
+          {emptyRows > 0 && (
+              <CTableRow style={{ height: 40 * emptyRows }}>
+                <CTableDataCell colSpan={10} />
+              </CTableRow>
+            )}
         </CTableBody>
       </CTable>
     </>

@@ -30,7 +30,7 @@ const Shelves = () => {
   }
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf' + '?token=' + getToken())])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/shelf?token=' + getToken())])
       .then(function (res) {
         setDataTable(res[0].data)
       })

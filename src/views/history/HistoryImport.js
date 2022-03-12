@@ -18,7 +18,7 @@ import {
 import { getData, putData } from '../api/Api.js'
 import DataImport from './DataImport.js'
 import { Link, useHistory } from 'react-router-dom'
-import { getToken } from 'src/components/utils/Common'
+import { getRoleNames, getToken } from 'src/components/utils/Common'
 
 const HistoryImport = () => {
   const history = useHistory()
@@ -92,7 +92,7 @@ const HistoryImport = () => {
                   <TableCell className="text-center">{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
                   <TableCell className="text-center">
                     <div className="d-grid gap-2 d-md-block">
-                      <DataImport code={item.code} status={item.status} created_at={item.created_at} />
+                      <DataImport code={item.code} status={item.status} created_at={item.created_at} created_by={item.fullname} />
                     </div>
                   </TableCell>
                 </TableRow>

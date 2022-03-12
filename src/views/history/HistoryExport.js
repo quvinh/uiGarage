@@ -25,6 +25,7 @@ const HistoryExport = () => {
   const [codeExport, setCodeExport] = useState([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -63,7 +64,7 @@ const HistoryExport = () => {
       <Card>
         <CardHeader title='Phiếu Xuất' />
         <Table striped hover responsive bordered borderColor="warning">
-          <TableHead style={{backgroundColor:'#ffcc80'}}>
+          <TableHead style={{ backgroundColor: '#ffcc80' }}>
             <TableRow>
               <TableCell className="text-center">STT</TableCell>
               <TableCell className="text-center">Mã Phiếu</TableCell>
@@ -93,10 +94,10 @@ const HistoryExport = () => {
               </TableRow>
             ))}
             {emptyRows > 0 && (
-                <TableRow style={{ height: 40 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
+              <TableRow style={{ height: 40 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>

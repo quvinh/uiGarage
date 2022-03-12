@@ -1,31 +1,11 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import React, { lazy, useEffect, useState } from 'react'
-import { CChartLine, CChartBar, CChart } from '@coreui/react-chartjs'
-import { getData, putData } from '../api/Api.js'
-import { Scale } from 'chart.js'
+import React from 'react'
+import { CChart } from '@coreui/react-chartjs'
+
 
 
 const Charts = (props) => {
-  // const [importVT, setImportVT] = useState([])
-  // const [exportVT, setExportVT] = useState([])
-  // const [importCode, setImportCode] = useState([])
-  // const [exportCode, setExportCode] = useState([])
-  // useEffect(() => {
-  //   Promise.all([getData('http://127.0.0.1:8000/api/admin/dashboard/import'), getData('http://127.0.0.1:8000/api/admin/dashboard/export'),
-  //     // getData('http://127.0.0.1:8000/api/admin/dashboard/importCode'), getData('http://127.0.0.1:8000/api/admin/dashboard/exportCode')
-  //   ])
-  //     .then(function (res) {
-  //       console.log(res)
-  //       setImportVT(res[0].data)
-  //       setExportVT(res[1].data)
-  //       // setImportCode(res[2].data)
-  //       // setExportCode(res[3].data)
-  //     }).catch((err) => {
-  //       // console.log(err)
-  //     })
-  // })
-
 
   const arrImportAmount = []
   props.importVT.map((item, index) => {

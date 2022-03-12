@@ -31,31 +31,31 @@ const _nav = [
     name: 'Danh mục',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
     items: [
-      {
-        component: CNavItem,
-        name: 'Điều phối kho',
-        to: '/transfer',
-      },
-      {
-        component: CNavItem,
-        name: 'Quản lý kho',
-        to: '/warehouses',
-      },
-      {
-        component: CNavItem,
-        name: 'Loại phụ tùng',
-        to: '/categories',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Điều phối kho',
+      //   to: '/transfer',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Quản lý kho',
+      //   to: '/warehouses',
+      // },
+      // {
+      //   component: CNavItem,
+      //   name: 'Loại phụ tùng',
+      //   to: '/categories',
+      // },
       // {
       //   component: CNavItem,
       //   name: 'Báo giá',
       //   to: '/',
       // },
-      // {
-      //   component: CNavItem,
-      //   name: 'Nhà cung cấp',
-      //   to: '/',
-      // },
+      {
+        component: CNavItem,
+        name: 'Nhà cung cấp',
+        to: '/supplier',
+      },
       // {
       //   component: CNavItem,
       //   name: 'Khách hàng',
@@ -65,14 +65,14 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Thống kê',
-    to: '/charts',
+    name: 'Thông tin tài khoản',
+    to: '/profile',
     icon: <CIcon icon={cilChartPie} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
     name: 'Thông báo',
-    to: '/notification',
+    to: '/notification-event',
     icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
   },
   // {
@@ -87,27 +87,27 @@ const _nav = [
   //     },
   //   ],
   // },
-  {
-    component: CNavTitle,
-    name: 'Mở rộng',
-  },
-  {
-    component: CNavGroup,
-    name: 'Pages',
-    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Admin',
-        to: '/account',
-      },
-      {
-        component: CNavItem,
-        name: 'Cấp tài khoản',
-        to: '/register',
-      },
-    ],
-  },
+  // {
+  //   component: CNavTitle,
+  //   name: 'Mở rộng',
+  // },
+  // {
+  //   component: CNavGroup,
+  //   name: 'Pages',
+  //   icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  //   items: [
+  //     {
+  //       component: CNavItem,
+  //       name: 'Admin',
+  //       to: '/account',
+  //     },
+  //     {
+  //       component: CNavItem,
+  //       name: 'Cấp tài khoản',
+  //       to: '/register',
+  //     },
+  //   ],
+  // },
 ]
 
 export default _nav

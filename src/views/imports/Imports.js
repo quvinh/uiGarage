@@ -1,36 +1,25 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CInputGroup,
-  CInputGroupText,
-  CFormInput,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CButton,
-  CFormSelect,
-} from '@coreui/react'
-import { getData } from '../api/Api'
-import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation'
-import { ShowImport } from './ShowImport'
-import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import DateTimePicker from '@mui/lab/DateTimePicker'
-import AdapterDateFns from '@mui/lab/AdapterDateFns'
-import { getToken, getUserID } from 'src/components/utils/Common'
-import CurrencyFormat from 'react-currency-format'
-import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
+import {
+  CButton, CCard,
+  CCardBody, CCol, CFormInput, CFormSelect, CInputGroup,
+  CInputGroupText, CRow, CTable, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import React, { useEffect, useState } from 'react'
+import CurrencyFormat from 'react-currency-format'
 import { useHistory } from 'react-router-dom'
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import { getData } from '../api/Api'
+import { ShowImport } from './ShowImport'
+import Validator from './Validation'
 
 const Imports = () => {
   const history = useHistory()
@@ -55,6 +44,7 @@ const Imports = () => {
 
   const [dataTable, setDataTable] = useState([])
   const [dataItem, setDataItem] = useState([])
+  const [dataItemName, setDataItemName] = useState([])
   const [dataWarehouse, setDataWarehouse] = useState([])
   const [dataSuppliers, setDataSuppliers] = useState([])
   const [dataShelf, setDataShelf] = useState([])
@@ -66,9 +56,24 @@ const Imports = () => {
   // const simpleValidator = useRef(SimpleReactValidator())
   const [validator, showValidationMessage] = Validator()
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
+  const [showWarehouse, setShowWarehouse] = useState(false)
   const [isItemSelected, setIsItemSelected] = useState(false)
   const [isUnitSelected, setIsUnitSelected] = useState(false)
   const [isCategorySelected, setIsCategorySelected] = useState(false)
+
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, dataTable.length - page * rowsPerPage);
 
   const setNull = () => {
     setName('')
@@ -98,9 +103,27 @@ const Imports = () => {
   }
 
   const onChangeName = (e, newValue) => {
-    setName(e.target.value)
+    setName(newValue)//)
     if (dataTable.length === 0) createCode()
     setIsItemSelected(false)
+
+    dataItemName.map((item) => {
+      if (item.name === newValue) {
+        setNull()
+        if (getRoleNames() !== 'admin') {
+          getDataShelf(getIdWarehouseRole())
+          setWarehouse(getIdWarehouseRole())
+          setShowWarehouse(true)
+        } else { setShowWarehouse(false) }
+        setItemID(item.id)
+        setCategory(item.category_id)
+        setUnit(item.unit)
+        setName(item.name)
+        setIsWarehouseSelected(true)
+        setIsItemSelected(true)
+      }
+    })
+
     dataItem.map((item) => {
       if (item.name_item === newValue) {
         getDataShelf(item.warehouse_id)
@@ -118,10 +141,9 @@ const Imports = () => {
         setTotalPrice((item.amount) * (item.price))
         setIsItemSelected(true)
         setIsWarehouseSelected(true)
-        console.log(item.name_item)
+        // console.log(item.name_item)
       }
     })
-    // console.log(arr)
   }
 
   const onChangeWarehouse = (e, value) => {
@@ -144,7 +166,7 @@ const Imports = () => {
       let index = e.nativeEvent.target.selectedIndex;
       setCategory(e.target.value)
       setIsCategorySelected(true)
-      console.log('category',e.target.value)
+      console.log('category', e.target.value)
       Promise.all(
         [getData('http://127.0.0.1:8000/api/admin/category/itemCategory/' + e.target.value + '?token=' + getToken()),
         getData('http://127.0.0.1:8000/api/admin/category/unitCategory/' + e.target.value + '?token=' + getToken())],
@@ -183,13 +205,14 @@ const Imports = () => {
         console.log(err)
       })
   }
+
   const onAddTable = (e) => {//Button click, add data table
     if (validator.allValid() && amount > 0) {
       if (dataTable.length > 0) {
         let amountTotal = 0
         let array = []
         dataTable.map((item, index) => {
-          if (item.item_id === item_id) {
+          if (item.item_id === item_id && item.batch_code === batch_code && item.supplier_id === supplier_id && item.shelf_id === shelf_id && item.warehouse_id === warehouse_id && item.price === price) {
             amountTotal = parseInt(item.amount) + parseInt(amount)
             array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
           }
@@ -246,23 +269,41 @@ const Imports = () => {
     setDataTable([...array])
   }
 
+  const getIdWarehouseRole = () => {
+    var nameRole = ''
+    getRoleNames().split(' ').map((item) => {
+      if (!isNaN(item)) nameRole = item
+    })
+    return nameRole
+  }
+
   useEffect(() => {
     Promise.all([
       getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/suppliers?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken()),
+      getData(getRoleNames() === 'admin' ?
+        'http://127.0.0.1:8000/api/admin/items/itemInWarehouse?token=' + getToken() :
+        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getIdWarehouseRole() + '?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/shelf?token=' + getToken()),
-      getData('http://127.0.0.1:8000/api/admin/items/searchItem/1?token=' + getToken()),
-      getData('http://127.0.0.1:8000/api/auth/user-profile?token=' + getToken())
+      getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken()),
+      getData('http://127.0.0.1:8000/api/admin/items?token=' + getToken())
     ])
       .then(res => {
+
+        console.log(res)
+        setWarehouse(getIdWarehouseRole())
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
-        setDataShelf(res[3].data)
-        setDataItem(res[4].data)
+        setDataItem(res[3].data)
+        setDataShelf(res[4].data)
         setUserProfile(res[5].data[0].fullname)
-        console.log('admin',res[5].data[0].fullname)
+        setDataItemName(res[6].data)
+        console.log(getIdWarehouseRole())
+        if (getRoleNames() !== 'admin') {
+          setShowWarehouse(true)
+        } else { setShowWarehouse(false) }
       })
       .catch(error => {
         console.log(error)
@@ -288,11 +329,13 @@ const Imports = () => {
                 id="name_item"
                 freeSolo
                 size='small'
-                options={dataItem.map((option) => option.name_item)}
+                options={dataItemName.map((option) => option.name)}
                 // value={name}
                 // onChange={(e, newValue) => onChangeName(e, newValue)}
                 inputValue={name}
-                onInputChange={(e, newValue) => onChangeName(e, newValue)}
+                onInputChange={(e, newValue) => {
+                  onChangeName(e, newValue)
+                }}
                 renderInput={(params) => <TextField {...params} label="Tên vật tư" />}
                 disableClearable
               />
@@ -340,7 +383,7 @@ const Imports = () => {
             <CCol xs>
               <CRow>
                 <CCol xs={4}>
-                <CFormSelect size="sm" value={unit} onChange={
+                  <CFormSelect size="sm" value={unit} onChange={
                     (e) => {
                       (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false); setItemID(''); setCategory(''); setName(''); setIsItemSelected(false)
                       setUnit(e.target.value)
@@ -376,8 +419,8 @@ const Imports = () => {
                           </CInputGroup>
                         </CCol>
                         <CCol>
-                          <CFormSelect disabled={isCategorySelected?true:(isItemSelected?true:false)} size="sm" value={unit} onChange={(e) => setSubUnit(e.target.value)}>
-                            {}
+                          <CFormSelect disabled={isCategorySelected ? true : (isItemSelected ? true : false)} size="sm" value={unit} onChange={(e) => setSubUnit(e.target.value)}>
+                            { }
                             <option value={'Chiếc'}>Chiếc</option>
                             <option value={'Bộ'}>Bộ</option>
                             <option value={'Cái'}>Cái</option>
@@ -413,8 +456,9 @@ const Imports = () => {
             <CCol xs>
               <CFormSelect disabled={isItemSelected} size="sm" name="category_id" value={category_id} onChange={
                 (e) => {
-                  (parseInt(e.target.value)) ? onChangeCategory(e, true) : onChangeCategory(e, false)}
-                  }>
+                  (parseInt(e.target.value)) ? onChangeCategory(e, true) : onChangeCategory(e, false)
+                }
+              }>
                 <option>Chọn loại vật tư</option>
                 {dataCategory.map((item, index) => (
                   <option key={index} value={item.id}>{item.name}</option>
@@ -455,7 +499,7 @@ const Imports = () => {
               <br />
             </CCol>
             <CCol xs>
-              <CFormSelect size="sm" name="warehouse_id" value={warehouse_id} onChange={
+              <CFormSelect disabled={showWarehouse} size="sm" name="warehouse_id" value={warehouse_id} onChange={
                 (e) => {
                   (parseInt(e.target.value)) ? onChangeWarehouse(e, true) : onChangeWarehouse(e, false)
                 }
@@ -606,10 +650,14 @@ const Imports = () => {
                 }}>
                   <CIcon icon={cilDelete} />
                 </CButton>
-
               </CTableHeaderCell>
             </CTableRow>
           ))}
+          {emptyRows > 0 && (
+              <CTableRow style={{ height: 20 * emptyRows }}>
+                <CTableDataCell colSpan={11} />
+              </CTableRow>
+            )}
         </CTableBody>
       </CTable>
     </>

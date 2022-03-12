@@ -107,7 +107,7 @@ const HistoryTransfer = () => {
                     <TableCell className="text-center">{rows.status === '2' ? 'Đã duyệt' : (rows.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
                     <TableCell className="text-center">
                       <div className="d-grid gap-2 d-md-block">
-                        <DataTransfer code={rows.code} created_at={rows.created_at} status={rows.status} />
+                        <DataTransfer code={rows.code} created_at={rows.created_at} status={rows.status} created_by={rows.fullname}/>
                       </div>
                     </TableCell>
                   </TableRow>
