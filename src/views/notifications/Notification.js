@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getToken } from 'src/components/utils/Common';
+import { getAllPermissions, getToken } from 'src/components/utils/Common';
 import { delData, getData, putData } from '../api/Api';
 
 
@@ -43,7 +43,7 @@ const NotificationEvent = () => {
     setContent(item.content)
   }
 
-  const handleDelete = (e,id) => {
+  const handleDelete = (e, id) => {
     // const eClick = e.currentTarget;
     console.log(id)
     Promise.all([delData('http://127.0.0.1:8000/api/admin/notification/delete/' + id + '?token=' + getToken())])
@@ -84,7 +84,7 @@ const NotificationEvent = () => {
 
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/notification?token=' + getToken()),
-    // getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken()),
+      // getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken()),
     ])
       .then(function (res) {
         console.log(res[0].data)
@@ -100,7 +100,11 @@ const NotificationEvent = () => {
     <>
       <Stack direction="row" spacing={2}>
         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-          <CButton href='#/notification-add' color="success">Tạo thông báo</CButton>
+          {
+            getAllPermissions().includes("Thêm thông báo") && (
+              <CButton href='#/notification-add' color="success">Tạo thông báo</CButton>
+            )
+          }
         </div>
       </Stack>
       <CCard>
@@ -126,14 +130,22 @@ const NotificationEvent = () => {
                   <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
                   <CTableDataCell className="text-center">
                     <div className="d-grid gap-2 d-md-block">
-                      <CButton className='me-2' onClick={() => {
-                        handleClick(item)
-                        setVisible(!visible)
-                      }} color='info'><CIcon icon={cilPenAlt} /></CButton>
-                      <CButton onClick={(e) => {
-                        setId(item.id)
-                        setVisibleDel(!visible)
-                         }} color="danger"><CIcon icon={cilDelete} /></CButton>
+                      {
+                        getAllPermissions().includes("Sửa thông báo") && (
+                          <CButton className='me-2' onClick={() => {
+                            handleClick(item)
+                            setVisible(!visible)
+                          }} color='info'><CIcon icon={cilPenAlt} /></CButton>
+                        )
+                      }
+                      {
+                        getAllPermissions().includes("Xoá thông báo") && (
+                          <CButton onClick={(e) => {
+                            setId(item.id)
+                            setVisibleDel(!visible)
+                          }} color="danger"><CIcon icon={cilDelete} /></CButton>
+                        )
+                      }
                     </div>
                   </CTableDataCell>
                 </CTableRow>
@@ -166,7 +178,7 @@ const NotificationEvent = () => {
           <CButton color="success" onClick={(e) => {
             handleEdit(id)
             setVisible(false)
-            }}><CIcon icon={cilCheckAlt} /></CButton>
+          }}><CIcon icon={cilCheckAlt} /></CButton>
         </CModalFooter>
       </CModal>
       <CModal visible={visibleDel} onClose={() => setVisibleDel(false)}>
@@ -175,7 +187,7 @@ const NotificationEvent = () => {
         <CModalBody>Bạn có chắc muốn xóa</CModalBody>
         <CModalFooter>
           <CButton color="danger" onClick={(e) => {
-            handleDelete(e,id)
+            handleDelete(e, id)
             setVisibleDel(false)
           }}><CIcon icon={cilCheckAlt} /></CButton>
         </CModalFooter>

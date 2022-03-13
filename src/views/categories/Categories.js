@@ -14,7 +14,7 @@ import {
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
-import { getToken } from 'src/components/utils/Common';
+import { getAllPermissions, getToken } from 'src/components/utils/Common';
 
 const Categories = () => {
   const [dataTable, setDataTable] = useState([])
@@ -52,7 +52,11 @@ const Categories = () => {
       <CCard>
         <CCardHeader>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton href='#/categories-add' color="success">Tạo mới loại phụ tùng</CButton>
+            {
+              getAllPermissions().includes("Thêm loại vật tư") && (
+                <CButton href='#/categories-add' color="success">Tạo mới loại phụ tùng</CButton>
+              )
+            }
           </div>
         </CCardHeader>
         <CCardBody>
@@ -73,8 +77,16 @@ const Categories = () => {
                   <CTableDataCell className="text-center">{item.note === null ? "" : item.note}</CTableDataCell>
                   <CTableDataCell className="text-center">
                     <div className="d-grid gap-2 d-md-block">
-                      <CButton href={'#/categories-edit/'+item.id} color="success">Sửa</CButton>
-                      <CButton onClick={(e) => handleDelete(e, item.id)} color="secondary">Xoá</CButton>
+                      {
+                        getAllPermissions().includes("Sửa loại vật tư") && (
+                          <CButton href={'#/categories-edit/'+item.id} color="success">Sửa</CButton>
+                        )
+                      }
+                      {
+                        getAllPermissions().includes("Xoá loại vật tư") && (
+                          <CButton onClick={(e) => handleDelete(e, item.id)} color="secondary">Xoá</CButton>
+                        )
+                      }
                     </div>
                   </CTableDataCell>
                 </CTableRow>

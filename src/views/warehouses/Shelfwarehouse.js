@@ -47,7 +47,7 @@ import { getData, delData, putData } from '../api/Api';
 // import Add from '../shelf/Add';
 // import Edit from '../shelf/Edit';
 
-import { getToken } from 'src/components/utils/Common';
+import { getAllPermissions, getToken } from 'src/components/utils/Common';
 
 const ShelfWarehouse = (props) => {
   const [visible, setVisible] = useState(false)
@@ -269,7 +269,11 @@ const ShelfWarehouse = (props) => {
         <CCardBody>
           <CRow>
             <CCol sm={3} lg={2}><div className="d-grid gap-2 d-md-block">
-              <CButton color="warning" className='m-2' href={'#/shelf-add/' + props.match.params.id}><CIcon icon={cilPlus} /></CButton>
+              {
+                getAllPermissions().includes("Thêm giá/kệ") && (
+                  <CButton color="warning" className='m-2' href={'#/shelf-add/' + props.match.params.id}><CIcon icon={cilPlus} /></CButton>
+                )
+              }
               <CButton style={{ backgroundColor: "#99ff66", width: "120px", height: "38px", border: "none", color: "#262626" }}
                 onClick={(e) => {
                   showAll()
@@ -304,11 +308,19 @@ const ShelfWarehouse = (props) => {
 
                       <CCol sm={2} lg={2}>
                         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                          <CButton color="info" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilPenAlt} /></CButton>
-                          <CButton color="danger" onClick={(e) => {
-                            setVisibleDel(!visible)
-                            // handleDeleteShelf(e, shelfId)
-                          }} ><CIcon icon={cilDelete} /></CButton>
+                          {
+                            getAllPermissions().includes("Sửa giá/kệ") && (
+                              <CButton color="info" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilPenAlt} /></CButton>
+                            )
+                          }
+                          {
+                            getAllPermissions().includes("Xoá giá/kệ") && (
+                              <CButton color="danger" onClick={(e) => {
+                                setVisibleDel(!visible)
+                                // handleDeleteShelf(e, shelfId)
+                              }} ><CIcon icon={cilDelete} /></CButton>
+                            )
+                          }
                         </div>
                       </CCol>
                     </CRow>
@@ -344,18 +356,26 @@ const ShelfWarehouse = (props) => {
                           <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
                           <CTableDataCell className="text-center">
                             <div >
-                              <CButton className='me-2' color='info' onClick={(e) => {
-                                handleGetItem(item)
-                                setDataItemClick(item.detail_item_id)
-                                setVisible(!visible)
-                              }}>
-                                <CIcon icon={cilPenAlt} />
-                              </CButton>
-                              <CButton color='success' onClick={() => {
-                                handleValid(item.id, item.shelf_id, item.warehouse_id)
-                                handleDetailItem(item.id, item.shelf_id, item.warehouse_id)
-                                setVisibleXL(!visibleXL)
-                              }}><CIcon icon={cilDescription} /></CButton>
+                              {
+                                getAllPermissions().includes("Sửa vật tư") && (
+                                  <CButton className='me-2' color='info' onClick={(e) => {
+                                    handleGetItem(item)
+                                    setDataItemClick(item.detail_item_id)
+                                    setVisible(!visible)
+                                  }}>
+                                    <CIcon icon={cilPenAlt} />
+                                  </CButton>
+                                )
+                              }
+                              {
+                                getAllPermissions().includes("Xem vật tư") && (
+                                  <CButton color='success' onClick={() => {
+                                    handleValid(item.id, item.shelf_id, item.warehouse_id)
+                                    handleDetailItem(item.id, item.shelf_id, item.warehouse_id)
+                                    setVisibleXL(!visibleXL)
+                                  }}><CIcon icon={cilDescription} /></CButton>
+                                )
+                              }
                               {/* <CButton className='me-2' color="success"><CIcon icon={cilDescription} /></CButton> */}
                             </div>
                           </CTableDataCell>
@@ -432,6 +452,7 @@ const ShelfWarehouse = (props) => {
           </CRow>
         </CModalBody>
         <CModalFooter>
+
           <CButton color="warning" onClick={(e) => {
             handleUpdateItem(e, dataItemClick)
             setVisible(false)

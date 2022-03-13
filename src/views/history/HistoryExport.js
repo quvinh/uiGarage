@@ -49,7 +49,7 @@ const HistoryExport = () => {
 
   return (
     <>
-      <Stack direction="row" spacing={2}>
+      {/* <Stack direction="row" spacing={2}>
         <Link className='btn btn-primary' to='/history_import'>
           Phiếu Nhập
         </Link>
@@ -59,7 +59,7 @@ const HistoryExport = () => {
         <Link className='btn btn-success' to='/history_transfer'>
           Phiếu Chuyển Kho
         </Link>
-      </Stack>
+      </Stack> */}
       <br />
       <Card>
         <CardHeader title='Phiếu Xuất' />

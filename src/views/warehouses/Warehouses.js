@@ -25,7 +25,7 @@ import CIcon from '@coreui/icons-react'
 import { cilCheckAlt, cilOptions, cilPlus, cilSettings } from '@coreui/icons'
 import { getData, putData, delData, postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
-import { getToken } from 'src/components/utils/Common.js'
+import { getAllPermissions, getToken } from 'src/components/utils/Common.js'
 
 //const WidgetsDropdown = lazy(() => import('../widgets/WidgetsDropdown.js'))
 // const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
@@ -132,13 +132,25 @@ const Warehouses = () => {
                           <CIcon style={{ position: "relative", right: "-10px" }} icon={cilSettings} size={'md'} />
                         </CDropdownToggle>
                         <CDropdownMenu >
-                          <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
-                          <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
-                          <CDropdownItem onClick={(e) => {
-                            setVisibleDel(!visibleDel)
-                            handleCount(item.id)
-                            setId(item.id)
-                          }} >Delete</CDropdownItem>
+                          {
+                            getAllPermissions().includes("Sửa kho") && (
+                              <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
+                            )
+                          }
+                          {
+                            getAllPermissions().includes("Xem kho") && (
+                              <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
+                            )
+                          }
+                          {
+                            getAllPermissions().includes("Xoá kho") && (
+                              <CDropdownItem onClick={(e) => {
+                                setVisibleDel(!visibleDel)
+                                handleCount(item.id)
+                                setId(item.id)
+                              }} >Delete</CDropdownItem>
+                            )
+                          }
                         </CDropdownMenu>
                       </CDropdown>
                     </CCol>
@@ -158,7 +170,7 @@ const Warehouses = () => {
           <CButton color="danger" onClick={(e) => {
             setVisibleDel(false)
             handleDelete(e, id)
-            }}><CIcon icon={cilCheckAlt}/></CButton>
+          }}><CIcon icon={cilCheckAlt} /></CButton>
         </CModalFooter>
       </CModal>
 

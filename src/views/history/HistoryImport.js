@@ -18,7 +18,7 @@ import {
 import { getData, putData } from '../api/Api.js'
 import DataImport from './DataImport.js'
 import { Link, useHistory } from 'react-router-dom'
-import { getRoleNames, getToken } from 'src/components/utils/Common'
+import { getAllPermissions, getRoleNames, getToken } from 'src/components/utils/Common'
 
 const HistoryImport = () => {
   const history = useHistory()
@@ -53,7 +53,7 @@ const HistoryImport = () => {
 
   return (
     <>
-      <Stack direction="row" spacing={2}>
+      {/* <Stack direction="row" spacing={2}>
         <Link className='btn btn-primary' to='/history_import'>
           Phiếu Nhập
         </Link>
@@ -63,7 +63,7 @@ const HistoryImport = () => {
         <Link className='btn btn-success' to='/history_transfer'>
           Phiếu Chuyển Kho
         </Link>
-      </Stack>
+      </Stack> */}
       <br />
       <Card>
         <CardHeader title='Phiếu Nhập' />

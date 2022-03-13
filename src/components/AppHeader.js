@@ -49,12 +49,17 @@ const AppHeader = () => {
                 <CDropdownToggle>Danh mục</CDropdownToggle>
                 <CDropdownMenu>
                   {
+                    getAllPermissions().includes("Thêm kho","Sửa kho","Xoá kho","Xem kho") && (
+                      <CDropdownItem href="#/warehouses">Quản lý kho</CDropdownItem>
+                    )
+                  }
+                  {/* {
                     getRoleNames() === "admin" ? (
                       <>
                         <CDropdownItem href="#/warehouses">Quản lý kho</CDropdownItem>
                       </>
                     ) : (<></>)
-                  }
+                  } */}
                   <CDropdownItem href="#/categories">Các loại phụ tùng</CDropdownItem>
                 </CDropdownMenu>
               </CDropdown>
@@ -64,18 +69,26 @@ const AppHeader = () => {
                 Bảng tin
               </CNavLink>
             </CNavItem>
-            <CNavItem>
-              <CNavLink to="/imports" component={NavLink}>
-                Nhập kho
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink to="/exports" component={NavLink}>
-                Xuất kho
-              </CNavLink>
-            </CNavItem>
             {
-              getAllPermissions().includes("Xem phiếu chuyển") && (
+              getAllPermissions().includes("Thêm phiếu nhập") && (
+                <CNavItem>
+                  <CNavLink to="/imports" component={NavLink}>
+                    Nhập kho
+                  </CNavLink>
+                </CNavItem>
+              )
+            }
+            {
+              getAllPermissions().includes("Thêm phiếu xuất") && (
+                <CNavItem>
+                  <CNavLink to="/exports" component={NavLink}>
+                    Xuất kho
+                  </CNavLink>
+                </CNavItem>
+              )
+            }
+            {
+              getAllPermissions().includes("Thêm phiếu chuyển") && (
                 <CNavItem>
                   <CNavLink to="/transfer" component={NavLink}>
                     Điều phối kho
@@ -83,15 +96,31 @@ const AppHeader = () => {
                 </CNavItem>
               )
             }
-            {
-              getAllPermissions().includes("Xem phiếu nhập", "Xem phiếu xuất", "Xem phiếu chuyển") && (
-                <CNavItem>
-                  <CNavLink to="/history_import" component={NavLink}>
+            <CNavItem>
+              {/* <CNavLink to="/history_import" component={NavLink}>
                     QL Phiếu
-                  </CNavLink>
-                </CNavItem>
-              )
-            }
+                  </CNavLink> */}
+              <CDropdown variant="nav-item">
+                <CDropdownToggle>QL Phiếu</CDropdownToggle>
+                <CDropdownMenu>
+                  {
+                    getAllPermissions().includes("Xem phiếu nhập","Sửa phiếu nhập","Xoá phiếu nhập","Duyệt phiếu nhập") && (
+                      <CDropdownItem href="#/history_import">Phiếu nhập</CDropdownItem>
+                    )
+                  }
+                  {
+                    getAllPermissions().includes("Sửa phiếu xuất","Xoá phiếu xuất","Xem phiếu xuất","Duyệt phiếu xuất") && (
+                      <CDropdownItem href="#/history_export">Phiếu xuất</CDropdownItem>
+                    )
+                  }
+                  {
+                    getAllPermissions().includes("Sửa phiếu chuyển","Xoá phiếu chuyển","Xem phiếu chuyển","Duyệt phiếu chuyển") && (
+                      <CDropdownItem href="#/history_transfer">Phiếu luân chuyển</CDropdownItem>
+                    )
+                  }
+                </CDropdownMenu>
+              </CDropdown>
+            </CNavItem>
             {
 
               getRoleNames().includes("admin") && (

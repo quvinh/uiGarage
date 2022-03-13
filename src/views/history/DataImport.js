@@ -130,15 +130,19 @@ const DataImport = (props) => {
     { label: "Số lượng nhập ", key: "luongNhap" },
     { label: "Đơn Vị Tính", key: "unit" },
     { label: "Người tạo", key: "fullname" },
-    { label: "Ngày tạo", key: "created_at"},
+    { label: "Ngày tạo", key: "created_at" },
   ];
 
   const data = tableHistoryImport;
 
   return (
     <>
-      <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       {
+        getAllPermissions().includes("Xem phiếu nhập") && (
+          <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
+        )
+      }
+      {/* {
         getAllPermissions().includes('Xoá phiếu xuất ' + getIdWarehouseRole()) ? (
           <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
         ) : (
@@ -146,10 +150,22 @@ const DataImport = (props) => {
             <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
           ) : (<></>)
         )
+      } */}
+      {
+        getAllPermissions().includes("Xoá phiếu nhập") && (
+          <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+        )
       }
-      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
-
+      {
+        getAllPermissions().includes("Duyệt phiếu nhập") && (
+          <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+        )
+      }
+      {
+        getAllPermissions().includes("Duyệt phiếu nhập") && (
+          <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
+        )
+      }
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} scroll='paper'>
 
         <DialogTitle className="d-grid gap-2 d-md-flex justify-content-md-end" style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>

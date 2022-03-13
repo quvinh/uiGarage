@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
   cilBell,
   cilCalculator,
   cilChartPie,
+  cilIndustry,
   cilNotes,
   cilPeople,
   cilSpeedometer,
@@ -26,11 +28,11 @@ const _nav = [
     component: CNavTitle,
     name: 'Chức năng',
   },
-  {
-    component: CNavGroup,
-    name: 'Danh mục',
-    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
-    items: [
+  // {
+  //   component: CNavGroup,
+  //   name: 'Danh mục',
+  //   icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+  //   items: [
       // {
       //   component: CNavItem,
       //   name: 'Điều phối kho',
@@ -51,17 +53,23 @@ const _nav = [
       //   name: 'Báo giá',
       //   to: '/',
       // },
-      {
-        component: CNavItem,
-        name: 'Nhà cung cấp',
-        to: '/supplier',
-      },
+      // {
+      //   component: CNavItem,
+      //   name: 'Nhà cung cấp',
+      //   to: '/supplier',
+      // },
       // {
       //   component: CNavItem,
       //   name: 'Khách hàng',
       //   to: '/',
       // },
-    ],
+  //   ],
+  // },
+  {
+    component: CNavItem,
+    name: 'Nhà cung cấp',
+    to: '/supplier',
+    icon: <CIcon icon={cilIndustry} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,

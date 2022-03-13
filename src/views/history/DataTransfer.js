@@ -114,7 +114,7 @@ const DataTransfer = (props) => {
     { label: "Số lượng xuất ", key: "amount" },
     { label: "Đơn Vị Tính", key: "unit" },
     { label: "Người tạo", key: "fullname" },
-    { label: "Ngày tạo", key: "created_at"},
+    { label: "Ngày tạo", key: "created_at" },
 
   ];
 
@@ -133,8 +133,17 @@ const DataTransfer = (props) => {
 
   return (
     <>
-      <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       {
+        getAllPermissions().includes("Xem phiếu chuyển") && (
+          <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
+        )
+      }
+      {
+        getAllPermissions.includes("Xoá phiếu chuyển") && (
+          <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+        )
+      }
+      {/* {
         getAllPermissions().includes('Xoá phiếu chuyển ' + getIdWarehouseRole()) ? (
           <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
         ) : (
@@ -142,9 +151,18 @@ const DataTransfer = (props) => {
             <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
           ) : (<></>)
         )
+      } */}
+      {
+        getAllPermissions().includes("Duyệt phiếu chuyển") && (
+          <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+        )
       }
-      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='b1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
+      {
+        getAllPermissions().includes("Duyệt phiếu chuyển") && (
+          <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
+        )
+      }
+
 
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
         <DialogTitle className="d-grid gap-2 d-md-flex justify-content-md-end" style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>
@@ -159,103 +177,103 @@ const DataTransfer = (props) => {
           </ButtonGroup>
         </DialogTitle>
         <Paper>
-                  <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
-          <Card>
-            <CardContent>
-              <Stack spacing={2}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Card>
-                      <CardContent>
-                        LOGO
-                      </CardContent>
-                    </Card>
+          <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+            <Card>
+              <CardContent>
+                <Stack spacing={2}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                      <Card>
+                        <CardContent>
+                          LOGO
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={8}>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Card>
+                        <CardContent>
+                          <ListItem>
+                            <ListItemText
+                              primary="NAM KHÁNH"
+                              secondary={'GARAGE'}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText
+                              primary="Địa chỉ: Lê Hồng Phong"
+                              secondary={'Liên hệ: 0123456789'}
+                            />
+                          </ListItem>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Card>
+                        <CardContent>
+                          <ListItem>
+                            <ListItemText
+                              primary={"Người Tạo: " + props.created_by}
+                              secondary={'Thủ kho'}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText
+                              primary={"Số phiếu: " + props.code}
+                              secondary={'Thời gian nhập: ' + props.created_at}
+                            />
+                          </ListItem>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    {/* </Grid> */}
+                    <Grid item xs={12}>
+                      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
+                      {tableHistoryTransfer.map((item, index) => (
+                        <TableContainer component={Paper} key={index}>
+                          <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
+                            <CTableHead color="warning">
+                              <CTableRow>
+                                <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Từ Kho</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Từ Giá</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Đến Kho</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Đến Giá</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Số lượng </CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
+                                <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
+                              </CTableRow>
+                            </CTableHead>
+                            <CTableBody>
+                              <CTableRow v-for="item in tableItems" >
+                                <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name_from_warehouse}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name_from_shelf}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name_to_warehouse}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name_to_shelf}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
+                                <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
+                              </CTableRow>
+                            </CTableBody>
+                          </Table>
+                        </TableContainer>
+                      ))}
+                    </Grid>
+                    <Grid item xs={6}>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={8}>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary="NAM KHÁNH"
-                            secondary={'GARAGE'}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary="Địa chỉ: Lê Hồng Phong"
-                            secondary={'Liên hệ: 0123456789'}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Người Tạo: " + props.created_by}
-                            secondary={'Thủ kho'}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Số phiếu: " + props.code}
-                            secondary={'Thời gian nhập: ' + props.created_at}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  {/* </Grid> */}
-                  <Grid item xs={12}>
-                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU NHẬP</p>
-                    {tableHistoryTransfer.map((item, index) => (
-                      <TableContainer component={Paper} key={index}>
-                        <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
-                          <CTableHead color="warning">
-                            <CTableRow>
-                              <CTableHeaderCell className="text-center">STT</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Mã vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Tên vật tư</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Từ Kho</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Từ Giá</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Đến Kho</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Đến Giá</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Số lượng </CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Đơn vị tính</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Ngày tạo</CTableHeaderCell>
-                              <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
-                            </CTableRow>
-                          </CTableHead>
-                          <CTableBody>
-                            <CTableRow v-for="item in tableItems" >
-                              <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name_from_warehouse}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name_from_shelf}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name_to_warehouse}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name_to_shelf}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-                              <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
-                            </CTableRow>
-                          </CTableBody>
-                        </Table>
-                      </TableContainer>
-                    ))}
-                  </Grid>
-                  <Grid item xs={6}>
-                  </Grid>
-                </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Container>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Container>
 
         </Paper>
       </Dialog>

@@ -123,7 +123,7 @@ const DataExport = (props) => {
     { label: "Số lượng xuất ", key: "luongXuat" },
     { label: "Đơn Vị Tính", key: "unit" },
     { label: "Người tạo", key: "fullname" },
-    { label: "Ngày tạo", key: "created_at"},
+    { label: "Ngày tạo", key: "created_at" },
 
   ];
 
@@ -141,8 +141,17 @@ const DataExport = (props) => {
 
   return (
     <>
-      <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
       {
+        getAllPermissions().includes("Xem phiếu xuất") && (
+          <CButton size='sm' className='me-2' color='warning' onClick={handleClickOpen}><CIcon icon={cilDescription} /></CButton>
+        )
+      }
+      {
+        getAllPermissions().includes("Xoá phiếu xuất") && (
+          <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
+        )
+      }
+      {/* {
         getAllPermissions().includes('Xoá phiếu nhập ' + getIdWarehouseRole()) ? (
           <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
         ) : (
@@ -150,10 +159,17 @@ const DataExport = (props) => {
             <CButton size='sm' className='me-2' color='danger' onClick={handleDelete}><CIcon icon={cilDelete} /></CButton>
           ) : (<></>)
         )
+      } */}
+      {
+        getAllPermissions().includes("Duyệt phiếu xuất") && (
+          <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
+        )
       }
-      <CButton size='sm' className='me-2' color={props.status === '0' ? 'info' : 'secondary'} onClick={handleDStatus} name='bt1' disabled={props.status === '0' ? false : true}><CIcon icon={cilSend} /></CButton>
-      <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
-
+      {
+        getAllPermissions().includes("Duyệt phiếu xuất") && (
+          <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='bt2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
+        )
+      }
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition} >
         <DialogTitle className="d-grid gap-2 d-md-flex justify-content-md-end" style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>
           <ButtonGroup variant="contained">
@@ -167,59 +183,59 @@ const DataExport = (props) => {
           </ButtonGroup>
         </DialogTitle>
         <Paper>
-                  <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
-          <Card>
-            <CardContent>
-              <Stack spacing={2}>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Card>
-                      <CardContent>
-                        LOGO
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={8}>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary="NAM KHÁNH"
-                            secondary={'GARAGE'}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary="Địa chỉ: Lê Hồng Phong"
-                            secondary={'Liên hệ: 0123456789'}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary="Người Tạo: Nguyễn Thị T"
-                            secondary={'Thủ kho'}
-                          />
-                        </ListItem>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Số phiếu: " + props.code}
-                            secondary={'Thời gian nhập: ' + props.created_at}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  {/* </Grid> */}
-                  <Grid item xs={12}>
-                    <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
+          <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+            <Card>
+              <CardContent>
+                <Stack spacing={2}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={4}>
+                      <Card>
+                        <CardContent>
+                          LOGO
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={8}>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Card>
+                        <CardContent>
+                          <ListItem>
+                            <ListItemText
+                              primary="NAM KHÁNH"
+                              secondary={'GARAGE'}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText
+                              primary="Địa chỉ: Lê Hồng Phong"
+                              secondary={'Liên hệ: 0123456789'}
+                            />
+                          </ListItem>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Card>
+                        <CardContent>
+                          <ListItem>
+                            <ListItemText
+                              primary="Người Tạo: Nguyễn Thị T"
+                              secondary={'Thủ kho'}
+                            />
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText
+                              primary={"Số phiếu: " + props.code}
+                              secondary={'Thời gian nhập: ' + props.created_at}
+                            />
+                          </ListItem>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                    {/* </Grid> */}
+                    <Grid item xs={12}>
+                      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: "20px", color: "orange" }}>PHIẾU XUẤT</p>
 
                       <TableContainer component={Paper} >
                         <Table aria-label="customized table"> {/*sx={{ minWidth: "70%" }}*/}
@@ -236,42 +252,42 @@ const DataExport = (props) => {
                               <CTableHeaderCell className="text-center">Trạng thái</CTableHeaderCell>
                             </CTableRow>
                           </CTableHead>
-                    {tableHistoryExport.map((item, index) => (
-                          <CTableBody key={index}>
-                            <CTableRow v-for="item in tableItems" >
-                              <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.name}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.price}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.luongXuat}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
-                              <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
-                              <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
-                            </CTableRow>
-                          </CTableBody>
-                        ))}
+                          {tableHistoryExport.map((item, index) => (
+                            <CTableBody key={index}>
+                              <CTableRow v-for="item in tableItems" >
+                                <CTableDataCell className="text-center">{String(index + 1)}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.item_id}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.name}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.price}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.luongXuat}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.unit}</CTableDataCell>
+                                <CTableDataCell className="text-center">{item.created_at}</CTableDataCell>
+                                <CTableDataCell className='text-center'>{item.status === '2' ? 'Đã duyệt' : (item.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</CTableDataCell>
+                              </CTableRow>
+                            </CTableBody>
+                          ))}
                         </Table>
                       </TableContainer>
+                    </Grid>
+                    <Grid item xs={6}>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Card>
+                        <CardContent>
+                          <ListItem>
+                            <ListItemText
+                              primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
+                            />
+                          </ListItem>
+                        </CardContent>
+                      </Card>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={6}>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Card>
-                      <CardContent>
-                        <ListItem>
-                          <ListItemText
-                            primary={"Tổng giá: " + String(handleTotalPrice() + " VND")}
-                          />
-                        </ListItem>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Container>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Container>
 
         </Paper>
       </Dialog>
