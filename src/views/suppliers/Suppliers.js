@@ -21,8 +21,8 @@ import {
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
 import CIcon from '@coreui/icons-react';
-import { cilPlus, cilFile, cilDelete } from '@coreui/icons';
-import { getToken } from 'src/components/utils/Common';
+import { cilPlus, cilFile, cilDelete, cilPenAlt } from '@coreui/icons';
+import { getAllPermissions, getToken } from 'src/components/utils/Common';
 import TablePagination from '@mui/material/TablePagination';
 
 const Suppliers = () => {
@@ -145,8 +145,16 @@ const Suppliers = () => {
                                     <CTableDataCell>{item.note}</CTableDataCell>
                                     <CTableDataCell>
                                         {/* <div className="d-grid gap-2 d-md-block"> */}
-                                        <CButton href={'#/supplier-edit/' + item.id} className='m-2' color="warning"><CIcon icon={cilFile} /></CButton>
-                                        <CButton onClick={(e) => handleDelete(e, item.id)} color="danger"><CIcon icon={cilDelete} /></CButton>
+                                        {
+                                            getAllPermissions().includes("Sửa nhà cung cấp") && (
+                                                <CButton href={'#/supplier-edit/' + item.id} className='m-2' color="warning"><CIcon icon={cilPenAlt} /></CButton>
+                                            )
+                                        }
+                                        {
+                                            getAllPermissions().includes("Xoá nhà cung cấp") && (
+                                                <CButton onClick={(e) => handleDelete(e, item.id)} color="danger"><CIcon icon={cilDelete} /></CButton>
+                                            )
+                                        }
                                         {/* </div> */}
                                     </CTableDataCell>
                                 </CTableRow>
