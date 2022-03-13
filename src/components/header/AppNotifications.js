@@ -52,6 +52,7 @@ import { Button } from '@mui/material'
 import { getData, putData, delData, postData } from '../../views/api/Api';
 import { useHistory } from 'react-router-dom';
 import { getToken, getUserID } from '../utils/Common';
+import { ListNotification } from 'src/views/notifications/ListNotification';
 // import  from 'src/views/notifications/ListNotification';
 
 const AppNotifications = (props) => {
@@ -151,18 +152,26 @@ const AppNotifications = (props) => {
   //   }
   // }
 
+  // console.log("notify")
+  // console.log(ListNotification())
+  // console.log("notify")
+  // const arr = ListNotification().map((item) => item)
+
+  // console.log(arr.length)
+  // setNotification(arr.map((item) => item))
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/notification' + '?token=' + getToken())
     ]).then(function (res) {
-      console.log(res[0].data)
       setNotification(res[0].data)
+      // setNotification(ListNotification())
       setCountNotification(res[0].count)
     })
       .catch((error) => {
         // console.log(error)
       })
   }, [])
-
+  // setNotification(ListNotification()[0].data)
+  // setCountNotification(ListNotification()[0].count)
   return (
     <>
       <CDropdown variant="nav-item" placement={'bottom-start'} >
@@ -176,27 +185,29 @@ const AppNotifications = (props) => {
         <CDropdownMenu className="pt-0" placement="bottom-end" >
           <CCard>
             <CCardBody>
-              {notification.map((item, index) => (
-                <CDropdownItem key={index} href='#'
-                  onClick={(e) => {
-                    setVisible(!visible)
-                    handleShow(e, item.id)
-                  }}
-                >
-                  <CRow>
-                    <strong>{item.fullname}</strong>
-                    {/* <strong>{userProfile}</strong> đã tạo thông báo */}
-                  </CRow>
-                  <CRow>
-                    {item.name} - {item.title}
-                  </CRow>
-                  <CRow>
-                    {item.created_at}
-                  </CRow>
+              {
+                notification.map((item, index) => (
+                  <CDropdownItem key={index} href='#'
+                    onClick={(e) => {
+                      setVisible(!visible)
+                      handleShow(e, item.id)
+                    }}
+                  >
+                    <CRow>
+                      <strong>{item.fullname}</strong>
+                      {/* <strong>{userProfile}</strong> đã tạo thông báo */}
+                    </CRow>
+                    <CRow>
+                      {item.name} - {item.title}
+                    </CRow>
+                    <CRow>
+                      {item.created_at}
+                    </CRow>
 
-                </CDropdownItem>
+                  </CDropdownItem>
 
-              ))}
+                ))
+              }
             </CCardBody>
           </CCard>
 
