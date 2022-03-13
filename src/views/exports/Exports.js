@@ -14,7 +14,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import { getRoleNames, getToken, getUserID, getAllPermissions, getDataWarehouseID } from 'src/components/utils/Common'
 import { getData } from '../api/Api'
 import { ShowExport } from './ShowExport'
 import Validator from './Validation'
@@ -272,12 +272,13 @@ const Exports = (props) => {
     })
     return nameRole
   }
-
+  console.log(getAllPermissions())
+  console.log(getDataWarehouseID())
   useEffect(() => {
     Promise.all([
       getData(getRoleNames() === 'admin' ?
         'http://127.0.0.1:8000/api/admin/items/itemInWarehouse?token=' + getToken() :
-        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getIdWarehouseRole() + '?token=' + getToken()),
+        getDataWarehouseID().length > 0 && 'http://127.0.0.1:8000/api/admin/items/searchItem/' + getDataWarehouseID()[0] + '?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken())
     ])
@@ -287,16 +288,19 @@ const Exports = (props) => {
         setDataWarehouse(res[1].data)
         setCreatedBy(res[2].data[0].fullname)
         if (getRoleNames() !== 'admin') {
-          setWarehouse(getIdWarehouseRole())
-          // getDataShelf(getIdWarehouseRole())
-          setIsWarehouseSelected(true)
-          setShowWarehouse(true)
+          if (getDataWarehouseID().length > 0) {
+            setWarehouse(getDataWarehouseID()[0])
+            setIsWarehouseSelected(true)
+            setShowWarehouse(true)
+          }
         } else { setShowWarehouse(false) }
       })
       .catch(error => {
         // if (error.response.status === 403) {
-        //   history.push('/404')
+
         // }
+        console.log(error)
+        history.push('/404')
       })
   }, [])
 
@@ -473,10 +477,10 @@ const Exports = (props) => {
             </CTableRow>
           ))}
           {emptyRows > 0 && (
-              <CTableRow style={{ height: 40 * emptyRows }}>
-                <CTableDataCell colSpan={9} />
-              </CTableRow>
-            )}
+            <CTableRow style={{ height: 40 * emptyRows }}>
+              <CTableDataCell colSpan={9} />
+            </CTableRow>
+          )}
         </CTableBody>
       </CTable>
     </>

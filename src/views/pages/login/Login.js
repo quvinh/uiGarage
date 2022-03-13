@@ -43,8 +43,8 @@ const Login = () => {
     console.log(data)
     Promise.all([postData("http://127.0.0.1:8000/api/auth/login", data)])
       .then(function (res) {
-        console.log(res[0].data.user.roles[0].name)
-        setUserSession(res[0].data.access_token, res[0].data.user.id, res[0].data.user.roles[0].name, res[0].data.role)
+        console.log(res[0].data.warehouse_id)
+        setUserSession(res[0].data.access_token, res[0].data.user.id, res[0].data.user.roles[0].name, res[0].data.role, res[0].data.warehouse_id)
         console.log("login")
         history.push("/dashboard")
       })

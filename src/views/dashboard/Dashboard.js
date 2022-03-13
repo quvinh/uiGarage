@@ -13,7 +13,7 @@ import {
 import { getData } from '../api/Api.js'
 import Charts from './Charts.js'
 // import ChartsV2 from './ChartsV2.js'
-import { getRoleNames, getToken } from 'src/components/utils/Common.js'
+import { getDataWarehouseID, getRoleNames, getToken } from 'src/components/utils/Common.js'
 import { useHistory } from 'react-router-dom'
 
 
@@ -49,17 +49,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     Promise.all([
-      getData(getRoleNames() === 'admin' ?
-        'http://127.0.0.1:8000/api/admin/dashboard/tongTonKho?token=' + getToken() :
-        'http://127.0.0.1:8000/api/admin/dashboard/tonKKho/' + getIdWarehouseRole() + '?token=' + getToken()),
-      getData(getRoleNames() === 'admin' ?
-        'http://127.0.0.1:8000/api/admin/dashboard/import/' + year + '?token=' + getToken() :
-      'http://127.0.0.1:8000/api/admin/dashboard/importCode/' + getIdWarehouseRole() + '/' + year + '?token=' + getToken()),
-      getData(getRoleNames() === 'admin' ?
-      'http://127.0.0.1:8000/api/admin/dashboard/export/' + year + '?token=' + getToken() :
-      'http://127.0.0.1:8000/api/admin/dashboard/exportCode/' + getIdWarehouseRole() + '/' + year + '?token=' + getToken()),
-
-    ])
+      getData(getRoleNames() === 'admin' ? (
+        'http://127.0.0.1:8000/api/admin/dashboard/tongTonKho?token=' + getToken(),
+        'http://127.0.0.1:8000/api/admin/dashboard/import/' + year + '?token=' + getToken(),
+        'http://127.0.0.1:8000/api/admin/dashboard/export/' + year + '?token=' + getToken()
+      ) : getDataWarehouseID().length > 0 && (
+        'http://127.0.0.1:8000/api/admin/dashboard/tonKho/' + getDataWarehouseID()[0] + '?token=' + getToken(),
+        'http://127.0.0.1:8000/api/admin/dashboard/importByWarehouse/' + getDataWarehouseID()[0] + '/' + year + '?token=' + getToken(),
+        'http://127.0.0.1:8000/api/admin/dashboard/exportByWarehouse/' + getDataWarehouseID()[0] + '/' + year + '?token=' + getToken()
+      ))])
       .then(function (res) {
         // res.header('Access-Control-Allow-Origin: *')
         setTonKho(res[0].data)
@@ -69,12 +67,13 @@ const Dashboard = () => {
         // setExportCode(res[5].data)
       })
       .catch((error) => {
-        // console.log(error)
-        if (error.response.status === 403) {
-          history.push('/404')
-        } else if (error.response.status === 401) {
-          history.push('/login')
-        }
+        console.log(error)
+        // if (error.response.status === 403) {
+        //   history.push('/404')
+        // } else if (error.response.status === 401) {
+        //   history.push('/login')
+        // }
+        // history.push('/404')
       })
   }, [])
 
