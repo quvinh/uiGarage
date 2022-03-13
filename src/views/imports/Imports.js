@@ -16,7 +16,7 @@ import TextField from '@mui/material/TextField'
 import React, { useEffect, useState } from 'react'
 import CurrencyFormat from 'react-currency-format'
 import { useHistory } from 'react-router-dom'
-import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import { getDataWarehouseID, getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
 import { getData } from '../api/Api'
 import { ShowImport } from './ShowImport'
 import Validator from './Validation'
@@ -111,8 +111,8 @@ const Imports = () => {
       if (item.name === newValue) {
         setNull()
         if (getRoleNames() !== 'admin') {
-          getDataShelf(getIdWarehouseRole())
-          setWarehouse(getIdWarehouseRole())
+          getDataShelf(getDataWarehouseID()[0])
+          setWarehouse(getDataWarehouseID()[0])
           setShowWarehouse(true)
         } else { setShowWarehouse(false) }
         setItemID(item.id)
@@ -269,13 +269,13 @@ const Imports = () => {
     setDataTable([...array])
   }
 
-  const getIdWarehouseRole = () => {
-    var nameRole = ''
-    getRoleNames().split(' ').map((item) => {
-      if (!isNaN(item)) nameRole = item
-    })
-    return nameRole
-  }
+  // const getIdWarehouseRole = () => {
+  //   var nameRole = ''
+  //   getRoleNames().split(' ').map((item) => {
+  //     if (!isNaN(item)) nameRole = item
+  //   })
+  //   return nameRole
+  // }
 
   useEffect(() => {
     Promise.all([
@@ -284,7 +284,7 @@ const Imports = () => {
       getData('http://127.0.0.1:8000/api/admin/category?token=' + getToken()),
       getData(getRoleNames() === 'admin' ?
         'http://127.0.0.1:8000/api/admin/items/itemInWarehouse?token=' + getToken() :
-        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getIdWarehouseRole() + '?token=' + getToken()),
+        'http://127.0.0.1:8000/api/admin/items/searchItem/' + getDataWarehouseID()[0] + '?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/shelf?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/auth/get-user/' + getUserID() + '?token=' + getToken()),
       getData('http://127.0.0.1:8000/api/admin/items?token=' + getToken())
@@ -292,7 +292,7 @@ const Imports = () => {
       .then(res => {
 
         console.log(res)
-        setWarehouse(getIdWarehouseRole())
+        setWarehouse(getDataWarehouseID())
         setDataWarehouse(res[0].data)
         setDataSuppliers(res[1].data)
         setDataCategory(res[2].data)
@@ -300,7 +300,7 @@ const Imports = () => {
         setDataShelf(res[4].data)
         setUserProfile(res[5].data[0].fullname)
         setDataItemName(res[6].data)
-        console.log(getIdWarehouseRole())
+        console.log(getDataWarehouseID())
         if (getRoleNames() !== 'admin') {
           setShowWarehouse(true)
         } else { setShowWarehouse(false) }
