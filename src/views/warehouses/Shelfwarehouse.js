@@ -38,7 +38,8 @@ import {
   cilPlus,
   cilCheckAlt,
   cilX,
-  cilSearch
+  cilSearch,
+  cilPenAlt
 } from '@coreui/icons';
 import { getData, delData, putData } from '../api/Api';
 
@@ -49,12 +50,12 @@ import { getData, delData, putData } from '../api/Api';
 import { getToken } from 'src/components/utils/Common';
 
 const ShelfWarehouse = (props) => {
-
-
   const [visible, setVisible] = useState(false)
   const [visibleXL, setVisibleXL] = useState(false)
+  const [visibleDel, setVisibleDel] = useState(false)
+  const [visibleAlert, setVisibleAlert] = useState(false)
 
-
+  const [count, setCount] = useState('')
   const [dataItemClick, setDataItemClick] = useState([])
 
   const [itemWarehouse, setItemWarehouse] = useState([])
@@ -80,6 +81,7 @@ const ShelfWarehouse = (props) => {
   const [amountNotValid, setAmountNotValid] = useState([])
   const [idItem, setIdItem] = useState([])
   const [nameItem, setNameItem] = useState([])
+  const [itemname, setItemname] = useState('')
   const [categoryIdItem, setCategoryIdItem] = useState([])
   const [categoryNameItem, setCategoryNameItem] = useState([])
   const [shelfIdItem, setShelfIdItem] = useState([])
@@ -97,10 +99,17 @@ const ShelfWarehouse = (props) => {
   const handlePriceChange = (e) => {
     setPrice(e.target.value);
   }
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+  }
+  const handleNameChange = (e) => {
+    setNameItem(e.target.value);
+  }
 
   const showAll = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/listItem/' + props.match.params.id + '?token=' + getToken())])
       .then(function (res) {
+        console.log(res[0].data)
         setItemWarehouse(res[0].data)
       })
   }
@@ -113,19 +122,29 @@ const ShelfWarehouse = (props) => {
       })
   }
 
+  const handleGetItem = (item) => {
+    // setDataItem(item)
+    setNameItem(item.itemname)
+    setItemShelfId(item.shelf_id)
+    setAmount(item.amount)
+    setPrice(item.price)
+    setStatusItem(item.status)
+  }
+
   // console.log(dataItemClick)
   const handleUpdateItem = (e) => {
     const dataItem = {
-      shelf_id: itemShelfId,
+      // shelf_id: itemShelfId,
       amount: itemAmount,
       price: itemPrice,
-      status: itemStatus,
+      status: 0,
     }
+    console.log(dataItem)
     Promise.all([putData('http://127.0.0.1:8000/api/admin/detail_item/update/' + dataItemClick + '?token=' + getToken(), dataItem)])
       .then(response => {
         console.log('Edited successfully ^^')
         // handleClick(shelfId)
-        handleReload()
+        showAll()
       }).catch((err) => {
         console.log(err)
       })
@@ -135,14 +154,16 @@ const ShelfWarehouse = (props) => {
   const handleReload = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/shelfWarehouse/' + props.match.params.id + '?token=' + getToken())])
       .then(response => {
+        console.log(response[0].data)
         setDataShelf(response[0].data)
       })
   }
 
-  const handleValid = (id,shelfid,warehouseid) => {
+
+  const handleValid = (id, shelfid, warehouseid) => {
     if (id !== '') {
-      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKD/' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),{ delay: false })])
-      // getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKDTransfer' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),
+      Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKD/' + id + '/' + shelfid + '/' + warehouseid + '?token=' + getToken(), { delay: false })])
+        // getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKDTransfer' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),
         .then(function (response) {
           setAmountNotValid(response[0].data)
         })
@@ -177,14 +198,20 @@ const ShelfWarehouse = (props) => {
 
 
   const handleDeleteShelf = (e, id) => {
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id + '?token=' + getToken())])
-      .then(function (res) {
-        handleReload()
-        setIsShelfSelected(false)
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    if (count === 0) {
+      Promise.all([delData('http://127.0.0.1:8000/api/admin/shelf/delete/' + id + '?token=' + getToken())])
+        .then(function (res) {
+          handleReload()
+          setIsShelfSelected(false)
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+    else {
+      setVisibleAlert(!visibleAlert)
+      setVisibleDel(false)
+    }
   }
 
   const handleClick = (e, id) => {
@@ -195,6 +222,7 @@ const ShelfWarehouse = (props) => {
         setItemWarehouse(response[0].data);
         setShelfName(response[1].data.name);
         setShelfPosition(response[1].data.position);
+        setCount(response[0].count);
       })
     setShelfId(id);
 
@@ -214,7 +242,7 @@ const ShelfWarehouse = (props) => {
         setWarehouseName(response[2].data.name)
         setAmountShelf(response[3].data)
         setAmountItem(response[3].count)
-        console.log(response[4].data)
+
         setItemWarehouse(response[4].data)
       })
   }, []);
@@ -224,13 +252,14 @@ const ShelfWarehouse = (props) => {
         <CCardHeader>
           <CRow>
             <CCol sm={9} lg={9}>
-              {warehouseName} -- Số lượng giá kệ: {amountShelf} -- Số vật tư: {amountItem}
+              {warehouseName} -- Số lượng giá kệ: {amountShelf}
+              {/* -- Số loại vật tư: {amountItem} */}
               {/* -- Tổng giá trị :{total} */}
             </CCol>
             <CCol sm={3} lg={3}>
               <CForm>
                 <CInputGroup>
-                  <CFormTextarea placeholder='Nhập tên vật tư' id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormTextarea>
+                  <CFormInput placeholder='Nhập tên vật tư' id="note" rows="1" onChange={(e) => setSearchName(e.target.value)}></CFormInput>
                   <CButton color='warning' onClick={(e) => { handleSearch(searchName) }} ><CIcon icon={cilSearch} /></CButton>
                 </CInputGroup>
               </CForm>
@@ -275,8 +304,11 @@ const ShelfWarehouse = (props) => {
 
                       <CCol sm={2} lg={2}>
                         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                          <CButton color="warning" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilFile} /></CButton>
-                          <CButton color="danger" onClick={(e) => handleDeleteShelf(e, shelfId)} ><CIcon icon={cilDelete} /></CButton>
+                          <CButton color="info" href={'#/shelf-edit/' + shelfId} ><CIcon icon={cilPenAlt} /></CButton>
+                          <CButton color="danger" onClick={(e) => {
+                            setVisibleDel(!visible)
+                            // handleDeleteShelf(e, shelfId)
+                          }} ><CIcon icon={cilDelete} /></CButton>
                         </div>
                       </CCol>
                     </CRow>
@@ -305,21 +337,22 @@ const ShelfWarehouse = (props) => {
                         <CTableRow key={index}>
                           <CTableDataCell className="text-center">{index + 1}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.id}</CTableDataCell>
-                          <CTableDataCell className="text-center">{item.name_item}</CTableDataCell>
+                          <CTableDataCell className="text-center">{item.itemname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.categoryname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelf_id}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.shelfname}</CTableDataCell>
                           <CTableDataCell className="text-center">{item.amount}</CTableDataCell>
                           <CTableDataCell className="text-center">
                             <div >
-                              <CButton className='me-2' color='warning' onClick={(e) => {
+                              <CButton className='me-2' color='info' onClick={(e) => {
+                                handleGetItem(item)
                                 setDataItemClick(item.detail_item_id)
                                 setVisible(!visible)
                               }}>
-                                <CIcon icon={cilFile} />
+                                <CIcon icon={cilPenAlt} />
                               </CButton>
                               <CButton color='success' onClick={() => {
-                                handleValid(item.id,item.shelf_id,item.warehouse_id)
+                                handleValid(item.id, item.shelf_id, item.warehouse_id)
                                 handleDetailItem(item.id, item.shelf_id, item.warehouse_id)
                                 setVisibleXL(!visibleXL)
                               }}><CIcon icon={cilDescription} /></CButton>
@@ -352,32 +385,45 @@ const ShelfWarehouse = (props) => {
               <CCard className="mx-4">
                 <CCardBody className="p-4">
                   <CForm>
-                    <CInputGroup className="mb-3">
+                    {/* <CInputGroup className="mb-3">
+                      <CInputGroupText id="" style={{ width: "100px" }}>Tên vật tư</CInputGroupText>
+                      <CFormInput id='name' placeholder="tên vật tư" onChange={(e) => handleNameChange(e)} value={nameItem} />
+                    </CInputGroup> */}
+                    {/* <CInputGroup className="mb-3">
                       <CFormSelect aria-label="Default select example" value={itemShelfId} onChange={(e) => setItemShelfId(e.target.value)}>
                         <option>Chọn giá kệ</option>
                         {dataShelf.map((item, index) => (
                           <option key={index} value={item.shelf_id}>{item.shelf_name}</option>
                         ))}
                       </CFormSelect>
+                    </CInputGroup> */}
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText id="" style={{ width: "100px" }}>Tên</CInputGroupText>
+                      <CFormInput id='name' placeholder="tên vật tư" onChange={(e) => handleNameChange(e)} value={nameItem} disabled />
                     </CInputGroup>
+                    <CInputGroup className="mb-3">
+                      <CInputGroupText id="" style={{ width: "100px" }}>Giá/Kệ</CInputGroupText>
+                      <CFormInput id='name' placeholder="tên vật tư" onChange={(e) => handleNameChange(e)} value={shelfNameItem} disabled />
+                    </CInputGroup>
+
                     <CInputGroup className="mb-3">
                       <CInputGroupText id="" style={{ width: "100px" }}>Số lượng tổng</CInputGroupText>
                       <CFormInput id='name' placeholder="Số lượng" onChange={(e) => handleAmountChange(e)} value={itemAmount} />
                     </CInputGroup>
                     <CInputGroup className="mb-3">
                       <CInputGroupText id="" style={{ width: "100px" }}>Đơn giá</CInputGroupText>
-                      <CFormInput id='name' placeholder="Đơn giá" onChange={(e) => handlePriceChange(e)} value={itemPrice} />
+                      <CFormInput id='name' placeholder="Đơn giá" onChange={(e) => handlePriceChange(e)} value={itemPrice + " VND"} disabled />
                     </CInputGroup>
                     <CInputGroup className="mb-3">
-                      <CFormSelect
-                        onChange={(e) => setStatus(e.target.value)}
+                      {/* <CFormSelect
+                        onChange={(e) => handleStatusChange(e)}
                         aria-label="Trạng thái"
                         options={[
                           'Trạng thái',
-                          { label: 'Còn', value: '1' },
+                          { label: 'Đã sử dụng', value: '1' },
                           { label: 'Hết', value: '0' }
                         ]}
-                      />
+                      /> */}
                     </CInputGroup>
                   </CForm>
                 </CCardBody>
@@ -387,8 +433,8 @@ const ShelfWarehouse = (props) => {
         </CModalBody>
         <CModalFooter>
           <CButton color="warning" onClick={(e) => {
-
             handleUpdateItem(e, dataItemClick)
+            setVisible(false)
           }
           }><CIcon icon={cilCheckAlt} /></CButton>
           <CButton color="danger" onClick={() => {
@@ -433,6 +479,22 @@ const ShelfWarehouse = (props) => {
             </CCard>
           </CListGroup>
         </CModalBody>
+      </CModal>
+      <CModal visible={visibleDel} onClose={() => setVisibleDel(false)}>
+        <CModalHeader onClose={() => setVisibleDel(false)}>
+        </CModalHeader>
+        <CModalBody>Bạn có chắc muốn xóa</CModalBody>
+        <CModalFooter>
+          <CButton color="danger" onClick={(e) => {
+            handleDeleteShelf(e, shelfId)
+            setVisibleDel(false)
+          }}><CIcon icon={cilCheckAlt} /></CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal visible={visibleAlert} onClose={() => setVisibleAlert(false)}>
+        <CModalHeader onClose={() => setVisibleAlert(false)}>
+        </CModalHeader>
+        <CModalBody>Vui lòng chuyển hết vật tư trước khi xóa</CModalBody>
       </CModal>
     </>
   )
