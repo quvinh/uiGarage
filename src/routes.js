@@ -52,6 +52,9 @@ const Suppliers = React.lazy(() => import('./views/suppliers/Suppliers'))
 const AddSuppliers = React.lazy(() => import('./views/suppliers/Add'))
 const EditSuppliers = React.lazy(() => import('./views/suppliers/Edit'))
 
+//Role
+const Role = React.lazy(() => import('./views/roles/Role'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/account', name: 'User', component: Account },
@@ -90,6 +93,8 @@ const routes = [
   { path: '/supplier', name: 'Nhà cung cấp', component: Suppliers },
   { path: '/supplier-add', name: 'Tạo mới nhà cung cấp', component: AddSuppliers },
   { path: '/supplier-edit/:id', name: 'Chỉnh sửa nhà cung cấp', component: EditSuppliers },
+
+  { path: '/role', name: 'Phân quyền', component: Role },
 ]
 
 export default routes

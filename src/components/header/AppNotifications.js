@@ -55,7 +55,6 @@ import { getToken } from '../utils/Common';
 
 const AppNotifications = () => {
 
-  const myRef = useRef(null)
   const [visible, setVisible] = useState(false)
   const [visible1, setVisible1] = useState(false)
   const [notification, setNotification] = useState([])
@@ -130,7 +129,7 @@ const AppNotifications = () => {
             <span className="visually-hidden">unread messages</span>
           </span>
         </CDropdownToggle>
-        <CDropdownMenu ref={myRef} className="pt-0" placement="bottom-end" >
+        <CDropdownMenu className="pt-0" placement="bottom-end" >
           {notification.map((item, index) => (
             <CDropdownItem key={index} href='#'
               onClick={() => {

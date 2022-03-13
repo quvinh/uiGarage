@@ -40,7 +40,7 @@ const Register = () => {
     }
     console.log(data)
     Promise.all([postData('http://127.0.0.1:8000/api/auth/register', data)])
-      .then(function(res) {
+      .then(function (res) {
         console.log("Successfully")
         // history.push("/login")
         history.push("/account")
@@ -56,6 +56,9 @@ const Register = () => {
         <CRow className="justify-content-center">
           <CCol md={9}>
             <CCardGroup>
+              <CCard className="text-white bg-warning py-5">
+
+              </CCard>
               <CCard className="p-4">
                 <CCardBody>
                   <CForm>
@@ -118,14 +121,12 @@ const Register = () => {
                     <div className="d-grid">
                       <CButton color="warning" onClick={(e) => onRegister(e)}>Tạo tài khoản</CButton>
                       <br />
-                      {/* <CButton href='#/login' color="secondary">Đăng nhập</CButton> */}
+                      <CButton onClick={(e) => {history.goBack()}} color="secondary">Huỷ</CButton>
                     </div>
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-warning py-5">
 
-              </CCard>
             </CCardGroup>
           </CCol>
         </CRow>

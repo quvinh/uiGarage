@@ -90,8 +90,9 @@ const AppHeader = () => {
                   <CDropdown variant="nav-item">
                     <CDropdownToggle>Quản trị</CDropdownToggle>
                     <CDropdownMenu>
-                      <CDropdownItem href="#/account">Người dùng</CDropdownItem>
-                      <CDropdownItem href="#/register">Tạo mới tài khoản</CDropdownItem>
+                      <CDropdownItem href="#/account">Quản lý người dùng</CDropdownItem>
+                      {/* <CDropdownItem href="#/role">Quản lý phân quyền</CDropdownItem> */}
+                      <CDropdownItem href="#/register">Cấp tài khoản</CDropdownItem>
                     </CDropdownMenu>
                   </CDropdown>
                 </CNavItem>

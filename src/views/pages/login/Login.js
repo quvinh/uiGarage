@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import {
   CButton,
@@ -26,6 +26,8 @@ const Login = () => {
   const [validationMsg, setValidationMsg] = useState('')
   const history = useHistory()
 
+  const inputPassword = useRef(null)
+
   const handleUsername = (e) => {
     setUsername(e.target.value)
   }
@@ -40,7 +42,7 @@ const Login = () => {
     }
     console.log(data)
     Promise.all([postData("http://127.0.0.1:8000/api/auth/login", data)])
-      .then(function(res) {
+      .then(function (res) {
         console.log(res[0].data.user.roles[0].name)
         setUserSession(res[0].data.access_token, res[0].data.user.id, res[0].data.user.roles[0].name, res[0].data.role)
         console.log("login")
@@ -56,11 +58,11 @@ const Login = () => {
   const validatorAll = () => {
     const msg = {}
     if (isEmpty(username)) {
-      msg.username = 'Nhập tên đăng nhập'
+      msg.username = '(*) Nhập tên đăng nhập'
     }
 
     if (isEmpty(password)) {
-      msg.password = 'Nhập mật khẩu'
+      msg.password = '(*) Nhập mật khẩu'
     }
 
     setValidationMsg(msg)
@@ -82,22 +84,29 @@ const Login = () => {
                       <CInputGroupText>
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
-                      <CFormInput placeholder="Tên đăng nhập" autoComplete="username" value={username} onChange={handleUsername} />
+                      <CFormInput placeholder="Tên đăng nhập"
+                        autoComplete="username"
+                        value={username}
+                        onChange={handleUsername}
+                        onKeyDown={(e) => { e.key === "Enter" && inputPassword.current.focus() }}
+                      />
                     </CInputGroup>
-                    <p className='text-danger'>{validationMsg.username}</p>
+                    <p className='text-danger' style={{ fontStyle: 'italic' }}>{validationMsg.username}</p>
                     <CInputGroup className="mb-4">
                       <CInputGroupText>
                         <CIcon icon={cilLockLocked} />
                       </CInputGroupText>
                       <CFormInput
+                        ref={inputPassword}
                         type="password"
                         placeholder="Mật khẩu"
                         autoComplete="current-password"
                         value={password}
                         onChange={handlePassword}
+                        onKeyDown={(e) => { e.key === "Enter" && handleLogin() }}
                       />
                     </CInputGroup>
-                    <p className='text-danger'>{validationMsg.password}</p>
+                    <p className='text-danger' style={{ fontStyle: 'italic' }}>{validationMsg.password}</p>
                     <CRow>
                       <CCol xs={6}>
                         <CButton color="warning" className="px-4" onClick={handleLogin}>
@@ -115,7 +124,7 @@ const Login = () => {
               </CCard>
               <CCard className="text-white bg-warning py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
-                    {/* <div>
+                  {/* <div>
                       <h2>Sign up</h2>
                       <p>
 
