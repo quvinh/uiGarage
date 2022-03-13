@@ -6,8 +6,6 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CContainer,
-    CForm,
     CFormInput,
     CFormTextarea,
     CInputGroup,
@@ -16,9 +14,6 @@ import {
 } from '@coreui/react'
 import { postData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import { getToken } from 'src/components/utils/Common';
 
 const Add = () => {

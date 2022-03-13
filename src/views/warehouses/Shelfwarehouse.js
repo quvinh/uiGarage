@@ -2,7 +2,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react'
 import {
-  CAvatar,
   CButton,
   CButtonGroup,
   CCol,
@@ -15,11 +14,6 @@ import {
   CTableHeaderCell,
   CTableBody,
   CTableDataCell,
-  CDropdownMenu,
-  CDropdownItem,
-  CDropdown,
-  CDropdownDivider,
-  CDropdownToggle,
   CCardHeader,
   CModal,
   CModalHeader,
@@ -38,9 +32,7 @@ import {
 } from '@coreui/react';
 import CIcon from '@coreui/icons-react';
 import {
-  cilOptions,
   cilDelete,
-  cilPeople,
   cilFile,
   cilDescription,
   cilPlus,
@@ -48,19 +40,12 @@ import {
   cilX,
   cilSearch
 } from '@coreui/icons';
-import { getData, delData, putData, postData } from '../api/Api';
-import { useHistory, useParams } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import BootstrapTable from 'react-bootstrap-table-next';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
-import paginationFactory from 'react-bootstrap-table2-paginator';
+import { getData, delData, putData } from '../api/Api';
 
 // import Itemshelf from './Itemshelf';
 // import Add from '../shelf/Add';
 // import Edit from '../shelf/Edit';
 
-import { StyledEngineProvider } from "@mui/material/styles";
-import { Button } from '@mui/material';
 import { getToken } from 'src/components/utils/Common';
 
 const ShelfWarehouse = (props) => {
@@ -71,31 +56,23 @@ const ShelfWarehouse = (props) => {
 
 
   const [dataItemClick, setDataItemClick] = useState([])
-  const [listItem, setListItem] = useState([])
 
   const [itemWarehouse, setItemWarehouse] = useState([])
-  const [categoryname, setCategory] = useState([])
-  const [dataItem, setDataItem] = useState([])
   const [searchName, setSearchName] = useState([])
 
   const [dataShelf, setDataShelf] = useState([])
   const [shelfId, setShelfId] = useState([])
-  const [shelfStatus, setShelfStatus] = useState([])
   const [shelfName, setShelfName] = useState([])
   const [shelfPosition, setShelfPosition] = useState([])
 
 
-  const [categoryId, setCategoryId] = useState([])
   const [itemShelfId, setItemShelfId] = useState([])
   const [itemAmount, setAmount] = useState([])
-  const [unit, setUnit] = useState([])
-  const [itemId, setItemId] = useState([])
   const [itemPrice, setPrice] = useState([])
   const [itemStatus, setStatus] = useState([])
   const [amountShelf, setAmountShelf] = useState([])
   const [amountItem, setAmountItem] = useState([])
 
-  const [total, setTotal] = useState([])
   const [isShelfSelected, setIsShelfSelected] = useState(false)
   const [warehouseName, setWarehouseName] = useState([])
   const [dataCategory, setDataCategory] = useState([])
@@ -113,43 +90,14 @@ const ShelfWarehouse = (props) => {
   const [amountItems, setAmountItems] = useState([])
   const [unitItem, setUnitItem] = useState([])
   const [statusItem, setStatusItem] = useState([])
-  const [amountValid, setAmountValid] = useState([])
 
-
-
-
-  const handlSearchName = (e) => {
-    setSearchName(e.target.value)
-  }
-
-  const handleItemIdChange = (e) => {
-    setItemId(e.target.value);
-  }
-  const handleCategoryIdChange = (e) => {
-    setCategoryId(e.target.value);
-  }
-  const handleShelfIdChange = (e) => {
-    setItemShelfId(e.target.value);
-  }
   const handleAmountChange = (e) => {
     setAmount(e.target.value);
-  }
-  const handleUnitChange = (e) => {
-    setUnit(e.target.value);
   }
   const handlePriceChange = (e) => {
     setPrice(e.target.value);
   }
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-  }
 
-  const handleReset = (e) => {
-    setShelfId('')
-    setAmount('')
-    setPrice('')
-    setStatus(0)
-  }
   const showAll = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/listItem/' + props.match.params.id + '?token=' + getToken())])
       .then(function (res) {
@@ -194,7 +142,7 @@ const ShelfWarehouse = (props) => {
   const handleValid = (id,shelfid,warehouseid) => {
     if (id !== '') {
       Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKD/' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),{ delay: false })])
-      // getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKDTransfer' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(), 
+      // getData('http://127.0.0.1:8000/api/admin/warehouse/amountItemKKDTransfer' + id + '/' + shelfid + '/' + warehouseid +'?token=' + getToken(),
         .then(function (response) {
           setAmountNotValid(response[0].data)
         })

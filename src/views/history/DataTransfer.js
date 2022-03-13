@@ -1,46 +1,31 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-
-import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
-import ListItemText from '@mui/material/ListItemText'
-import ListItem from '@mui/material/ListItem'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
-import CloseIcon from '@mui/icons-material/Close'
-import Slide from '@mui/material/Slide'
-import Grid from '@mui/material/Grid'
-import styled from "@emotion/styled"
-import Container from '@mui/material/Container';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import CIcon from '@coreui/icons-react';
-
-
-import React, { useEffect, useState } from 'react'
+import { cilCheckCircle, cilDelete, cilDescription, cilSend } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
 import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CTableCaption,
-  CButton
-} from '@coreui/react';
-import { getData, delData, putData } from '../api/Api.js'
-import { cilCheckCircle, cilDelete, cilDescription, cilFile, cilSend } from '@coreui/icons'
+  CButton, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react'
+import { ButtonGroup, DialogTitle } from '@mui/material'
+import Button from '@mui/material/Button'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Container from '@mui/material/Container'
+import Dialog from '@mui/material/Dialog'
+import Grid from '@mui/material/Grid'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Paper from '@mui/material/Paper'
+import Slide from '@mui/material/Slide'
+import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableContainer from '@mui/material/TableContainer'
+import React, { useEffect, useState } from 'react'
+import { CSVLink } from 'react-csv'
 import { getAllPermissions, getRoleNames, getToken } from 'src/components/utils/Common.js'
+import { delData, getData, putData } from '../api/Api.js'
+
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />
@@ -113,6 +98,29 @@ const DataTransfer = (props) => {
     })
     return nameRole
   }
+
+  const print = () => {
+    window.print()
+  }
+  const headers = [
+    { label: "Mã Phiếu", key: "code" },
+    { label: "Mã Vật Tư", key: "item_id" },
+    { label: "Tên Vật Tư", key: "name" },
+    { label: "Tên Kho", key: "name_from_warehouse" },
+    { label: "Tên Kệ", key: "name_from_shelf" },
+    { label: "Tên Kho", key: "name_to_warehouse" },
+    { label: "Tên Kệ", key: "name_to_shelf" },
+    { label: "Giá nhập", key: "price" },
+    { label: "Số lượng xuất ", key: "amount" },
+    { label: "Đơn Vị Tính", key: "unit" },
+    { label: "Người tạo", key: "fullname" },
+    { label: "Ngày tạo", key: "created_at"},
+
+  ];
+
+  const data = tableHistoryTransfer;
+
+
   useEffect(() => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showHistoryTransfer/' + props.code + '?token=' + getToken())])
       .then(function (res) {
@@ -139,22 +147,19 @@ const DataTransfer = (props) => {
       <CButton size='sm' className='me-2' color={props.status === '1' ? 'success' : 'secondary'} onClick={handleUpdateStatus} name='b2' disabled={props.status === '1' ? false : true}><CIcon icon={cilCheckCircle} /></CButton>
 
       <Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-        <AppBar sx={{ position: 'relative' }} style={{ background: "#ffa64d" }}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={handleClose}
-              aria-label="close"
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Thoát
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
+        <DialogTitle className="d-grid gap-2 d-md-flex justify-content-md-end" style={{ background: "#ffa64d" }} sx={{ position: 'static' }}>
+          <ButtonGroup variant="contained">
+            <CSVLink data={data} headers={headers} className='btn btn-primary' filename={props.code}>
+              CSV
+            </CSVLink>
+            <Button onClick={print} >
+              Print
+            </Button>
+            <Button onClick={handleClose} >Thoát</Button>
+          </ButtonGroup>
+        </DialogTitle>
+        <Paper>
+                  <Container maxWidth="lg" style={{ aline: "center" }}> {/*maxWidth="sm"*/}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -191,7 +196,7 @@ const DataTransfer = (props) => {
                       <CardContent>
                         <ListItem>
                           <ListItemText
-                            primary="Người Tạo: Nguyễn Thị T"
+                            primary={"Người Tạo: " + props.created_by}
                             secondary={'Thủ kho'}
                           />
                         </ListItem>
@@ -251,6 +256,8 @@ const DataTransfer = (props) => {
             </CardContent>
           </Card>
         </Container>
+
+        </Paper>
       </Dialog>
     </>
 

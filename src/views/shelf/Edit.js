@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from 'react'
-import { getData, putData, delData } from '../api/Api';
+import { getData, putData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
 import {
   CButton,
@@ -24,9 +24,6 @@ import { getToken } from 'src/components/utils/Common';
 
 const Edit = (props) => {
 
-  const [open, setOpen] = React.useState(false);
-
-  const [dataTable, setDataWarehouse] = useState([])
   const [name, setName] = useState('');
   const [position, setPosition] = useState('');
   const [warehouse_id, setWarehouse_id] = useState('');
@@ -38,13 +35,6 @@ const Edit = (props) => {
   const handlePosition = (e) => {
     setPosition(e.target.value);
   }
-  const handleWarehouse_id = (e) => {
-    setWarehouse_id(e.target.value);
-  }
-  const handleStatus = (e) => {
-    setStatus(e.target.value);
-  }
-
 
   const handleUpdate = (e) => {
     const shelf = {

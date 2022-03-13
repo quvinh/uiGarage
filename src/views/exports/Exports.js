@@ -1,33 +1,23 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CButton,
-  CFormSelect,
-  CFormInput,
-} from '@coreui/react'
-import { getData } from '../api/Api'
-import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation'
-import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import DateTimePicker from '@mui/lab/DateTimePicker'
-import AdapterDateFns from '@mui/lab/AdapterDateFns'
-import { ShowExport } from './ShowExport'
-import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
-import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import CIcon from '@coreui/icons-react'
+import {
+  CButton, CCard,
+  CCardBody, CCol, CFormSelect, CRow, CTable, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import { getData } from '../api/Api'
+import { ShowExport } from './ShowExport'
+import Validator from './Validation'
 
 const Exports = (props) => {
 
@@ -64,6 +54,20 @@ const Exports = (props) => {
   const [isWarehouseSelected, setIsWarehouseSelected] = useState(false)
   const [showWarehouse, setShowWarehouse] = useState(false)
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, dataTable.length - page * rowsPerPage);
+
   const history = useHistory()
   // const [isItemSelected, setIsItemSelected] = useState(false)
 
@@ -99,15 +103,12 @@ const Exports = (props) => {
       if (dataTable.length === 0) createCode()
     }
     if (!checked) setIsAmountSelected(false)
-    console.log(dataItem.length)
     setAmount(0)
   }
 
   const onChangeAmount = (e) => {
     (e.target.value > 0 && name.length > 0) ? setIsAmountSelected(true) : setIsAmountSelected(false)
     if (dataTable.length === 0) createCode()
-    console.log(shelf_id)
-    console.log(name)
   }
 
   const setNull = () => {
@@ -136,8 +137,6 @@ const Exports = (props) => {
   }
 
   const onChangeWarehouse = (e, value) => {
-    console.log(value)
-    console.log(e)
     if (value) {
       setIsWarehouseSelected(true)
       setWarehouse(e.target.value)
@@ -167,14 +166,12 @@ const Exports = (props) => {
       setIsAmountSelected(false)
     } else {
       setIsAmountSelected(true)
-      console.log(e.nativeEvent.target[index].text)
       setShelfName(e.nativeEvent.target[index].text)
       setShelfID(e.target.value)
       Promise.all([
         getData('http://127.0.0.1:8000/api/admin/warehouse/itemShelf/' + warehouse_id + '/' + e.target.value + '?token=' + getToken())
       ])
         .then(function (res) {
-          console.log(res[0].data)
           setDataItem(res[0].data)
         })
         .catch(error => {
@@ -211,7 +208,7 @@ const Exports = (props) => {
         let amountTotal = 0
         let array = []
         dataTable.map((item, index) => {
-          if (item.item_id === item_id) {
+          if (item.item_id === item_id && item.shelf_id === shelf_id && item.warehouse_id === warehouse_id) {
             amountTotal = parseInt(item.amount) + parseInt(amount)
             array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
           }
@@ -258,7 +255,6 @@ const Exports = (props) => {
           totalPrice: totalPrice
         }
         setDataTable([...dataTable, data])
-        console.log(amount)
       }
       setAmount(0)
       // setAmountCurrent(0)
@@ -298,9 +294,9 @@ const Exports = (props) => {
         } else { setShowWarehouse(false) }
       })
       .catch(error => {
-        if (error.response.status === 403) {
-          history.push('/404')
-        }
+        // if (error.response.status === 403) {
+        //   history.push('/404')
+        // }
       })
   }, [])
 
@@ -476,6 +472,11 @@ const Exports = (props) => {
               </CTableDataCell>
             </CTableRow>
           ))}
+          {emptyRows > 0 && (
+              <CTableRow style={{ height: 40 * emptyRows }}>
+                <CTableDataCell colSpan={9} />
+              </CTableRow>
+            )}
         </CTableBody>
       </CTable>
     </>

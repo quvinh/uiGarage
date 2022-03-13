@@ -7,20 +7,14 @@ import {
     CCardBody,
     CCardHeader,
     CCol,
-    CContainer,
-    CForm,
     CFormInput,
     CFormTextarea,
     CInputGroup,
     CInputGroupText,
     CRow,
 } from '@coreui/react'
-import { postData, putData, getData } from '../api/Api';
+import { putData, getData } from '../api/Api';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import { id } from 'date-fns/locale';
 import { cilCheckAlt } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { getToken } from 'src/components/utils/Common';

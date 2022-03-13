@@ -1,13 +1,13 @@
 /* eslint-disable prettier/prettier */
 import React from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell
-} from '@coreui/react';
+// import {
+//   CTable,
+//   CTableHead,
+//   CTableRow,
+//   CTableHeaderCell,
+//   CTableBody,
+//   CTableDataCell
+// } from '@coreui/react';
 
 const Reports = () => {
   return (

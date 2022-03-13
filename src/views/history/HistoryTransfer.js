@@ -50,7 +50,8 @@ const HistoryTransfer = () => {
     rowsPerPage - Math.min(rowsPerPage, codeTransfer.length - page * rowsPerPage);
 
   useEffect(() => {
-    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeTransfer' + '?token=' + getToken())])
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/inventory/showCodeTransfer' + '?token=' + getToken())],
+    )
       .then(function (res) {
         setCodeTransfer(res[0].data)
       }).catch((error) => {
@@ -97,7 +98,7 @@ const HistoryTransfer = () => {
                   <TableRow key={index}>
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell className="text-center">{rows.code}</TableCell>
-                    <TableCell className="text-center">Nguyễn T ...</TableCell>
+                    <TableCell className="text-center">{rows.fullname}</TableCell>
                     <TableCell className="text-center">{rows.name_from_warehouse}</TableCell>
                     <TableCell className="text-center">{rows.name_from_shelf}</TableCell>
                     <TableCell className="text-center">{rows.name_to_warehouse}</TableCell>
@@ -106,7 +107,7 @@ const HistoryTransfer = () => {
                     <TableCell className="text-center">{rows.status === '2' ? 'Đã duyệt' : (rows.status === '1' ? 'Giao hàng' : 'Chưa duyệt')}</TableCell>
                     <TableCell className="text-center">
                       <div className="d-grid gap-2 d-md-block">
-                        <DataTransfer code={rows.code} created_at={rows.created_at} status={rows.status} />
+                        <DataTransfer code={rows.code} created_at={rows.created_at} status={rows.status} created_by={rows.fullname}/>
                       </div>
                     </TableCell>
                   </TableRow>

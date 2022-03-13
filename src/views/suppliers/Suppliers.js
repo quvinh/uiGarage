@@ -11,15 +11,12 @@ import {
     CCardHeader,
     CCardBody,
     CButton,
-    CButtonGroup,
     CRow,
     CCol,
-    CLink,
     CModal,
     CModalHeader,
     CModalTitle,
     CModalBody,
-    CModalFooter,
     CTableFoot,
 } from '@coreui/react';
 import { delData, getData } from '../api/Api';
@@ -94,7 +91,7 @@ const Suppliers = () => {
     useEffect(() => {
         Promise.all([getData('http://127.0.0.1:8000/api/admin/suppliers?token=' + getToken())])
             .then(function (res) {
-                // console.log(res[0].data) 
+                // console.log(res[0].data)
                 setDataTable(res[0].data)
             })
             .catch(error => {

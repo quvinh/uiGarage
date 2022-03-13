@@ -1,36 +1,25 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react'
-import {
-  CTable,
-  CTableHead,
-  CTableRow,
-  CTableHeaderCell,
-  CTableBody,
-  CTableDataCell,
-  CInputGroup,
-  CInputGroupText,
-  CFormInput,
-  CCard,
-  CCardBody,
-  CRow,
-  CCol,
-  CButton,
-  CFormSelect,
-} from '@coreui/react'
-import { getData } from '../api/Api'
-import TextField from '@mui/material/TextField'
-import Autocomplete from '@mui/material/Autocomplete'
-import Validator from './Validation'
-import { ShowImport } from './ShowImport'
-import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import DateTimePicker from '@mui/lab/DateTimePicker'
-import AdapterDateFns from '@mui/lab/AdapterDateFns'
-import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
-import CurrencyFormat from 'react-currency-format'
-import CIcon from '@coreui/icons-react'
 import { cilDelete } from '@coreui/icons'
+import CIcon from '@coreui/icons-react'
+import {
+  CButton, CCard,
+  CCardBody, CCol, CFormInput, CFormSelect, CInputGroup,
+  CInputGroupText, CRow, CTable, CTableBody,
+  CTableDataCell, CTableHead, CTableHeaderCell, CTableRow
+} from '@coreui/react'
+import AdapterDateFns from '@mui/lab/AdapterDateFns'
+import DateTimePicker from '@mui/lab/DateTimePicker'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import React, { useEffect, useState } from 'react'
+import CurrencyFormat from 'react-currency-format'
 import { useHistory } from 'react-router-dom'
+import { getRoleNames, getToken, getUserID } from 'src/components/utils/Common'
+import { getData } from '../api/Api'
+import { ShowImport } from './ShowImport'
+import Validator from './Validation'
 
 const Imports = () => {
   const history = useHistory()
@@ -72,6 +61,19 @@ const Imports = () => {
   const [isUnitSelected, setIsUnitSelected] = useState(false)
   const [isCategorySelected, setIsCategorySelected] = useState(false)
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, dataTable.length - page * rowsPerPage);
 
   const setNull = () => {
     setName('')
@@ -210,7 +212,7 @@ const Imports = () => {
         let amountTotal = 0
         let array = []
         dataTable.map((item, index) => {
-          if (item.item_id === item_id) {
+          if (item.item_id === item_id && item.batch_code === batch_code && item.supplier_id === supplier_id && item.shelf_id === shelf_id && item.warehouse_id === warehouse_id && item.price === price) {
             amountTotal = parseInt(item.amount) + parseInt(amount)
             array = index > 0 ? [...dataTable.slice(0, index), ...dataTable.slice(index + 1, dataTable.length)] : [...dataTable.slice(1, dataTable.length)]
           }
@@ -383,8 +385,7 @@ const Imports = () => {
                 <CCol xs={4}>
                   <CFormSelect size="sm" value={unit} onChange={
                     (e) => {
-                      // (e.target.value !== unit.toString()) ? (reset()) : setUnit(e.target.value)
-                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false); setName(''); setItemID(''); setCategory(''); setIsItemSelected(false)
+                      (e.target.value === 'Lô') ? setIsUnitSelected(true) : setIsUnitSelected(false); setItemID(''); setCategory(''); setName(''); setIsItemSelected(false)
                       setUnit(e.target.value)
                     }
                   }>
@@ -649,10 +650,14 @@ const Imports = () => {
                 }}>
                   <CIcon icon={cilDelete} />
                 </CButton>
-
               </CTableHeaderCell>
             </CTableRow>
           ))}
+          {emptyRows > 0 && (
+              <CTableRow style={{ height: 20 * emptyRows }}>
+                <CTableDataCell colSpan={11} />
+              </CTableRow>
+            )}
         </CTableBody>
       </CTable>
     </>
