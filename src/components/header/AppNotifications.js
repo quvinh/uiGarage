@@ -91,7 +91,6 @@ const AppNotifications = (props) => {
       })
   }
 
-  console.log('test:...' + test())
 
   const handleShow = (e, id) => {
     setIdNotification(id)

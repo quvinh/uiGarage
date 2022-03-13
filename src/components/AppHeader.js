@@ -24,7 +24,7 @@ import { cilBell, cilEnvelopeOpen, cilList, cilMenu } from '@coreui/icons'
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import { logo } from 'src/assets/brand/logo'
-import { getRoleNames } from './utils/Common'
+import { getAllPermissions, getRoleNames } from './utils/Common'
 import AppNotifications from './header/AppNotifications'
 const AppHeader = () => {
   const dispatch = useDispatch()
@@ -74,18 +74,27 @@ const AppHeader = () => {
                 Xuất kho
               </CNavLink>
             </CNavItem>
-            <CNavItem>
-              <CNavLink to="/transfer" component={NavLink}>
-                Điều phối kho
-              </CNavLink>
-            </CNavItem>
-            <CNavItem>
-              <CNavLink to="/history_import" component={NavLink}>
-                QL Phiếu
-              </CNavLink>
-            </CNavItem>
             {
-              getRoleNames() === "admin" ? (
+              getAllPermissions().includes("Xem phiếu chuyển") && (
+                <CNavItem>
+                  <CNavLink to="/transfer" component={NavLink}>
+                    Điều phối kho
+                  </CNavLink>
+                </CNavItem>
+              )
+            }
+            {
+              getAllPermissions().includes("Xem phiếu nhập", "Xem phiếu xuất", "Xem phiếu chuyển") && (
+                <CNavItem>
+                  <CNavLink to="/history_import" component={NavLink}>
+                    QL Phiếu
+                  </CNavLink>
+                </CNavItem>
+              )
+            }
+            {
+
+              getRoleNames().includes("admin") && (
                 <CNavItem>
                   <CDropdown variant="nav-item">
                     <CDropdownToggle>Quản trị</CDropdownToggle>
@@ -96,7 +105,7 @@ const AppHeader = () => {
                     </CDropdownMenu>
                   </CDropdown>
                 </CNavItem>
-              ) : (<></>)
+              )
             }
             {/* <CNavItem>
               <CNavLink to="/reports" component={NavLink}>
