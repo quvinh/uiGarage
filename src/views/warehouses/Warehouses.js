@@ -14,10 +14,15 @@ import {
   CDropdownToggle,
   CCardHeader,
   CWidgetDropdown,
+  CModal,
+  CModalHeader,
+  CModalTitle,
+  CModalBody,
+  CModalFooter,
 
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilOptions, cilPlus, cilSettings } from '@coreui/icons'
+import { cilCheckAlt, cilOptions, cilPlus, cilSettings } from '@coreui/icons'
 import { getData, putData, delData, postData } from '../api/Api.js'
 import { useHistory } from 'react-router-dom';
 import { getToken } from 'src/components/utils/Common.js'
@@ -26,9 +31,14 @@ import { getToken } from 'src/components/utils/Common.js'
 // const WidgetsBrand = lazy(() => import('../widgets/WidgetsBrand.js'))
 
 const Warehouses = () => {
+  const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [note, setNote] = useState('');
+  const [count, setCount] = useState('')
+  const [visibleAlert, setVisibleAlert] = useState(false)
+  const [visibleDel, setVisibleDel] = useState(false)
+
   const history = useHistory()
 
   const handleName = (e) => {
@@ -46,6 +56,12 @@ const Warehouses = () => {
     Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse?token=' + getToken())])
       .then(function (res) {
         setDataWarehouse(res[0].data)
+      })
+  }
+  const handleCount = (id) => {
+    Promise.all([getData('http://127.0.0.1:8000/api/admin/warehouse/amountShelf/' + id + '?token=' + getToken()),])
+      .then(function (res) {
+        setCount(res[0].data)
       })
   }
 
@@ -69,14 +85,21 @@ const Warehouses = () => {
 
   const handleDelete = (e, id) => {
     console.log(id)
-    Promise.all([delData('http://127.0.0.1:8000/api/admin/warehouse/delete/' + id + '?token=' + getToken())])
-      .then(function (response) {
-        handleReload()
-        // eClick.closest('tr').remove();
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    if (count === 0) {
+      Promise.all([delData('http://127.0.0.1:8000/api/admin/warehouse/delete/' + id + '?token=' + getToken())])
+        .then(function (response) {
+          handleReload()
+          // eClick.closest('tr').remove();
+        })
+        .catch(error => {
+          console.log(error)
+        })
+    }
+    else {
+      setVisibleAlert(!visible)
+      setVisibleDel(false)
+    }
+
   }
   const [visible, setVisible] = useState(false)
   // const [visible1, setVisible1] = useState(false)
@@ -118,12 +141,16 @@ const Warehouses = () => {
                     <CCol>
                       <CDropdown variant="btn-group" direction="dropstart">
                         <CDropdownToggle color="transparent" caret={false} className="p-0">
-                          <CIcon style={{position: "relative", right: "-10px"}} icon={ cilSettings } size={'md'} />
+                          <CIcon style={{ position: "relative", right: "-10px" }} icon={cilSettings} size={'md'} />
                         </CDropdownToggle>
                         <CDropdownMenu >
                           <CDropdownItem href={'#/warehouses-edit/' + item.id}>Sửa</CDropdownItem>
                           <CDropdownItem href={'#/warehouses-shelf/' + item.id}>Chi tiết</CDropdownItem>
-                          <CDropdownItem onClick={(e) => handleDelete(e, item.id)} >Delete</CDropdownItem>
+                          <CDropdownItem onClick={(e) => {
+                            setVisibleDel(!visible)
+                            handleCount(item.id)
+                            setId(item.id)
+                          }} >Delete</CDropdownItem>
                         </CDropdownMenu>
                       </CDropdown>
                     </CCol>
@@ -135,6 +162,24 @@ const Warehouses = () => {
           </CRow>
         </CCardBody>
       </CCard>
+      <CModal visible={visibleDel} onClose={() => setVisibleDel(false)}>
+        <CModalHeader onClose={() => setVisibleDel(false)}>
+        </CModalHeader>
+        <CModalBody>Bạn có chắc muốn xóa</CModalBody>
+        <CModalFooter>
+          <CButton color="danger" onClick={(e) => {
+            setVisibleDel(false)
+            handleDelete(e, id)
+            }}><CIcon icon={cilCheckAlt}/></CButton>
+        </CModalFooter>
+      </CModal>
+
+
+      <CModal visible={visibleAlert} onClose={() => setVisibleAlert(false)}>
+        <CModalHeader onClose={() => setVisibleAlert(false)}>
+        </CModalHeader>
+        <CModalBody>Vui lòng chuyển hết vật tư hoặc giá kệ ra khỏi kho trước khi xóa</CModalBody>
+      </CModal>
     </>
   )
 }

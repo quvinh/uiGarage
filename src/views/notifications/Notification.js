@@ -46,6 +46,7 @@ const NotificationEvent = () => {
   const [content, setContent] = useState('')
   const [id, setId] = useState('')
   const history = useHistory()
+  const [visibleDel, setVisibleDel] = useState(false)
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value)
@@ -147,8 +148,11 @@ const NotificationEvent = () => {
                       <CButton className='me-2' onClick={() => {
                         handleClick(item)
                         setVisible(!visible)
-                      }} color='warning'><CIcon icon={cilPenAlt} /></CButton>
-                      <CButton onClick={(e) => handleDelete(e,item.id)} color="danger"><CIcon icon={cilDelete} /></CButton>
+                      }} color='info'><CIcon icon={cilPenAlt} /></CButton>
+                      <CButton onClick={(e) => {
+                        setId(item.id)
+                        setVisibleDel(!visible)
+                         }} color="danger"><CIcon icon={cilDelete} /></CButton>
                     </div>
                   </CTableDataCell>
                 </CTableRow>
@@ -182,6 +186,17 @@ const NotificationEvent = () => {
             handleEdit(id)
             setVisible(false)
             }}><CIcon icon={cilCheckAlt} /></CButton>
+        </CModalFooter>
+      </CModal>
+      <CModal visible={visibleDel} onClose={() => setVisibleDel(false)}>
+        <CModalHeader onClose={() => setVisibleDel(false)}>
+        </CModalHeader>
+        <CModalBody>Bạn có chắc muốn xóa</CModalBody>
+        <CModalFooter>
+          <CButton color="danger" onClick={(e) => {
+            handleDelete(e,id)
+            setVisibleDel(false)
+          }}><CIcon icon={cilCheckAlt} /></CButton>
         </CModalFooter>
       </CModal>
     </>
