@@ -110,19 +110,23 @@ const Account = () => {
   //Save user role
   const handelSave = (user_id, roles_id, permission, warehouse_id) => {
     console.log("......")
-    Promise.all([postData('http://127.0.0.1:8000/api/admin/auth_model/user_roles?token=' + getToken(), {
-      user_id: user_id,
-      roles_id: roles_id,
-      permission: permission,
-      warehouse_id: warehouse_id
-    })])
-      .then(function (res) {
-        console.log('SAVED roles')
-        handleGetUsers()
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    if (user_id !== "" && roles_id !== "" && permission.length > 0 && warehouse_id.length > 0) {
+      Promise.all([postData('http://127.0.0.1:8000/api/admin/auth_model/user_roles?token=' + getToken(), {
+        user_id: user_id,
+        roles_id: roles_id,
+        permission: permission,
+        warehouse_id: warehouse_id
+      })])
+        .then(function (res) {
+          console.log('SAVED roles')
+          handleGetUsers()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    } else {
+      console.log("NO")
+    }
   }
 
   //Update role name
